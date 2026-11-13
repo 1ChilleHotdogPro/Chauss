@@ -1,0 +1,4 @@
+# Keep the engine files byte-for-byte as released (no line-ending conversion),
+# so their SHA-256 hashes in public/engine/README.md stay true.
+public/engine/*.js -text
+public/engine/*.wasm binary
