@@ -52,6 +52,11 @@ export interface SnapshotMeta {
   lichess: { ratings: number[]; speeds: string[] };
   /** The moves that lead to the opening, in normal notation. */
   rootLine: string[];
+  /**
+   * The opening the tree stays in, as Lichess names it (e.g. "Ponziani Opening"). Moves into a
+   * position that Lichess names as a different opening are listed but not followed.
+   */
+  family?: string;
   thresholds: {
     /** A move is followed if it has at least this share of the games at its position ... */
     minShare: number;

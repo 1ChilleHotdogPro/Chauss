@@ -115,19 +115,34 @@ const thousands = (n: number): string => n.toLocaleString('en-US');
 function printSurvey(result: CrawlResult, thresholds: CrawlThresholds, options: typeof OPTIONS): void {
   log('');
   log(`Survey: ${result.nodes.size} positions seen with at least ${thresholds.minGamesLichess} games per move${result.truncated ? ' (cut off by the position limit)' : ''}.`);
-  log('How many positions each minimum-games setting would keep:');
-  log('  min games | positions | deepest move');
-  for (const minGames of [300, 500, 1000, 2000, 3000, 5000, 10000, 20000, 50000]) {
+  log('How many of the positions seen each setting would keep (rows: minimum Lichess games; columns: minimum master games).');
+  log('Numbers close to the number of positions seen are underestimates: the real tree continues beyond what was crawled.');
+  const mastersOptions = [10, 15, 20, 30, 50].filter((n) => n >= thresholds.minGamesMasters);
+  log(`  min games | ${mastersOptions.map((n) => `masters>=${n}`.padStart(11)).join(' | ')}`);
+  for (const minGames of [300, 5000, 20000, 50000, 75000, 100000, 150000, 200000, 500000, 10_000_000]) {
     if (minGames < thresholds.minGamesLichess) continue;
-    const strict = { ...thresholds, minGamesLichess: minGames };
-    // Depth reached: re-walk with the stricter rule.
-    let deepest = 0;
-    const count = countReachable(result, ROOT_LINE, strict);
-    for (const node of result.nodes.values()) {
-      if (sumCounts(node.lichess) >= minGames) deepest = Math.max(deepest, node.ply);
-    }
-    log(`  ${String(minGames).padStart(9)} | ${String(count).padStart(9)} | ${Math.ceil(deepest / 2)}`);
+    const counts = mastersOptions.map((minGamesMasters) =>
+      countReachable(result, ROOT_LINE, { ...thresholds, minGamesLichess: minGames, minGamesMasters }),
+    );
+    log(`  ${String(minGames).padStart(9)} | ${counts.map((n) => String(n).padStart(11)).join(' | ')}`);
   }
+  // Which openings the tree wanders into (by the names Lichess gives the positions).
+  const families = new Map<string, { positions: number; masters: number; lichess: number }>();
+  for (const node of result.nodes.values()) {
+    if (node.kind !== 'tree') continue;
+    const name = node.opening?.name ?? '(unnamed)';
+    const entry = families.get(name) ?? { positions: 0, masters: 0, lichess: 0 };
+    entry.positions += 1;
+    entry.masters = Math.max(entry.masters, sumCounts(node.masters));
+    entry.lichess = Math.max(entry.lichess, sumCounts(node.lichess));
+    families.set(name, entry);
+  }
+  log('');
+  log('Opening names of the positions inside the tree (positions | most master games | most Lichess games):');
+  for (const [name, entry] of [...families.entries()].sort((a, b) => b[1].positions - a[1].positions)) {
+    log(`  ${String(entry.positions).padStart(4)} | ${thousands(entry.masters).padStart(7)} | ${thousands(entry.lichess).padStart(10)} | ${name}`);
+  }
+
   const ponziani = [...result.nodes.values()].find((node) => node.kind === 'tree' && node.ply === ROOT_LINE.length);
   if (ponziani) {
     log('');
@@ -176,7 +191,10 @@ export async function main(argv: readonly string[]): Promise<number> {
         log(`  ${visited} positions (${waiting} waiting) — move ${Math.ceil(node.ply / 2)}, ${node.opening?.name ?? 'unnamed'}; ${client.requestsSent()} requests sent, ${diskCache.hits()} answered from disk`);
       }
     });
-    log(`Crawl finished: ${result.nodes.size} positions, ${client.requestsSent()} requests sent to Lichess, ${diskCache.hits()} answered from disk${result.truncated ? '; the position limit cut the tree short' : ''}.`);
+    log(`Crawl finished: ${result.nodes.size} positions, ${client.requestsSent()} requests sent to Lichess, ${diskCache.hits()} answered from disk.`);
+    if (result.truncated) {
+      log(`The position limit cut the tree short. The most played move that was left out has ${thousands(result.largestCut)} Lichess games: run again with --min-games=${result.largestCut + 1} for a complete tree of this size.`);
+    }
 
     if (options.survey) {
       printSurvey(result, thresholds, options);
@@ -215,6 +233,7 @@ export async function main(argv: readonly string[]): Promise<number> {
       explorerHost: EXPLORER_HOST,
       lichess: { ratings: options.ratings, speeds: options.speeds },
       rootLine: ROOT_LINE,
+      ...(result.family ? { family: result.family } : {}),
       thresholds: {
         minShare: thresholds.minShare,
         minGamesLichess: thresholds.minGamesLichess,

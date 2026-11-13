@@ -16,7 +16,11 @@ export function fenAfter(line: string): string {
   return chess.fen();
 }
 
-function toPosition(fen: string, games: Record<string, number> | undefined): ExplorerPosition {
+function toPosition(
+  fen: string,
+  games: Record<string, number> | undefined,
+  nameOf: (fen: string) => { eco: string; name: string } | null,
+): ExplorerPosition {
   const moves: ExplorerMove[] = Object.entries(games ?? {}).map(([san, total]) => {
     const played = new Chess(fen).move(san);
     // Split the games 50% / 10% / 40% so the three numbers are all exercised.
@@ -29,7 +33,8 @@ function toPosition(fen: string, games: Record<string, number> | undefined): Exp
       draws,
       black: total - white - draws,
       averageRating: 1200,
-      opening: null,
+      // Like Lichess: a move carries the name of the position it leads to, if that has one.
+      opening: nameOf(played.after),
     };
   });
   return {
@@ -55,8 +60,9 @@ export function fakeSource(book: FakeBook, names: Record<string, { eco: string; 
   const answer = (source: 'masters' | 'lichess', fen: string): ExplorerPosition => {
     const found = byKey.get(positionKey(fen));
     asked.push(`${source} ${found?.line ?? fen}`);
-    const position = toPosition(fen, found?.entry[source]);
-    position.opening = nameByKey.get(positionKey(fen)) ?? null;
+    const nameOf = (positionFen: string) => nameByKey.get(positionKey(positionFen)) ?? null;
+    const position = toPosition(fen, found?.entry[source], nameOf);
+    position.opening = nameOf(fen);
     return position;
   };
   return {

@@ -49,6 +49,27 @@ export interface CrawlResult {
   nodes: Map<string, CrawlNode>;
   /** True when the position limit cut the tree short. */
   truncated: boolean;
+  /**
+   * When truncated: the largest number of Lichess games among the moves that were cut. Crawling
+   * again with a minimum just above this gives a complete tree that fits the position limit.
+   */
+  largestCut: number;
+  /** The opening the tree is about, as Lichess names its first position (e.g. "Ponziani Opening"). */
+  family: string | undefined;
+}
+
+/** "Ponziani Opening: Jaenisch Counterattack" -> "Ponziani Opening". */
+export function openingFamily(name: string): string {
+  return name.split(':')[0]!.trim();
+}
+
+/**
+ * True when a move leads to a position that Lichess names as a different opening — e.g. from the
+ * Ponziani into the Italian Game. Such moves are listed, with that name, but not followed: the
+ * other opening's theory is not what this tree is about.
+ */
+export function leavesOpening(move: Pick<CrawlMove, 'opening'>, family: string | undefined): boolean {
+  return family !== undefined && move.opening !== undefined && openingFamily(move.opening) !== family;
 }
 
 const START_FEN = 'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1';
@@ -116,6 +137,8 @@ export function movesToFollow(
   node: Pick<CrawlNode, 'ply' | 'kind' | 'masters' | 'lichess' | 'fen'> & { moves: readonly CrawlMove[] },
   rootLine: readonly string[],
   thresholds: CrawlThresholds,
+  /** The opening the tree is about; moves into a differently named opening are not followed. */
+  family?: string,
 ): Map<string, NodeKind> {
   const follow = new Map<string, NodeKind>();
   if (node.kind === 'sideline') return follow; // light coverage: nothing deeper
@@ -133,7 +156,7 @@ export function movesToFollow(
 
   if (node.ply + 1 > thresholds.maxPly) return follow;
   for (const move of node.moves) {
-    if (meetsThreshold(move, node, thresholds)) follow.set(move.uci, 'tree');
+    if (meetsThreshold(move, node, thresholds) && !leavesOpening(move, family)) follow.set(move.uci, 'tree');
   }
   return follow;
 }
@@ -146,8 +169,11 @@ export function movesToFollow(
  */
 function treePriority(move: CrawlMove, node: CrawlNode, thresholds: CrawlThresholds): number {
   const book = meetsThreshold({ masters: move.masters, lichess: [0, 0, 0] }, node, thresholds);
-  return book ? 1e12 + sumCounts(move.masters) : sumCounts(move.lichess);
+  return book ? BOOK_PRIORITY + sumCounts(move.masters) : sumCounts(move.lichess);
 }
+
+/** Far above any number of Lichess games, so book lines always come first. */
+const BOOK_PRIORITY = 1e12;
 
 interface Pending {
   fen: string;
@@ -172,6 +198,8 @@ export async function crawl(
   const nodes = new Map<string, CrawlNode>();
   const queue: Pending[] = [{ fen: START_FEN, ply: 0, kind: 'prelude', priority: Infinity }];
   let truncated = false;
+  let largestCut = 0;
+  let family: string | undefined;
 
   while (queue.length > 0) {
     queue.sort((a, b) => b.priority - a.priority);
@@ -180,6 +208,7 @@ export async function crawl(
     if (nodes.has(key)) continue;
     if (item.kind === 'tree' && nodes.size >= thresholds.maxPositions) {
       truncated = true;
+      if (item.priority < BOOK_PRIORITY) largestCut = Math.max(largestCut, item.priority);
       continue;
     }
 
@@ -198,8 +227,10 @@ export async function crawl(
     const opening = lichess.opening ?? masters.opening ?? item.inheritedOpening;
     if (opening) node.opening = opening;
     nodes.set(key, node);
+    // The first position of the opening itself names the family the tree stays in.
+    if (node.kind === 'tree' && family === undefined && node.opening) family = openingFamily(node.opening.name);
 
-    const follow = movesToFollow(node, rootLine, thresholds);
+    const follow = movesToFollow(node, rootLine, thresholds, family);
     for (const move of node.moves) {
       const kind = follow.get(move.uci);
       if (!kind) continue;
@@ -215,7 +246,7 @@ export async function crawl(
     onProgress?.(nodes.size, queue.length, node);
   }
 
-  return { rootKey: positionKey(START_FEN), nodes, truncated };
+  return { rootKey: positionKey(START_FEN), nodes, truncated, largestCut, family };
 }
 
 /**
@@ -234,7 +265,7 @@ export function countReachable(
     const node = result.nodes.get(key);
     if (!node || seen.has(key)) continue;
     seen.add(key);
-    for (const [uci, childKind] of movesToFollow({ ...node, kind }, rootLine, thresholds)) {
+    for (const [uci, childKind] of movesToFollow({ ...node, kind }, rootLine, thresholds, result.family)) {
       const move = node.moves.find((candidate) => candidate.uci === uci);
       if (move) stack.push({ key: positionKey(move.fenAfter), kind: childKind });
     }

@@ -241,6 +241,47 @@ describe('crawl', () => {
     expect(kindOf(`${P} d5`)).toBeUndefined();
   });
 
+  it('says how to get a complete tree when the position limit cut it', async () => {
+    const full = await run();
+    expect(full.result.truncated).toBe(false);
+    expect(full.result.largestCut).toBe(0);
+
+    // With room for 11 positions, the most played move that had to be left out is d5 (150 games).
+    const cut = await run({ maxPositions: 11 });
+    expect(cut.result.truncated).toBe(true);
+    expect(cut.result.largestCut).toBe(150);
+
+    // Asking for more than that many games gives a tree that fits and is complete.
+    const complete = await run({ maxPositions: 11, minGamesLichess: 151, minGamesMasters: 6 });
+    expect(complete.result.truncated).toBe(false);
+    expect(complete.result.nodes.size).toBeLessThanOrEqual(11);
+  });
+
+  it('lists but does not follow a move into a differently named opening', async () => {
+    // Pretend Lichess calls the position after 3...d5 by another opening's name.
+    const source = fakeSource(BOOK, {
+      [P]: { eco: 'C44', name: 'Ponziani Opening' },
+      [`${P} Nf6`]: { eco: 'C44', name: 'Ponziani Opening: Jaenisch Counterattack' },
+      [`${P} d5`]: { eco: 'C50', name: 'Some Other Opening: A Variation' },
+    });
+    const result = await crawl(source, { rootLine: ROOT, thresholds: THRESHOLDS });
+    expect(result.family).toBe('Ponziani Opening');
+
+    const ponziani = result.nodes.get(key(P))!;
+    const d5 = ponziani.moves.find((m) => m.san === 'd5')!;
+    expect(d5.opening).toBe('Some Other Opening: A Variation');
+    expect(d5.follow).toBeUndefined(); // listed, with its name, but the tree stops there
+    expect(result.nodes.has(key(`${P} d5`))).toBe(false);
+
+    // A variation of the same opening is followed as usual.
+    expect(ponziani.moves.find((m) => m.san === 'Nf6')?.follow).toBe('tree');
+    expect(result.nodes.get(key(`${P} Nf6`))?.opening?.name).toBe('Ponziani Opening: Jaenisch Counterattack');
+    // Moves without a name of their own stay in the opening.
+    expect(ponziani.moves.find((m) => m.san === 'd6')?.follow).toBe('tree');
+    // countReachable applies the same rule.
+    expect(countReachable(result, ROOT, THRESHOLDS)).toBe(result.nodes.size);
+  });
+
   it('reports progress', async () => {
     const source = fakeSource(BOOK);
     const seen: number[] = [];
