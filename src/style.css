@@ -568,8 +568,26 @@ body[data-mode='explore'] .game-only {
   overflow: auto;
 }
 
-.stats-table td {
+/* The Statistics table borrows the explorer's table look; these rules must beat .explore-table's
+   (hence the double class): the line wraps and takes the spare width, so every column stays in view. */
+.explore-table.stats-table td {
+  width: auto;
+}
+
+.explore-table.stats-table td.stats-line {
+  width: 100%;
+  min-width: 9em;
   white-space: normal;
+}
+
+.explore-table.stats-table td:last-child {
+  white-space: normal;
+}
+
+@media (max-width: 480px) {
+  .explore-table.stats-table td.stats-line {
+    min-width: 6em;
+  }
 }
 
 .stats-table .stats-move {

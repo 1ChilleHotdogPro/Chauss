@@ -229,6 +229,8 @@ test('Statistics lists every position; a backup can be saved, and loaded after a
   await expect(first.locator('td').nth(3)).toHaveText('1');
   await expect(first.locator('td').nth(4)).toHaveText('0%');
   await expect(first.locator('td').nth(5)).toHaveText(/^in \d+ minutes?$/);
+  // Long lines wrap: every column fits without scrolling sideways.
+  expect(await page.locator('.stats-scroll').evaluate((el) => el.scrollWidth <= el.clientWidth)).toBe(true);
   await page.screenshot({ path: 'test-results/phase5-stats.png' });
 
   // Save a backup file.
@@ -318,5 +320,7 @@ test('Drill mode fits a phone-sized screen', async ({ page }) => {
   await page.locator('#open-stats').click();
   const box = (await page.locator('#stats').boundingBox())!;
   expect(box.x + box.width).toBeLessThanOrEqual(390);
+  // Every column of the table is in view, without scrolling sideways.
+  expect(await page.locator('.stats-scroll').evaluate((el) => el.scrollWidth <= el.clientWidth)).toBe(true);
   await page.screenshot({ path: 'test-results/phase5-narrow.png' });
 });
