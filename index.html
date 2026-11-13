@@ -32,38 +32,57 @@
         </section>
 
         <aside class="panel">
+          <div class="mode-tabs" role="tablist" aria-label="Mode">
+            <button id="mode-explore" type="button" role="tab" aria-selected="true">Explore</button>
+            <button id="mode-drill" type="button" role="tab" aria-selected="false">Drill</button>
+          </div>
+
           <p id="status" class="status" role="status" aria-live="polite"></p>
-          <p id="verdict" class="verdict" aria-live="polite" hidden></p>
+          <p id="verdict" class="verdict explore-only" aria-live="polite" hidden></p>
+
+          <!-- Drill mode: the app plays Black, you find the repertoire move as White. -->
+          <section id="drill" class="drill drill-only" aria-label="Drill">
+            <p id="drill-prompt" class="drill-prompt" role="status" aria-live="polite"></p>
+            <p id="drill-feedback" class="drill-feedback" data-kind="none" role="status" aria-live="polite" hidden></p>
+            <div class="controls">
+              <button id="drill-next" type="button" title="Start the next line (Enter)">Next line</button>
+              <button id="open-stats" type="button">Statistics</button>
+            </div>
+            <p id="drill-counts" class="hint"></p>
+            <p id="drill-score" class="hint"></p>
+          </section>
 
           <div class="controls">
-            <button id="prev" type="button" title="Previous move (Left arrow)" aria-label="Previous move">&#9664;</button>
-            <button id="next" type="button" title="Next move (Right arrow)" aria-label="Next move">&#9654;</button>
+            <button id="prev" class="explore-only" type="button" title="Previous move (Left arrow)" aria-label="Previous move">&#9664;</button>
+            <button id="next" class="explore-only" type="button" title="Next move (Right arrow)" aria-label="Next move">&#9654;</button>
             <button id="flip" type="button" title="Flip board (F)">Flip board</button>
-            <button id="undo" type="button" title="Take back the last move">Undo</button>
-            <button id="reset" type="button" title="Start a new game">New game</button>
+            <button id="undo" class="explore-only" type="button" title="Take back the last move">Undo</button>
+            <button id="reset" class="explore-only" type="button" title="Start a new game">New game</button>
           </div>
 
           <h2>Moves</h2>
           <ol id="moves" class="moves"></ol>
           <p id="moves-empty" class="hint">No moves yet. Click or drag a white piece to start.</p>
 
-          <h2>Opening explorer</h2>
-          <div id="explore" class="explore" data-status="loading"></div>
-          <div class="controls explore-actions">
-            <button id="open-traps" type="button">Common mistakes in this opening</button>
-          </div>
+          <div class="explore-only">
+            <h2>Opening explorer</h2>
+            <div id="explore" class="explore" data-status="loading"></div>
+            <div class="controls explore-actions">
+              <button id="open-traps" type="button">Common mistakes in this opening</button>
+            </div>
 
-          <h2>Engine</h2>
-          <div class="controls">
-            <button id="toggle-eval" type="button" aria-pressed="false" title="Show or hide the evaluation (E)">
-              Show eval
-            </button>
-            <button id="toggle-arrows" type="button" aria-pressed="false" title="Show or hide best-move arrows (A)">
-              Show arrows
-            </button>
+            <h2>Engine</h2>
+            <div class="controls">
+              <button id="toggle-eval" type="button" aria-pressed="false" title="Show or hide the evaluation (E)">
+                Show eval
+              </button>
+              <button id="toggle-arrows" type="button" aria-pressed="false" title="Show or hide best-move arrows (A)">
+                Show arrows
+              </button>
+            </div>
+            <p id="engine-status" class="hint engine-status" data-state="loading">Engine: loading Stockfish…</p>
+            <ol id="engine-lines" class="engine-lines" hidden></ol>
           </div>
-          <p id="engine-status" class="hint engine-status" data-state="loading">Engine: loading Stockfish…</p>
-          <ol id="engine-lines" class="engine-lines" hidden></ol>
 
           <p class="fen">
             <span class="fen-label" title="FEN: a one-line text description of the position">FEN</span>
@@ -79,6 +98,45 @@
         <div id="traps-body"><p class="hint">Loading…</p></div>
         <div class="settings-footer">
           <button id="traps-close" type="button">Close</button>
+        </div>
+      </div>
+    </dialog>
+
+    <dialog id="stats" class="settings traps" aria-labelledby="stats-title">
+      <div class="settings-body">
+        <h2 id="stats-title">Statistics</h2>
+        <p id="stats-summary" class="hint"></p>
+        <div class="stats-scroll">
+          <table id="stats-table" class="explore-table stats-table">
+            <thead>
+              <tr>
+                <th>Line</th>
+                <th>Play</th>
+                <th>Tries</th>
+                <th>Wrong</th>
+                <th>Right</th>
+                <th>Next</th>
+              </tr>
+            </thead>
+            <tbody></tbody>
+          </table>
+        </div>
+
+        <h3>Backup</h3>
+        <p class="hint">
+          Your progress is stored in this browser only. Save a backup file to keep it safe or move it to another
+          computer.
+        </p>
+        <div class="controls">
+          <button id="stats-export" type="button">Save a backup file</button>
+          <button id="stats-import" type="button">Load a backup file</button>
+          <input id="stats-import-file" type="file" accept="application/json,.json" hidden />
+          <button id="stats-reset" type="button">Reset progress</button>
+        </div>
+        <p id="stats-message" class="test-result" role="status" hidden></p>
+
+        <div class="settings-footer">
+          <button id="stats-close" type="button">Close</button>
         </div>
       </div>
     </dialog>

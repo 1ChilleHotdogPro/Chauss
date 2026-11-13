@@ -8,6 +8,9 @@ import { Analysis } from './analysis/analysis';
 import { formatScore } from './analysis/eval';
 import { numberedLine, parseUciMove, pvToSan, toUci } from './analysis/pv';
 import { verdictSentence } from './analysis/verdictText';
+import { DrillController } from './drill/controller';
+import { loadProgress, saveProgress, type Progress } from './drill/progress';
+import { statsRows } from './drill/stats';
 import { Engine } from './engine/engine';
 import { createWorkerTransport, engineUrl } from './engine/workerTransport';
 import { createMemoryCache, createStorageCache, layerCaches, type KeyValueStorage } from './explorer/cache';
@@ -21,10 +24,12 @@ import { buildRanking } from './explore/ranking';
 import { explainRefutation } from './explore/refutation';
 import { ExploreSource } from './explore/source';
 import type { Trap } from './explore/traps';
-import { Game } from './game/game';
-import type { Snapshot } from './snapshot/format';
+import { Game, type PromotionPiece } from './game/game';
+import { buildRepertoire, type Repertoire } from './repertoire/repertoire';
+import { positionKey, type Snapshot } from './snapshot/format';
 import { describeSnapshot, loadSnapshot } from './snapshot/load';
-import { createBoard, type Arrow } from './ui/board';
+import { createBoard, type Arrow, type BoardInteraction } from './ui/board';
+import { renderDrillPanel } from './ui/drillPanel';
 import { renderEnginePanel, type EnginePanelModel } from './ui/enginePanel';
 import { createEvalBar } from './ui/evalBar';
 import {
@@ -37,6 +42,7 @@ import {
 import { renderMoveList, updateMoveMarks } from './ui/moveList';
 import { createPromotionPicker } from './ui/promotion';
 import { createSettingsPanel } from './ui/settingsPanel';
+import { createStatsDialog } from './ui/statsDialog';
 import { createTrapsDialog } from './ui/trapsDialog';
 
 /** The engine reports its three best moves (used for the arrows and the lines list). */
@@ -127,15 +133,149 @@ loadSnapshot().then(
     snapshotInfo.dataset.state = 'ready';
     snapshotInfo.dataset.positions = String(loaded.meta.counts.positions);
     snapshotInfo.textContent = describeSnapshot(loaded.meta);
-    renderExplore();
+
+    // The repertoire (White's move in every position it reaches) and the drills built on it.
+    repertoire = buildRepertoire(loaded);
+    drill = new DrillController({
+      snapshot: loaded,
+      repertoire,
+      progress,
+      onProgress: (changed) => {
+        progress = changed;
+        saveProgress(storage, changed);
+        statsDialog.refresh();
+      },
+    });
+    if (mode === 'drill') startDrillLine();
+    else renderExplore();
+    renderDrill();
   },
   (error: unknown) => {
     snapshot = null;
     snapshotInfo.dataset.state = 'failed';
     snapshotInfo.textContent = `The bundled opening data could not be loaded (${error instanceof Error ? error.message : String(error)}).`;
     renderExplore();
+    renderDrill();
   },
 );
+
+// ---- Modes: Explore (look things up) and Drill (the app plays Black, you find White's move) ----
+let mode: 'explore' | 'drill' = 'explore';
+let repertoire: Repertoire | null = null;
+let drill: DrillController | null = null;
+let progress: Progress = loadProgress(storage);
+/** True while the app is showing Black's reply in a drill (no moving pieces meanwhile). */
+let drillShowing = false;
+let drillTimer: ReturnType<typeof setTimeout> | undefined;
+
+const modeButtons = {
+  explore: byId<HTMLButtonElement>('mode-explore'),
+  drill: byId<HTMLButtonElement>('mode-drill'),
+};
+const drillPanel = {
+  prompt: byId<HTMLElement>('drill-prompt'),
+  feedback: byId<HTMLElement>('drill-feedback'),
+  counts: byId<HTMLElement>('drill-counts'),
+  score: byId<HTMLElement>('drill-score'),
+  next: byId<HTMLButtonElement>('drill-next'),
+};
+
+const statsDialog = createStatsDialog({
+  dialog: byId<HTMLDialogElement>('stats'),
+  openButton: byId<HTMLButtonElement>('open-stats'),
+  rows: () => (repertoire ? statsRows(repertoire, progress, Date.now()) : []),
+  progress: () => progress,
+  onReplace: (replaced) => {
+    progress = replaced;
+    drill?.setProgress(replaced);
+    const stored = saveProgress(storage, replaced);
+    renderDrill();
+    return stored;
+  },
+});
+
+function renderDrill(): void {
+  let unavailable: string | null = null;
+  if (snapshot === null) unavailable = 'The bundled opening data could not be loaded, so drills are not available.';
+  else if (repertoire && repertoire.cards.size === 0) unavailable = 'The bundled opening data has no lines to drill.';
+  renderDrillPanel(drillPanel, drill && !unavailable ? drill.view() : null, unavailable);
+}
+
+/** Put the drill's line on the board; with `showReply`, play Black's last move after a short pause. */
+function showDrillLine(showReply: boolean): void {
+  if (!drill) return;
+  const line = [...drill.view().line];
+  clearTimeout(drillTimer);
+  if (showReply && line.length > 0) {
+    drillShowing = true;
+    game.loadLine(line.slice(0, -1));
+    render();
+    drillTimer = setTimeout(() => {
+      drillShowing = false;
+      game.loadLine(line);
+      render();
+    }, 450);
+  } else {
+    drillShowing = false;
+    game.loadLine(line);
+    render();
+  }
+}
+
+function startDrillLine(): void {
+  if (!drill) return;
+  promotion.cancel();
+  drill.next();
+  showDrillLine(true);
+}
+
+/** The user's move in a drill. */
+function drillMove(from: string, to: string, piece?: PromotionPiece): void {
+  if (!drill) return;
+  let played;
+  try {
+    played = new Chess(game.fen()).move(piece ? { from, to, promotion: piece } : { from, to });
+  } catch {
+    render();
+    return;
+  }
+  const lengthBefore = drill.view().line.length;
+  const outcome = drill.answer(`${from}${to}${played.promotion ?? ''}`, played.san);
+  // After a right answer the line grew by our move and (unless it ended) Black's reply.
+  if (outcome === 'correct') showDrillLine(drill.view().line.length === lengthBefore + 2);
+  else render();
+}
+
+function setMode(next: 'explore' | 'drill'): void {
+  if (next === mode) return;
+  mode = next;
+  document.body.dataset.mode = next;
+  modeButtons.explore.setAttribute('aria-selected', String(next === 'explore'));
+  modeButtons.drill.setAttribute('aria-selected', String(next === 'drill'));
+  clearTimeout(drillTimer);
+  drillShowing = false;
+  promotion.cancel();
+  if (next === 'drill') {
+    // Think for yourself in a drill: no evaluation, no arrows.
+    evalShown = false;
+    arrowsShown = false;
+    if (drill) startDrillLine();
+    else render();
+  } else {
+    render();
+  }
+}
+
+/** Who may move pieces on the board right now. */
+function interaction(): BoardInteraction {
+  if (mode !== 'drill') return 'side-to-move';
+  return drill?.view().card && !drillShowing ? 'white-only' : 'none';
+}
+
+modeButtons.explore.addEventListener('click', () => setMode('explore'));
+modeButtons.drill.addEventListener('click', () => setMode('drill'));
+drillPanel.next.addEventListener('click', startDrillLine);
+document.body.dataset.mode = mode;
 
 const exploreEl = byId<HTMLElement>('explore');
 const exploreSource = new ExploreSource({
@@ -211,6 +351,11 @@ function renderExplore(): void {
   if (rankingFen !== null && rankingFen !== fen) rankingFen = null;
 
   const view = exploreSource.view(fen);
+  // Mark the repertoire move (the one the drills ask for) where the repertoire reaches this position.
+  if (view.status === 'ready' && !view.position.recommended) {
+    const card = repertoire?.cards.get(positionKey(fen));
+    if (card) view.position.recommended = card.move.uci;
+  }
   const settings = settingsPanel.settings();
   const ratings =
     view.status === 'ready' && view.origin === 'snapshot' && snapshot
@@ -267,9 +412,17 @@ function renderExplore(): void {
 function handleUserMove(from: string, to: string): void {
   if (game.needsPromotion(from, to)) {
     promotion.open(game.turn(), (piece) => {
+      if (piece && mode === 'drill') {
+        drillMove(from, to, piece);
+        return;
+      }
       if (piece) game.play(from, to, piece);
       render(); // also puts the pawn back if the user cancelled
     });
+    return;
+  }
+  if (mode === 'drill') {
+    drillMove(from, to);
     return;
   }
   game.play(from, to);
@@ -293,6 +446,7 @@ function statusText(): string {
 
 /** Redraw everything from the game. Cheap enough to call after every change. */
 function render(): void {
+  board.setInteraction(interaction());
   board.sync();
 
   const moves = game.history();
@@ -345,7 +499,12 @@ function renderEngine(): void {
   });
 
   const arrows: Arrow[] = [];
-  if (arrowsShown && evaluation) {
+  if (mode === 'drill') {
+    // In a drill the only arrow is the answer, shown after a wrong try.
+    const feedback = drill?.view().feedback;
+    const hint = feedback?.kind === 'wrong' ? parseUciMove(feedback.hint) : null;
+    if (hint) arrows.push({ from: hint.from, to: hint.to });
+  } else if (arrowsShown && evaluation) {
     for (const line of evaluation.lines) {
       const move = line.pv[0] ? parseUciMove(line.pv[0]) : null;
       if (move) arrows.push({ from: move.from, to: move.to });
@@ -365,7 +524,8 @@ function renderEngine(): void {
   });
 
   // The Explore panel shows engine results too (refutations, the ranking, the eval column).
-  renderExplore();
+  if (mode === 'explore') renderExplore();
+  else renderDrill();
 }
 
 // The engine reports many times a second; redraw at most once per frame.
@@ -380,6 +540,7 @@ function scheduleEngineRender(): void {
 }
 
 function goTo(ply: number): void {
+  if (mode === 'drill') return; // no stepping through the game while being tested on it
   promotion.cancel();
   game.goTo(ply);
   render();
@@ -391,11 +552,13 @@ function flip(): void {
 }
 
 function toggleEval(): void {
+  if (mode === 'drill') return;
   evalShown = !evalShown;
   renderEngine();
 }
 
 function toggleArrows(): void {
+  if (mode === 'drill') return;
   arrowsShown = !arrowsShown;
   renderEngine();
 }
@@ -420,7 +583,19 @@ document.addEventListener('keydown', (event) => {
   if (event.ctrlKey || event.metaKey || event.altKey) return;
   const target = event.target;
   if (target instanceof HTMLInputElement || target instanceof HTMLTextAreaElement) return;
-  if (settingsPanel.isOpen() || trapsDialog.isOpen()) return; // no board hotkeys while a dialog is open
+  if (settingsPanel.isOpen() || trapsDialog.isOpen() || statsDialog.isOpen()) return; // no board hotkeys while a dialog is open
+
+  if (mode === 'drill' && event.key === 'Enter' && !promotion.isOpen()) {
+    // Enter starts the next line once this one is over (and does nothing in the middle of one).
+    // With the focus on some other button, Enter presses that button as usual; the Drill tab does
+    // not count, because the focus is still there right after switching to Drill.
+    const onOtherButton = target instanceof HTMLButtonElement && target !== modeButtons.drill;
+    if (drill && drill.view().card === null && !onOtherButton) {
+      event.preventDefault();
+      startDrillLine();
+    }
+    return;
+  }
 
   if (promotion.isOpen()) {
     if (event.key === 'Escape') promotion.cancel();

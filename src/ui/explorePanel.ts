@@ -127,7 +127,7 @@ function moveTable(
     moveCell.append(play);
     if (move.uci === recommended) {
       const star = el('span', 'explore-recommended', '★');
-      star.title = 'Recommended reply';
+      star.title = 'The move this trainer recommends (your repertoire move)';
       moveCell.append(star);
     }
 

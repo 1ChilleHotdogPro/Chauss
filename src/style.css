@@ -435,6 +435,86 @@ button:focus-visible {
   color: var(--accent-text);
 }
 
+/* ---- Modes ---- */
+.mode-tabs {
+  display: flex;
+  gap: 4px;
+  margin-bottom: 12px;
+  padding: 3px;
+  border-radius: 8px;
+  background: var(--button);
+}
+
+.mode-tabs button {
+  flex: 1 1 0;
+  border-color: transparent;
+  background: transparent;
+  font-weight: 600;
+}
+
+.mode-tabs button[aria-selected='true'] {
+  background: var(--panel);
+  border-color: var(--border);
+}
+
+/* Parts that belong to one mode only. */
+body[data-mode='drill'] .explore-only,
+body[data-mode='explore'] .drill-only {
+  display: none !important;
+}
+
+/* ---- Drill ---- */
+.drill {
+  margin-bottom: 12px;
+}
+
+.drill-prompt {
+  margin: 0 0 8px;
+}
+
+.drill-prompt[data-state='finished'] {
+  font-weight: 600;
+}
+
+.drill-feedback {
+  margin: 0 0 8px;
+  padding: 6px 8px;
+  border-left: 4px solid var(--border);
+  border-radius: 4px;
+  background: var(--button);
+  font-size: 0.9rem;
+}
+
+.drill-feedback[data-kind='correct'] {
+  border-left-color: var(--accent);
+}
+
+.drill-feedback[data-kind='wrong'] {
+  border-left-color: var(--blunder);
+}
+
+.drill .hint {
+  margin-top: 6px;
+}
+
+.stats-scroll {
+  max-height: 46vh;
+  overflow: auto;
+}
+
+.stats-table td {
+  white-space: normal;
+}
+
+.stats-table .stats-move {
+  font-weight: 600;
+}
+
+.stats-table tr[data-due='true'] td:last-child {
+  color: var(--mistake);
+  font-weight: 600;
+}
+
 /* ---- Opening explorer ---- */
 .explore h3 {
   margin: 10px 0 4px;

@@ -7,9 +7,19 @@ export interface BoardView {
   sync(): void;
   flip(): void;
   orientation(): Side;
+  /**
+   * Who may move pieces with the mouse:
+   *  - 'side-to-move': whoever's turn it is (exploring);
+   *  - 'white-only': White on White's turn, nobody on Black's (drills, where the app plays Black);
+   *  - 'none': nobody (while the app is showing something).
+   * Takes effect at the next sync().
+   */
+  setInteraction(who: BoardInteraction): void;
   /** Draw arrows for the engine's suggestions, best first (at most three). An empty list clears them. */
   setArrows(arrows: readonly Arrow[]): void;
 }
+
+export type BoardInteraction = 'side-to-move' | 'white-only' | 'none';
 
 export interface Arrow {
   from: string;
@@ -48,18 +58,23 @@ export function createBoard(
     animation: { enabled: true, duration: 150 },
   });
 
+  let interaction: BoardInteraction = 'side-to-move';
+
   function sync(): void {
     const last = game.lastMove();
+    const turn = game.turn();
+    const mayMove = interaction === 'side-to-move' || (interaction === 'white-only' && turn === 'white');
     ground.set({
       fen: game.fen(),
-      turnColor: game.turn(),
+      turnColor: turn,
       check: game.inCheck(),
       lastMove: last ? [last.from, last.to] : undefined,
       movable: {
-        color: game.turn(),
-        dests: game.dests(),
+        color: mayMove ? turn : undefined,
+        dests: mayMove ? game.dests() : new Map(),
       },
     });
+    element.dataset.interaction = interaction;
   }
 
   sync();
@@ -88,6 +103,9 @@ export function createBoard(
     sync,
     flip: () => ground.toggleOrientation(),
     orientation: () => ground.state.orientation,
+    setInteraction: (who) => {
+      interaction = who;
+    },
     setArrows,
   };
 }
