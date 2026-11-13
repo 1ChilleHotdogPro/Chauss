@@ -202,8 +202,11 @@ test('a drill that runs out of data asks the same question, and can be played on
       })
       .toBe(true);
     if ((await drillPrompt.getAttribute('data-state')) !== 'asking') break;
-    const card = repertoire.cards.get(positionKey(await fen(page)))!;
+    const before = await fen(page);
+    const card = repertoire.cards.get(positionKey(before))!;
     await play(page, card.move.uci);
+    // The board reports the move a moment after the click: wait for it before looking again.
+    await expect(page.locator('#fen')).not.toHaveText(before);
   }
   await expect(drillPrompt).toHaveAttribute('data-state', 'finished');
   await expect(oob(page)).toBeVisible();

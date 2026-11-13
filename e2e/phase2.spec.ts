@@ -180,16 +180,18 @@ test('bar, arrows and verdict follow the position when stepping through the game
   await playMoves(page, BLUNDER_LINE);
   await page.keyboard.press('e');
   await page.keyboard.press('a');
-  await expect(evalBar(page)).toHaveAttribute('data-score', '#1');
+  // Engine results: allow for a slow engine when many browser tests run Stockfish at once.
+  const ENGINE = { timeout: 20_000 };
+  await expect(evalBar(page)).toHaveAttribute('data-score', '#1', ENGINE);
 
   // One step back: before the blunder there is no mate, and the verdict is about Bc4.
   await page.keyboard.press('ArrowLeft');
   await expect(page.locator('#moves .move.current')).toHaveText('Bc4');
-  await expect(evalBar(page)).toHaveAttribute('data-score', /^([+-]\d+\.\d|0\.0)$/);
-  await expect(page.locator('#verdict')).toHaveText(/^Bc4/);
-  await expect(drawnArrows(page)).toHaveCount(3);
+  await expect(evalBar(page)).toHaveAttribute('data-score', /^([+-]\d+\.\d|0\.0)$/, ENGINE);
+  await expect(page.locator('#verdict')).toHaveText(/^Bc4/, ENGINE);
+  await expect(drawnArrows(page)).toHaveCount(3, ENGINE);
   // The blunder keeps its mark while we look at an earlier position.
-  await expect(page.locator('#moves .move[data-ply="6"]')).toHaveAttribute('data-verdict', 'blunder');
+  await expect(page.locator('#moves .move[data-ply="6"]')).toHaveAttribute('data-verdict', 'blunder', ENGINE);
 
   // Forward again: the mate is back at once (the result was remembered).
   await page.keyboard.press('ArrowRight');
@@ -199,13 +201,13 @@ test('bar, arrows and verdict follow the position when stepping through the game
   // Undo removes the blunder and its verdict.
   await page.locator('#undo').click();
   await expect(page.locator('#moves .move')).toHaveCount(5);
-  await expect(page.locator('#verdict')).toHaveText(/^Bc4/);
-  await expect(evalBar(page)).toHaveAttribute('data-score', /^([+-]\d+\.\d|0\.0)$/);
+  await expect(page.locator('#verdict')).toHaveText(/^Bc4/, ENGINE);
+  await expect(evalBar(page)).toHaveAttribute('data-score', /^([+-]\d+\.\d|0\.0)$/, ENGINE);
 
   // Back to the very start: no move, so no verdict.
   await page.locator('#reset').click();
   await expect(page.locator('#verdict')).toBeHidden();
-  await expect(evalBar(page)).toHaveAttribute('data-score', /^([+-]\d\.\d|0\.0)$/);
+  await expect(evalBar(page)).toHaveAttribute('data-score', /^([+-]\d\.\d|0\.0)$/, ENGINE);
 });
 
 test('the eval bar turns with the board', async ({ page }) => {
