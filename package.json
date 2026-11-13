@@ -1,0 +1,25 @@
+{
+  "name": "chauss",
+  "private": true,
+  "version": "0.1.0",
+  "description": "Ponziani Opening trainer: learn the theory, spot bad opponent moves, and punish them.",
+  "license": "GPL-3.0-or-later",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc --noEmit && vite build",
+    "preview": "vite preview",
+    "test": "vitest run",
+    "test:e2e": "playwright test"
+  },
+  "dependencies": {
+    "@lichess-org/chessground": "^10.5.0",
+    "chess.js": "^1.4.0"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.65.0",
+    "typescript": "^7.0.2",
+    "vite": "^8.3.8",
+    "vitest": "^5.1.0"
+  }
+}
