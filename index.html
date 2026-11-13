@@ -35,10 +35,11 @@
           <div class="mode-tabs" role="tablist" aria-label="Mode">
             <button id="mode-explore" type="button" role="tab" aria-selected="true">Explore</button>
             <button id="mode-drill" type="button" role="tab" aria-selected="false">Drill</button>
+            <button id="mode-play" type="button" role="tab" aria-selected="false">Play</button>
           </div>
 
           <p id="status" class="status" role="status" aria-live="polite"></p>
-          <p id="verdict" class="verdict explore-only" aria-live="polite" hidden></p>
+          <p id="verdict" class="verdict not-drill" aria-live="polite" hidden></p>
 
           <!-- Drill mode: the app plays Black, you find the repertoire move as White. -->
           <section id="drill" class="drill drill-only" aria-label="Drill">
@@ -50,6 +51,41 @@
             </div>
             <p id="drill-counts" class="hint"></p>
             <p id="drill-score" class="hint"></p>
+          </section>
+
+          <!-- Play mode: a game against a bot that plays Black from the opening data. -->
+          <section id="play" class="play play-only" aria-label="Play against the bot">
+            <fieldset class="play-style">
+              <legend>Bot</legend>
+              <label
+                ><input type="radio" name="play-style" id="play-style-realistic" value="realistic" checked />
+                Realistic <span class="hint">— plays the moves people at your level play, as often as they play them</span></label
+              >
+              <label
+                ><input type="radio" name="play-style" id="play-style-punish" value="punish" /> Punish me
+                <span class="hint">— prefers the mistakes people make here, so you practise punishing them</span></label
+              >
+            </fieldset>
+            <p id="play-prompt" class="drill-prompt" role="status" aria-live="polite"></p>
+            <p id="play-last" class="drill-feedback" data-kind="none" role="status" aria-live="polite" hidden></p>
+            <div class="controls">
+              <button id="play-new" type="button">New game</button>
+            </div>
+          </section>
+
+          <!-- Drill and Play: the game has left the opening data. -->
+          <section id="oob" class="oob game-only" aria-label="Out of the opening data" hidden>
+            <p id="oob-lead" class="oob-lead"></p>
+            <div id="oob-choices" class="controls">
+              <button id="oob-stop" type="button">Stop: show Stockfish's verdict</button>
+              <button id="oob-play" type="button">Play on against Stockfish</button>
+            </div>
+            <label class="oob-strength"
+              >Stockfish strength when playing on
+              <select id="oob-strength"></select></label
+            >
+            <div id="oob-result" class="oob-result" hidden></div>
+            <p id="oob-engine" class="hint" role="status" aria-live="polite" hidden></p>
           </section>
 
           <div class="controls">
@@ -70,7 +106,9 @@
             <div class="controls explore-actions">
               <button id="open-traps" type="button">Common mistakes in this opening</button>
             </div>
+          </div>
 
+          <div class="not-drill">
             <h2>Engine</h2>
             <div class="controls">
               <button id="toggle-eval" type="button" aria-pressed="false" title="Show or hide the evaluation (E)">

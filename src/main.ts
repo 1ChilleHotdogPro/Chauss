@@ -8,6 +8,9 @@ import { Analysis } from './analysis/analysis';
 import { formatScore } from './analysis/eval';
 import { numberedLine, parseUciMove, pvToSan, toUci } from './analysis/pv';
 import { verdictSentence } from './analysis/verdictText';
+import { pickBlackMove, trapRoutes, type BotChoice, type TrapRoutes } from './bot/choose';
+import { stopSummary, strengthById, treeStatus } from './bot/outOfBook';
+import { loadPlaySettings, savePlaySettings, type PlaySettings } from './bot/playSettings';
 import { DrillController } from './drill/controller';
 import { loadProgress, saveProgress, type Progress } from './drill/progress';
 import { statsRows } from './drill/stats';
@@ -18,6 +21,8 @@ import { ExplorerClient } from './explorer/client';
 import { describeResult } from './explorer/describe';
 import { describeRatings, loadSettings, saveSettings } from './explorer/settings';
 import type { RatingBand } from './explorer/types';
+import { IDEAS } from './explore/ideaList';
+import { latestIdea } from './explore/ideas';
 import { loadTraps } from './explore/loadTraps';
 import type { ExploreMove } from './explore/position';
 import { buildRanking } from './explore/ranking';
@@ -40,6 +45,8 @@ import {
   type RefutationModel,
 } from './ui/explorePanel';
 import { renderMoveList, updateMoveMarks } from './ui/moveList';
+import { fillStrengthOptions, renderOutOfBook, type OutOfBookModel } from './ui/outOfBookPanel';
+import { renderPlayPanel, type PlayPanelModel } from './ui/playPanel';
 import { createPromotionPicker } from './ui/promotion';
 import { createSettingsPanel } from './ui/settingsPanel';
 import { createStatsDialog } from './ui/statsDialog';
@@ -147,6 +154,7 @@ loadSnapshot().then(
       },
     });
     if (mode === 'drill') startDrillLine();
+    else if (mode === 'play') continueGame();
     else renderExplore();
     renderDrill();
   },
@@ -156,11 +164,14 @@ loadSnapshot().then(
     snapshotInfo.textContent = `The bundled opening data could not be loaded (${error instanceof Error ? error.message : String(error)}).`;
     renderExplore();
     renderDrill();
+    if (mode === 'play') continueGame();
   },
 );
 
-// ---- Modes: Explore (look things up) and Drill (the app plays Black, you find White's move) ----
-let mode: 'explore' | 'drill' = 'explore';
+// ---- Modes: Explore (look things up), Drill (the app plays Black, you find White's move) and
+// Play (a game against a bot that plays Black from the data) ----
+type Mode = 'explore' | 'drill' | 'play';
+let mode: Mode = 'explore';
 let repertoire: Repertoire | null = null;
 let drill: DrillController | null = null;
 let progress: Progress = loadProgress(storage);
@@ -168,9 +179,10 @@ let progress: Progress = loadProgress(storage);
 let drillShowing = false;
 let drillTimer: ReturnType<typeof setTimeout> | undefined;
 
-const modeButtons = {
+const modeButtons: Record<Mode, HTMLButtonElement> = {
   explore: byId<HTMLButtonElement>('mode-explore'),
   drill: byId<HTMLButtonElement>('mode-drill'),
+  play: byId<HTMLButtonElement>('mode-play'),
 };
 const drillPanel = {
   prompt: byId<HTMLElement>('drill-prompt'),
@@ -225,7 +237,11 @@ function showDrillLine(showReply: boolean): void {
 function startDrillLine(): void {
   if (!drill) return;
   promotion.cancel();
+  stopBlack();
+  drillAfter = null;
   drill.next();
+  // A line can be over at once (the data stops right after Black's first reply).
+  if (drill.view().finished) drillAfter = { kind: 'prompt' };
   showDrillLine(true);
 }
 
@@ -241,26 +257,39 @@ function drillMove(from: string, to: string, piece?: PromotionPiece): void {
   }
   const lengthBefore = drill.view().line.length;
   const outcome = drill.answer(`${from}${to}${played.promotion ?? ''}`, played.san);
+  // The data has run out: ask what to do next (every time).
+  if (outcome === 'correct' && drill.view().finished) drillAfter = { kind: 'prompt' };
   // After a right answer the line grew by our move and (unless it ended) Black's reply.
   if (outcome === 'correct') showDrillLine(drill.view().line.length === lengthBefore + 2);
   else render();
 }
 
-function setMode(next: 'explore' | 'drill'): void {
+function setMode(next: Mode): void {
   if (next === mode) return;
+  // Remember the game in Play, to pick it up again when coming back.
+  if (mode === 'play') playLine = game.history().map((move) => move.san);
+  stopBlack();
   mode = next;
   document.body.dataset.mode = next;
-  modeButtons.explore.setAttribute('aria-selected', String(next === 'explore'));
-  modeButtons.drill.setAttribute('aria-selected', String(next === 'drill'));
+  for (const [name, button] of Object.entries(modeButtons)) button.setAttribute('aria-selected', String(name === next));
   clearTimeout(drillTimer);
   drillShowing = false;
   promotion.cancel();
-  if (next === 'drill') {
-    // Think for yourself in a drill: no evaluation, no arrows.
+  if (next !== 'explore') {
+    // Think for yourself first: no evaluation, no arrows (in Play they can be switched on).
     evalShown = false;
     arrowsShown = false;
+  }
+  if (next === 'drill') {
     if (drill) startDrillLine();
     else render();
+  } else if (next === 'play') {
+    if (!game.loadLine(playLine)) {
+      game.reset();
+      playAfter = null;
+    }
+    render();
+    continueGame();
   } else {
     render();
   }
@@ -268,21 +297,301 @@ function setMode(next: 'explore' | 'drill'): void {
 
 /** Who may move pieces on the board right now. */
 function interaction(): BoardInteraction {
-  if (mode !== 'drill') return 'side-to-move';
-  return drill?.view().card && !drillShowing ? 'white-only' : 'none';
+  if (mode === 'explore') return 'side-to-move';
+  const after = currentAfter();
+  if (after?.kind === 'engine') {
+    // Playing on against Stockfish: White's turn, once it has moved.
+    return game.status() === 'playing' && !blackThinking() ? 'white-only' : 'none';
+  }
+  if (mode === 'drill') return drill?.view().card && !drillShowing ? 'white-only' : 'none';
+  // Play, inside the opening data.
+  if (after !== null || game.status() !== 'playing' || blackThinking()) return 'none';
+  return 'white-only';
 }
 
 modeButtons.explore.addEventListener('click', () => setMode('explore'));
 modeButtons.drill.addEventListener('click', () => setMode('drill'));
+modeButtons.play.addEventListener('click', () => setMode('play'));
 drillPanel.next.addEventListener('click', startDrillLine);
 document.body.dataset.mode = mode;
+
+// ---- Play: the bot plays Black from the data; outside it, the user chooses what happens ----
+
+/** What happens once a drill or a game has left the opening data. */
+type After = { kind: 'prompt' } | { kind: 'stopped' } | { kind: 'engine' };
+let drillAfter: After | null = null;
+let playAfter: After | null = null;
+/** The Play game's moves while another mode is shown. */
+let playLine: string[] = [];
+let playSettings: PlaySettings = loadPlaySettings(storage);
+/** Black moves that head for a known trap (from the traps list, once loaded). */
+let routes: TrapRoutes = new Map();
+/** The bot's last move in Play, for the message under the board. */
+let botLast: { choice: BotChoice; label: string } | null = null;
+/** Set while the bot's move is about to be shown. */
+let botTimer: ReturnType<typeof setTimeout> | undefined;
+/** True while live data for the position is on its way. */
+let botWaiting = false;
+/** A separate, weakened Stockfish for playing on, so it never disturbs the analysis. Made when first needed. */
+let playEngine: Engine | null = null;
+let engineThinking = false;
+/** How long the bot "thinks" before its move appears (milliseconds). */
+const BOT_DELAY_MS = 450;
+
+const playPanel = {
+  styleRealistic: byId<HTMLInputElement>('play-style-realistic'),
+  stylePunish: byId<HTMLInputElement>('play-style-punish'),
+  prompt: byId<HTMLElement>('play-prompt'),
+  last: byId<HTMLElement>('play-last'),
+};
+const oobPanel = {
+  section: byId<HTMLElement>('oob'),
+  lead: byId<HTMLElement>('oob-lead'),
+  choices: byId<HTMLElement>('oob-choices'),
+  stop: byId<HTMLButtonElement>('oob-stop'),
+  playOn: byId<HTMLButtonElement>('oob-play'),
+  strength: byId<HTMLSelectElement>('oob-strength'),
+  result: byId<HTMLElement>('oob-result'),
+  engine: byId<HTMLElement>('oob-engine'),
+};
+fillStrengthOptions(oobPanel.strength);
+
+function currentAfter(): After | null {
+  if (mode === 'drill') return drillAfter;
+  if (mode === 'play') return playAfter;
+  return null;
+}
+
+function setAfter(after: After | null): void {
+  if (mode === 'drill') drillAfter = after;
+  else if (mode === 'play') playAfter = after;
+}
+
+function blackThinking(): boolean {
+  return botTimer !== undefined || engineThinking;
+}
+
+/** Cancel whatever Black was about to play. */
+function stopBlack(): void {
+  clearTimeout(botTimer);
+  botTimer = undefined;
+  botWaiting = false;
+  if (engineThinking) playEngine?.stop();
+  engineThinking = false;
+}
+
+function changePlaySettings(change: Partial<Omit<PlaySettings, 'version'>>): void {
+  playSettings = { ...playSettings, ...change };
+  savePlaySettings(storage, playSettings);
+  render();
+}
+
+function startPlayGame(): void {
+  promotion.cancel();
+  stopBlack();
+  playAfter = null;
+  botLast = null;
+  game.reset();
+  render();
+  continueGame();
+}
+
+/** "4...Nf6": a move with its number, from its place in the game. */
+function numberedSan(ply: number, san: string): string {
+  const number = Math.ceil(ply / 2);
+  return ply % 2 === 1 ? `${number}.${san}` : `${number}...${san}`;
+}
+
+/**
+ * Move the game along after a move or a change: let Black reply (from the data, or Stockfish when
+ * playing on), and notice when the game leaves the opening data.
+ */
+function continueGame(): void {
+  if (mode === 'explore' || game.status() !== 'playing') return;
+  const after = currentAfter();
+  if (after?.kind === 'engine') {
+    if (game.turn() === 'black') requestEngineMove();
+    return;
+  }
+  if (mode !== 'play' || after !== null || botTimer !== undefined) return;
+
+  const view = exploreSource.view(game.fen());
+  const status = treeStatus(view);
+  botWaiting = status === 'loading';
+  if (status === 'loading') {
+    render(); // the data source calls back when the answer is in
+    return;
+  }
+  const choice =
+    status === 'in' && view.status === 'ready' && game.turn() === 'black'
+      ? pickBlackMove(view.position, playSettings.style, routes)
+      : null;
+  if (status === 'out' || (game.turn() === 'black' && !choice)) {
+    playAfter = { kind: 'prompt' };
+    render();
+    return;
+  }
+  if (!choice) return; // White's turn inside the data: wait for the user
+
+  const fen = game.fen();
+  botTimer = setTimeout(() => {
+    botTimer = undefined;
+    if (mode !== 'play' || game.fen() !== fen) return;
+    const move = parseUciMove(choice.move.uci);
+    const played = move ? game.play(move.from, move.to, move.promotion) : null;
+    botLast = played ? { choice, label: numberedSan(played.ply, played.san) } : null;
+    render();
+    continueGame();
+  }, BOT_DELAY_MS);
+  render();
+}
+
+function ensurePlayEngine(): Engine {
+  playEngine ??= new Engine(createWorkerTransport(engineUrl(import.meta.env.BASE_URL)), {
+    multiPv: 1,
+    onStateChange: (state) => {
+      if (state === 'failed') engineThinking = false;
+      render();
+    },
+  });
+  return playEngine;
+}
+
+/** Ask the weakened Stockfish for Black's move. */
+function requestEngineMove(): void {
+  if (engineThinking) return;
+  const engine = ensurePlayEngine();
+  if (engine.state() === 'failed') {
+    render();
+    return;
+  }
+  const fen = game.fen();
+  const strength = strengthById(playSettings.strength);
+  engineThinking = true;
+  engine.analyse({
+    fen,
+    depth: strength.depth,
+    multiPv: 1,
+    options: { 'Skill Level': strength.skill },
+    onInfo: () => {},
+    onDone: (best) => {
+      engineThinking = false;
+      if (game.fen() === fen && currentAfter()?.kind === 'engine') {
+        const move = best ? parseUciMove(best) : null;
+        if (move) game.play(move.from, move.to, move.promotion);
+      }
+      render();
+    },
+  });
+  render();
+}
+
+/** A move on the board in Play, or while playing on after a drill. */
+function freeMove(from: string, to: string, piece?: PromotionPiece): void {
+  const played = game.play(from, to, piece);
+  if (played && mode === 'play') botLast = null;
+  render();
+  if (played) continueGame();
+}
+
+/** What the Play panel says. */
+function playModel(): PlayPanelModel {
+  const after = playAfter;
+  let state: PlayPanelModel['state'] = 'your-move';
+  let detail: string | null = null;
+  if (game.status() !== 'playing') {
+    state = 'over';
+    detail = statusText();
+  } else if (after !== null) state = 'out';
+  else if (botWaiting) state = 'waiting';
+  else if (botTimer !== undefined || game.turn() === 'black') state = 'thinking';
+
+  let last: PlayPanelModel['last'] = null;
+  if (botLast) {
+    const { choice, label } = botLast;
+    const share = choice.move.popular ? sharePercent(choice.move.popular.share) : null;
+    const how = share ? ` — played in ${share} of games at this level` : '';
+    if (choice.reason === 'mistake') {
+      last = { text: `Black played ${label}${how}. Stockfish calls it a ${choice.move.flag}: find the punishment!`, kind: 'mistake' };
+    } else if (choice.reason === 'trap-route') {
+      last = { text: `Black played ${label}${how}. This leads towards a common mistake — stay alert.`, kind: 'book' };
+    } else {
+      last = { text: `Black played ${label}${how}.`, kind: 'book' };
+    }
+  }
+  return { style: playSettings.style, state, detail, last };
+}
+
+/** What the box for "out of the opening data" says, in Drill and Play. */
+function outOfBookModel(): OutOfBookModel | null {
+  const after = currentAfter();
+  if (!after || (mode === 'drill' && drillShowing)) return null;
+  const strength = strengthById(playSettings.strength);
+  const lead =
+    after.kind === 'engine'
+      ? `Playing on against Stockfish (${strength.label}).`
+      : after.kind === 'stopped'
+        ? 'Stopped here: this is what Stockfish thinks.'
+        : 'You have left the opening data. Stop here and see what Stockfish thinks, or play on against a weakened Stockfish?';
+
+  const model: OutOfBookModel = {
+    state: after.kind,
+    lead,
+    strength: strength.id,
+    summary: null,
+    verdict: null,
+    idea: null,
+    engineText: null,
+  };
+  if (after.kind === 'stopped') {
+    model.summary =
+      game.status() === 'playing'
+        ? stopSummary(analysis.current())
+        : { balance: `${statusText()}.`, best: null, line: null, depth: analysis.current()?.depth ?? 0 };
+    const verdict = currentVerdict();
+    model.verdict = verdict && verdict.kind !== 'pending' ? verdict.text : null;
+    if (snapshot) {
+      model.idea = latestIdea(snapshot, IDEAS, [game.startFen, ...game.history().map((move) => move.fenAfter)]);
+    }
+  } else if (after.kind === 'engine') {
+    if (playEngine?.state() === 'failed') model.engineText = `Stockfish could not be started: ${playEngine.error()}`;
+    else if (game.status() !== 'playing') model.engineText = `Game over: ${statusText()}.`;
+    else if (engineThinking) model.engineText = 'Stockfish is thinking…';
+    else model.engineText = game.turn() === 'white' ? 'Your move as White.' : '';
+  }
+  return model;
+}
+
+function renderGamePanels(): void {
+  if (mode === 'play') renderPlayPanel(playPanel, playModel());
+  renderOutOfBook(oobPanel, outOfBookModel());
+}
+
+playPanel.styleRealistic.addEventListener('change', () => changePlaySettings({ style: 'realistic' }));
+playPanel.stylePunish.addEventListener('change', () => changePlaySettings({ style: 'punish' }));
+byId<HTMLButtonElement>('play-new').addEventListener('click', startPlayGame);
+oobPanel.stop.addEventListener('click', () => {
+  setAfter({ kind: 'stopped' });
+  render();
+});
+oobPanel.playOn.addEventListener('click', () => {
+  setAfter({ kind: 'engine' });
+  render();
+  continueGame();
+});
+oobPanel.strength.addEventListener('change', () =>
+  changePlaySettings({ strength: strengthById(oobPanel.strength.value).id }),
+);
 
 const exploreEl = byId<HTMLElement>('explore');
 const exploreSource = new ExploreSource({
   snapshot: () => snapshot,
   settings: () => settingsPanel.settings(),
   client: explorer,
-  onUpdate: renderExplore,
+  onUpdate: () => {
+    if (mode === 'explore') renderExplore();
+    else if (mode === 'play') continueGame();
+  },
 });
 
 // What the user asked the Explore panel to show for the position on the board.
@@ -297,7 +606,10 @@ const trapsDialog = createTrapsDialog({
   onShow: showTrap,
 });
 loadTraps().then(
-  (file) => trapsDialog.setTraps(file),
+  (file) => {
+    trapsDialog.setTraps(file);
+    routes = trapRoutes(file.traps);
+  },
   (error: unknown) => trapsDialog.setFailed(error instanceof Error ? error.message : String(error)),
 );
 
@@ -412,21 +724,24 @@ function renderExplore(): void {
 function handleUserMove(from: string, to: string): void {
   if (game.needsPromotion(from, to)) {
     promotion.open(game.turn(), (piece) => {
-      if (piece && mode === 'drill') {
-        drillMove(from, to, piece);
-        return;
-      }
-      if (piece) game.play(from, to, piece);
-      render(); // also puts the pawn back if the user cancelled
+      if (piece) dispatchMove(from, to, piece);
+      else render(); // puts the pawn back
     });
     return;
   }
-  if (mode === 'drill') {
-    drillMove(from, to);
-    return;
+  dispatchMove(from, to);
+}
+
+/** A move made on the board, handled the way the current mode wants. */
+function dispatchMove(from: string, to: string, piece?: PromotionPiece): void {
+  if (mode === 'explore') {
+    game.play(from, to, piece);
+    render();
+  } else if (mode === 'drill' && drillAfter?.kind !== 'engine') {
+    drillMove(from, to, piece);
+  } else {
+    freeMove(from, to, piece);
   }
-  game.play(from, to);
-  render();
 }
 
 function statusText(): string {
@@ -525,7 +840,8 @@ function renderEngine(): void {
 
   // The Explore panel shows engine results too (refutations, the ranking, the eval column).
   if (mode === 'explore') renderExplore();
-  else renderDrill();
+  else if (mode === 'drill') renderDrill();
+  renderGamePanels();
 }
 
 // The engine reports many times a second; redraw at most once per frame.
@@ -540,7 +856,7 @@ function scheduleEngineRender(): void {
 }
 
 function goTo(ply: number): void {
-  if (mode === 'drill') return; // no stepping through the game while being tested on it
+  if (mode !== 'explore') return; // no stepping through the game while being tested or playing
   promotion.cancel();
   game.goTo(ply);
   render();
@@ -590,7 +906,8 @@ document.addEventListener('keydown', (event) => {
     // With the focus on some other button, Enter presses that button as usual; the Drill tab does
     // not count, because the focus is still there right after switching to Drill.
     const onOtherButton = target instanceof HTMLButtonElement && target !== modeButtons.drill;
-    if (drill && drill.view().card === null && !onOtherButton) {
+    // While playing on against Stockfish, Enter does not throw the game away.
+    if (drill && drill.view().card === null && drillAfter?.kind !== 'engine' && !onOtherButton) {
       event.preventDefault();
       startDrillLine();
     }

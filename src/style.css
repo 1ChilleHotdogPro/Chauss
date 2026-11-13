@@ -459,7 +459,73 @@ button:focus-visible {
 
 /* Parts that belong to one mode only. */
 body[data-mode='drill'] .explore-only,
-body[data-mode='explore'] .drill-only {
+body[data-mode='play'] .explore-only,
+body[data-mode='explore'] .drill-only,
+body[data-mode='play'] .drill-only,
+body[data-mode='explore'] .play-only,
+body[data-mode='drill'] .play-only,
+body[data-mode='drill'] .not-drill,
+body[data-mode='explore'] .game-only {
+  display: none !important;
+}
+
+/* ---- Play ---- */
+.play {
+  margin-bottom: 12px;
+}
+
+.play-style {
+  display: grid;
+  gap: 6px;
+  margin: 0 0 10px;
+  padding: 8px 10px;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+}
+
+.play-style legend {
+  padding: 0 4px;
+  font-weight: 600;
+}
+
+.play-style label {
+  overflow-wrap: anywhere;
+}
+
+/* ---- Out of the opening data (Drill and Play) ---- */
+.oob {
+  margin-bottom: 12px;
+  padding: 8px 10px;
+  border-left: 4px solid var(--accent);
+  border-radius: 4px;
+  background: var(--button);
+}
+
+.oob-lead {
+  margin: 0 0 8px;
+  font-weight: 600;
+}
+
+.oob-strength {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px;
+  margin-top: 8px;
+  font-size: 0.9rem;
+}
+
+.oob-strength select {
+  max-width: 100%;
+}
+
+.oob-result p {
+  margin: 8px 0 0;
+  overflow-wrap: anywhere;
+}
+
+/* Parts of the box that are hidden while they do not apply (.controls would otherwise show them). */
+.oob [hidden] {
   display: none !important;
 }
 
