@@ -18,6 +18,11 @@ export interface AnalyseRequest {
    * Left out: the engine's default from EngineOptions. A large number ranks every legal move.
    */
   multiPv?: number;
+  /**
+   * Other UCI options for this search, e.g. { 'Skill Level': 3 } to make the engine play weaker.
+   * They are set just before the search starts and stay set until a later request changes them.
+   */
+  options?: Readonly<Record<string, string | number>>;
   /** Called for every exact line the engine reports for this request. */
   onInfo(info: InfoLine): void;
   /**
@@ -51,6 +56,8 @@ export class Engine {
   private readonly defaultMultiPv: number;
   /** The MultiPV value the engine is currently set to. */
   private activeMultiPv: number;
+  /** Other options as last sent to the engine (see AnalyseRequest.options). */
+  private readonly activeOptions = new Map<string, string>();
 
   constructor(
     private readonly transport: Transport,
@@ -116,6 +123,12 @@ export class Engine {
     if (multiPv !== this.activeMultiPv) {
       this.activeMultiPv = multiPv;
       this.transport.post(`setoption name MultiPV value ${multiPv}`);
+    }
+    for (const [name, raw] of Object.entries(request.options ?? {})) {
+      const value = String(raw);
+      if (this.activeOptions.get(name) === value) continue;
+      this.activeOptions.set(name, value);
+      this.transport.post(`setoption name ${name} value ${value}`);
     }
     this.transport.post(`position fen ${request.fen}`);
     this.transport.post(`go depth ${request.depth}`);

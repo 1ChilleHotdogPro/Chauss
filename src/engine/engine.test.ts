@@ -238,6 +238,26 @@ describe('searching', () => {
     expect(transport.takeSent()).toEqual(['setoption name MultiPV value 3', `position fen ${FEN_A}`, 'go depth 12']);
   });
 
+  it('sets other options (such as Skill Level) before a search, only when they change', () => {
+    const { transport, engine } = readyEngine();
+    engine.analyse({ ...record(FEN_A).request, options: { 'Skill Level': 3 } });
+    expect(transport.takeSent()).toEqual(['setoption name Skill Level value 3', `position fen ${FEN_A}`, 'go depth 12']);
+
+    // Same value: not sent again. A request without options leaves them as they are.
+    transport.emit('bestmove e2e4');
+    engine.analyse({ ...record(FEN_B).request, options: { 'Skill Level': 3 } });
+    expect(transport.takeSent()).toEqual([`position fen ${FEN_B}`, 'go depth 12']);
+    transport.emit('bestmove e7e5');
+    engine.analyse(record(FEN_C).request);
+    expect(transport.takeSent()).toEqual([`position fen ${FEN_C}`, 'go depth 12']);
+
+    // A new value is sent; while a search runs it waits until that search has stopped.
+    engine.analyse({ ...record(FEN_A).request, options: { 'Skill Level': 10 } });
+    expect(transport.takeSent()).toEqual(['stop']);
+    transport.emit('bestmove g1f3');
+    expect(transport.takeSent()).toEqual(['setoption name Skill Level value 10', `position fen ${FEN_A}`, 'go depth 12']);
+  });
+
   it('ignores stray output when nothing is being searched', () => {
     const { transport, engine } = readyEngine();
     transport.emit('info depth 3 multipv 1 score cp 10 pv e2e4', 'bestmove e2e4');

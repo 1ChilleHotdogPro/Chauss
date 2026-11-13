@@ -103,6 +103,18 @@ export function failedChecks(snapshot: Snapshot, idea: Idea): string[] {
   return problems;
 }
 
+/**
+ * The key idea of a game so far: the remark for the latest of its positions that has one.
+ * `fens` are the game's positions, from the start to the position on the board.
+ */
+export function latestIdea(snapshot: Snapshot, ideas: readonly Idea[], fens: readonly string[]): string | null {
+  for (let index = fens.length - 1; index >= 0; index--) {
+    const text = ideaFor(snapshot, ideas, fens[index]!);
+    if (text) return text;
+  }
+  return null;
+}
+
 /** The remark for the position with this FEN, if there is one and the data backs it. */
 export function ideaFor(snapshot: Snapshot, ideas: readonly Idea[], fen: string): string | null {
   const key = positionKey(fen);
