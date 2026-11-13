@@ -10,7 +10,8 @@
     "build": "tsc --noEmit && vite build",
     "preview": "vite preview",
     "test": "vitest run",
-    "test:e2e": "playwright test"
+    "test:e2e": "playwright test",
+    "snapshot": "node scripts/run.mjs scripts/build-snapshot.ts"
   },
   "dependencies": {
     "@lichess-org/chessground": "^10.5.0",

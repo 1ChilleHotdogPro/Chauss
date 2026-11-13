@@ -4,10 +4,10 @@
 //
 // Plain JavaScript on purpose: it needs Node's child_process, and the project has no Node type
 // definitions installed.
-import { spawn } from 'node:child_process';
 import { fileURLToPath } from 'node:url';
 import { Chess } from 'chess.js';
 import { afterEach, describe, expect, it } from 'vitest';
+import { createEvaluator, createNodeTransport as startEngine } from '../../scripts/lib/nodeEngine.ts';
 import { Analysis } from '../../src/analysis/analysis.ts';
 import { Engine } from '../../src/engine/engine.ts';
 import { ENGINE_FILE } from '../../src/engine/workerTransport.ts';
@@ -16,34 +16,11 @@ import { Game } from '../../src/game/game.ts';
 const enginePath = fileURLToPath(new URL(`../../public/${ENGINE_FILE}`, import.meta.url));
 const children = [];
 
-/** The Node counterpart of the browser's worker transport: the engine as a child process. */
+/** The engine as a child process (the launcher the snapshot script uses), remembered for clean-up. */
 function createNodeTransport() {
-  const child = spawn(process.execPath, [enginePath], { stdio: ['pipe', 'pipe', 'pipe'] });
-  children.push(child);
-  let onLine = () => {};
-  let onError = () => {};
-  let buffer = '';
-  child.stdout.on('data', (chunk) => {
-    buffer += chunk.toString();
-    let index;
-    while ((index = buffer.indexOf('\n')) >= 0) {
-      const line = buffer.slice(0, index).trim();
-      buffer = buffer.slice(index + 1);
-      if (line) onLine(line);
-    }
-  });
-  child.stderr.on('data', (chunk) => onError(String(chunk).slice(0, 300)));
-  child.on('error', (error) => onError(error.message));
-  return {
-    post: (command) => child.stdin.write(`${command}\n`),
-    onLine: (handler) => {
-      onLine = handler;
-    },
-    onError: (handler) => {
-      onError = handler;
-    },
-    terminate: () => child.kill(),
-  };
+  const transport = startEngine(enginePath);
+  children.push(transport.child);
+  return transport;
 }
 
 function waitFor(check, what, timeoutMs = 30_000) {
@@ -129,6 +106,31 @@ describe('the committed Stockfish file, run for real', () => {
     await waitFor(() => !analysis.busy(), 'the whole line to be analysed');
     for (const ply of [1, 2]) {
       expect(['best', 'good']).toContain(analysis.judgement(ply).verdict);
+    }
+  });
+
+  it('the snapshot evaluator scores positions from White\'s point of view', async () => {
+    const evaluator = createEvaluator(enginePath, 10);
+    try {
+      expect(await evaluator.ready()).toMatch(/^Stockfish 19/);
+      // White to move and mating in one.
+      expect(await evaluator.evaluate('r1bqkb1r/pppp1ppp/2n2n2/4p2Q/2B1P3/8/PPPP1PPP/RNB1K1NR w KQkq - 4 4')).toEqual({
+        type: 'mate',
+        winner: 'white',
+        moves: 1,
+      });
+      // Black to move, a queen down: clearly winning for White, so a large positive score.
+      const queenUp = await evaluator.evaluate('rnb1kbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR b KQkq - 0 1');
+      expect(queenUp.type).toBe('cp');
+      expect(queenUp.value).toBeGreaterThan(500);
+      // Checkmate already on the board, Black to move: White has won.
+      expect(await evaluator.evaluate('r1bqkb1r/pppp1Qpp/2n2n2/4p3/2B1P3/8/PPPP1PPP/RNB1K1NR b KQkq - 0 4')).toEqual({
+        type: 'mate',
+        winner: 'white',
+        moves: 0,
+      });
+    } finally {
+      evaluator.close();
     }
   });
 
