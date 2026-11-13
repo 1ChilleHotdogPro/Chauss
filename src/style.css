@@ -584,9 +584,42 @@ body[data-mode='explore'] .game-only {
   white-space: normal;
 }
 
+/* Phones: fixed column widths, so the table can never be wider than the screen whatever the font
+   (Linux fonts run wider than Windows ones); text wraps inside its column instead. */
 @media (max-width: 480px) {
+  .explore-table.stats-table {
+    table-layout: fixed;
+  }
+
+  .explore-table.stats-table th,
+  .explore-table.stats-table td,
   .explore-table.stats-table td.stats-line {
-    min-width: 6em;
+    min-width: 0;
+    padding: 2px 2px;
+    white-space: normal;
+    overflow-wrap: anywhere;
+  }
+
+  .explore-table.stats-table th {
+    font-size: 0.6rem;
+  }
+
+  .explore-table.stats-table th:nth-child(1) {
+    width: 33%;
+  }
+
+  .explore-table.stats-table th:nth-child(2) {
+    width: 15%;
+  }
+
+  .explore-table.stats-table th:nth-child(3),
+  .explore-table.stats-table th:nth-child(4),
+  .explore-table.stats-table th:nth-child(5) {
+    width: 12%;
+  }
+
+  .explore-table.stats-table th:nth-child(6) {
+    width: 16%;
   }
 }
 
