@@ -24,8 +24,11 @@ export interface OutOfBookModel {
   summary: StopSummary | null;
   /** Stopped: the verdict on the move that left the data, when known. */
   verdict: string | null;
-  /** Stopped: the key idea of the line, when one is written for it. */
-  idea: string | null;
+  /**
+   * Stopped: the key idea of the line, when one is written for it; `where` names the earlier
+   * position it belongs to (null = the position on the board).
+   */
+  idea: { where: string | null; text: string } | null;
   /** Playing on: whose turn, or how the game ended. */
   engineText: string | null;
 }
@@ -84,7 +87,10 @@ export function renderOutOfBook(elements: OutOfBookElements, model: OutOfBookMod
     if (summary.line) parts.push(paragraph('Main line', summary.line, 'line'));
   }
   if (model.verdict) parts.push(paragraph('Last move', model.verdict, 'verdict'));
-  if (model.idea) parts.push(paragraph('Key idea', model.idea, 'idea'));
+  if (model.idea) {
+    const label = model.idea.where ? `Key idea (${model.idea.where})` : 'Key idea';
+    parts.push(paragraph(label, model.idea.text, 'idea'));
+  }
   // Redraw only when something changed, so the text does not flicker while the engine deepens.
   const signature = parts.map((p) => p.textContent).join('\n');
   if (elements.result.dataset.signature !== signature) {

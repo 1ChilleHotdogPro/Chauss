@@ -4,7 +4,7 @@ import { assembleSnapshot, positionsToEvaluate } from '../snapshot/assemble';
 import { crawl, type CrawlThresholds } from '../snapshot/crawl';
 import { positionKey, type Snapshot } from '../snapshot/format';
 import { fakeSource, fenAfter, type FakeBook } from '../snapshot/testData';
-import { failedCheck, failedChecks, ideaFor, nodeAfter, type Idea } from './ideas';
+import { failedCheck, failedChecks, ideaFor, latestIdea, nodeAfter, type Idea } from './ideas';
 
 const ROOT = ['e4', 'e5', 'Nf3', 'Nc6', 'c3'];
 const P = 'e4 e5 Nf3 Nc6 c3';
@@ -82,6 +82,18 @@ describe('failedCheck', () => {
     expect(fail({ kind: 'sound', line: ROOT, san: 'h5' })).toMatch(/h5 is not listed/);
     expect(fail({ kind: 'sound', line: ['d4'], san: 'd5' })).toMatch(/no position after d4/);
   });
+
+  it('checks a move score, the engine top move and the rating groups', async () => {
+    const data = await snapshot();
+    const check = (c: Parameters<typeof failedCheck>[1]) => failedCheck(data, c);
+    expect(check({ kind: 'move-score', line: ROOT, san: 'f6', min: 2.95, max: 3.05 })).toBeNull();
+    expect(check({ kind: 'move-score', line: ROOT, san: 'f6', max: 1 })).toMatch(/f6 scores 3\.00/);
+    // Black to move: the lowest score is best for Black, so f6 (+3.0) is not the top move.
+    expect(check({ kind: 'engine-top', line: ROOT, san: 'f6' })).toMatch(/top move is (Nf6|d5), not f6/);
+    expect(check({ kind: 'engine-top', line: [...ROOT, 'Nf6'], san: 'd4' })).toBeNull();
+    expect(check({ kind: 'ratings', line: [], ratings: [1200, 1000] })).toBeNull();
+    expect(check({ kind: 'ratings', line: [], ratings: [1600] })).toMatch(/rating groups are 1000,1200, not 1600/);
+  });
 });
 
 describe('ideaFor', () => {
@@ -106,6 +118,14 @@ describe('ideaFor', () => {
     const data = await snapshot();
     const fen = fenAfter(P).replace(/ 0 3$/, ' 7 12');
     expect(ideaFor(data, [idea], fen)).toBe(idea.text);
+  });
+
+  it('latestIdea finds the remark of the latest position that has one, and says which', async () => {
+    const data = await snapshot();
+    const fens = ['', 'e4', 'e4 e5', 'e4 e5 Nf3', 'e4 e5 Nf3 Nc6', P, `${P} Nf6`].map(fenAfter);
+    expect(latestIdea(data, [idea], fens)).toEqual({ text: idea.text, ply: 5 });
+    expect(latestIdea(data, [idea], fens.slice(0, 5))).toBeNull();
+    expect(latestIdea(data, [], fens)).toBeNull();
   });
 
   it('stays silent when the data no longer backs the sentence', async () => {

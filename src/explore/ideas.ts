@@ -1,3 +1,4 @@
+import { winPercent } from '../analysis/eval';
 import { positionKey, type Snapshot, type SnapshotNode } from '../snapshot/format';
 import { buildExplorePosition, type ExploreMove, type ExplorePosition, type MoveFlag } from './position';
 
@@ -32,7 +33,13 @@ export type IdeaCheck =
   /** Stockfish does not flag `san` at all. */
   | { kind: 'sound'; line: string[]; san: string }
   /** Stockfish's score of the position, in pawns from White's point of view, is in this range. */
-  | { kind: 'score'; line: string[]; min?: number; max?: number };
+  | { kind: 'score'; line: string[]; min?: number; max?: number }
+  /** Stockfish's score after `san`, in pawns from White's point of view, is in this range. */
+  | { kind: 'move-score'; line: string[]; san: string; min?: number; max?: number }
+  /** `san` scores best of the listed moves, for the side to move. */
+  | { kind: 'engine-top'; line: string[]; san: string }
+  /** The snapshot's Lichess games come from exactly these rating groups (for texts that name them). */
+  | { kind: 'ratings'; line: string[]; ratings: number[] };
 
 /** Follow moves from the start position through the snapshot's links. */
 export function nodeAfter(snapshot: Snapshot, line: readonly string[]): SnapshotNode | undefined {
@@ -49,6 +56,11 @@ const inRange = (value: number, min: number | undefined, max: number | undefined
 
 /** Why a check does not hold, or null if it does. */
 export function failedCheck(snapshot: Snapshot, check: IdeaCheck): string | null {
+  if (check.kind === 'ratings') {
+    const have = [...snapshot.meta.lichess.ratings].sort((a, b) => a - b).join(',');
+    const want = [...check.ratings].sort((a, b) => a - b).join(',');
+    return have === want ? null : `the snapshot's rating groups are ${have}, not ${want}`;
+  }
   const where = check.line.join(' ') || 'the start position';
   const node = nodeAfter(snapshot, check.line);
   if (!node) return `the snapshot has no position after ${where}`;
@@ -89,6 +101,20 @@ export function failedCheck(snapshot: Snapshot, check: IdeaCheck): string | null
         : `after ${where}, ${check.san} is flagged "${move.flag}", not at least "${check.atLeast}"`;
     case 'sound':
       return move.flag === 'none' ? null : `after ${where}, ${check.san} is flagged "${move.flag}"`;
+    case 'move-score': {
+      if (!move.eval || move.eval.type !== 'cp') return `after ${where}, ${check.san} has no plain score`;
+      const pawns = move.eval.value / 100;
+      return inRange(pawns, check.min, check.max) ? null : `after ${where}, ${check.san} scores ${pawns.toFixed(2)}`;
+    }
+    case 'engine-top': {
+      const scored = position.moves.filter((candidate) => candidate.eval !== undefined);
+      const best = scored.reduce<ExploreMove | undefined>(
+        (top, candidate) =>
+          !top || winPercent(candidate.eval!, position.mover) > winPercent(top.eval!, position.mover) ? candidate : top,
+        undefined,
+      );
+      return best?.san === check.san ? null : `after ${where} Stockfish's top move is ${best?.san ?? 'none'}, not ${check.san}`;
+    }
   }
 }
 
@@ -105,12 +131,17 @@ export function failedChecks(snapshot: Snapshot, idea: Idea): string[] {
 
 /**
  * The key idea of a game so far: the remark for the latest of its positions that has one.
- * `fens` are the game's positions, from the start to the position on the board.
+ * `fens` are the game's positions, from the start to the position on the board; `ply` in the
+ * answer is the index of the position the remark belongs to (0 = the start, 1 = after move 1...).
  */
-export function latestIdea(snapshot: Snapshot, ideas: readonly Idea[], fens: readonly string[]): string | null {
+export function latestIdea(
+  snapshot: Snapshot,
+  ideas: readonly Idea[],
+  fens: readonly string[],
+): { text: string; ply: number } | null {
   for (let index = fens.length - 1; index >= 0; index--) {
     const text = ideaFor(snapshot, ideas, fens[index]!);
-    if (text) return text;
+    if (text) return { text, ply: index };
   }
   return null;
 }

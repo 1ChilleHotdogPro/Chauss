@@ -22,7 +22,7 @@ import { describeResult } from './explorer/describe';
 import { describeRatings, loadSettings, saveSettings } from './explorer/settings';
 import type { RatingBand } from './explorer/types';
 import { IDEAS } from './explore/ideaList';
-import { latestIdea } from './explore/ideas';
+import { ideaFor, latestIdea } from './explore/ideas';
 import { loadTraps } from './explore/loadTraps';
 import type { ExploreMove } from './explore/position';
 import { buildRanking } from './explore/ranking';
@@ -550,8 +550,14 @@ function outOfBookModel(): OutOfBookModel | null {
         : { balance: `${statusText()}.`, best: null, line: null, depth: analysis.current()?.depth ?? 0 };
     const verdict = currentVerdict();
     model.verdict = verdict && verdict.kind !== 'pending' ? verdict.text : null;
-    if (snapshot) {
-      model.idea = latestIdea(snapshot, IDEAS, [game.startFen, ...game.history().map((move) => move.fenAfter)]);
+    const found = snapshot
+      ? latestIdea(snapshot, IDEAS, [game.startFen, ...game.history().map((move) => move.fenAfter)])
+      : null;
+    if (found) {
+      const move = game.history()[found.ply - 1];
+      // The remark may belong to an earlier position: say which, since it speaks of "here".
+      const where = move ? `after ${numberedSan(found.ply, move.san)}` : 'at the start';
+      model.idea = found.ply === game.history().length ? { where: null, text: found.text } : { where, text: found.text };
     }
   } else if (after.kind === 'engine') {
     if (playEngine?.state() === 'failed') model.engineText = `Stockfish could not be started: ${playEngine.error()}`;
@@ -695,7 +701,7 @@ function renderExplore(): void {
       view,
       ratingsLabel: describeRatings(ratings),
       evalShown,
-      idea: null,
+      idea: snapshot ? ideaFor(snapshot, IDEAS, fen) : null,
       selectedUci: refutation ? (explained?.uci ?? null) : null,
       refutation,
       ranking,
