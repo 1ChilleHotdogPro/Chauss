@@ -1,8 +1,8 @@
 {
  "meta": {
   "formatVersion": 1,
-  "createdAt": "2026-11-13T12:46:19.884Z",
-  "snapshotCreatedAt": "2026-11-13T08:03:19.704Z",
+  "createdAt": "2026-11-13T22:42:38.785Z",
+  "snapshotCreatedAt": "2026-11-13T18:36:04.966Z",
   "engine": {
    "name": "Stockfish 19 Lite WASM",
    "depth": 22
@@ -15,6 +15,207 @@
   }
  },
  "traps": [
+  {
+   "id": "r1bqkb1r/pppp1pp1/2n2n1p/4p3/2B1P3/2P2N2/PP1P1PPP/RNBQ1RK1 b kq -|f8c5",
+   "line": [
+    "e4",
+    "e5",
+    "Nf3",
+    "Nc6",
+    "c3",
+    "Nf6",
+    "Bc4",
+    "h6",
+    "O-O"
+   ],
+   "fen": "r1bqkb1r/pppp1pp1/2n2n1p/4p3/2B1P3/2P2N2/PP1P1PPP/RNBQ1RK1 b kq - 1 5",
+   "victim": "black",
+   "kind": "exploit",
+   "move": {
+    "uci": "f8c5",
+    "san": "Bc5"
+   },
+   "popular": {
+    "games": 79011,
+    "share": 0.33320119598358683
+   },
+   "book": {
+    "games": 0,
+    "share": 0
+   },
+   "scoreBefore": {
+    "type": "cp",
+    "value": -35
+   },
+   "scoreAfter": {
+    "type": "cp",
+    "value": 247
+   },
+   "drop": 24.5,
+   "verdict": "mistake",
+   "refutation": {
+    "uci": [
+     "d2d4",
+     "c5b6",
+     "f3e5",
+     "c6e5",
+     "d4e5",
+     "f6e4",
+     "c4f7",
+     "e8f7",
+     "d1d5",
+     "f7f8"
+    ],
+    "san": [
+     "d4",
+     "Bb6",
+     "Nxe5",
+     "Nxe5",
+     "dxe5",
+     "Nxe4",
+     "Bxf7+",
+     "Kxf7",
+     "Qd5+",
+     "Kf8"
+    ],
+    "why": "No immediate material win, but Stockfish rates the position +2.5. Black's winning chances fall from 53% to 29%."
+   },
+   "opening": "Ponziani Opening: Neumann Gambit"
+  },
+  {
+   "id": "r1bqk1nr/pppp1ppp/2n5/2b5/3PP3/5N2/PP3PPP/RNBQKB1R b KQkq -|c6d4",
+   "line": [
+    "e4",
+    "e5",
+    "Nf3",
+    "Nc6",
+    "c3",
+    "Bc5",
+    "d4",
+    "exd4",
+    "cxd4"
+   ],
+   "fen": "r1bqk1nr/pppp1ppp/2n5/2b5/3PP3/5N2/PP3PPP/RNBQKB1R b KQkq - 0 5",
+   "victim": "black",
+   "kind": "exploit",
+   "move": {
+    "uci": "c6d4",
+    "san": "Nxd4"
+   },
+   "popular": {
+    "games": 64550,
+    "share": 0.06730653931775882
+   },
+   "book": {
+    "games": 0,
+    "share": 0
+   },
+   "scoreBefore": {
+    "type": "cp",
+    "value": 103
+   },
+   "scoreAfter": {
+    "type": "cp",
+    "value": 530
+   },
+   "drop": 28.2,
+   "verdict": "mistake",
+   "refutation": {
+    "uci": [
+     "f3d4",
+     "g8f6",
+     "b1c3",
+     "d7d5",
+     "e4d5",
+     "e8g8",
+     "f1e2",
+     "f6d5",
+     "e1g1",
+     "d5c3"
+    ],
+    "san": [
+     "Nxd4",
+     "Nf6",
+     "Nc3",
+     "d5",
+     "exd5",
+     "O-O",
+     "Be2",
+     "Nxd5",
+     "O-O",
+     "Nxc3"
+    ],
+    "why": "No immediate material win, but Stockfish rates the position +5.3. Black's winning chances fall from 41% to 12%."
+   },
+   "opening": "Ponziani Opening"
+  },
+  {
+   "id": "r1bqkb1r/ppp2ppp/2np1n2/3Pp3/4P3/2P2N2/PP3PPP/RNBQKB1R b KQkq -|c6a5",
+   "line": [
+    "e4",
+    "e5",
+    "Nf3",
+    "Nc6",
+    "c3",
+    "Nf6",
+    "d4",
+    "d6",
+    "d5"
+   ],
+   "fen": "r1bqkb1r/ppp2ppp/2np1n2/3Pp3/4P3/2P2N2/PP3PPP/RNBQKB1R b KQkq - 0 5",
+   "victim": "black",
+   "kind": "exploit",
+   "move": {
+    "uci": "c6a5",
+    "san": "Na5"
+   },
+   "popular": {
+    "games": 40869,
+    "share": 0.20152366863905324
+   },
+   "book": {
+    "games": 0,
+    "share": 0
+   },
+   "scoreBefore": {
+    "type": "cp",
+    "value": 56
+   },
+   "scoreAfter": {
+    "type": "cp",
+    "value": 397
+   },
+   "drop": 26,
+   "verdict": "mistake",
+   "refutation": {
+    "uci": [
+     "b2b4",
+     "f6e4",
+     "b4a5",
+     "c7c6",
+     "a5a6",
+     "f8e7",
+     "f1e2",
+     "d8a5",
+     "f3d2",
+     "e4f6"
+    ],
+    "san": [
+     "b4",
+     "Nxe4",
+     "bxa5",
+     "c6",
+     "a6",
+     "Be7",
+     "Be2",
+     "Qa5",
+     "Nfd2",
+     "Nf6"
+    ],
+    "why": "White wins a knight for a pawn."
+   },
+   "opening": "Ponziani Opening: Jaenisch Counterattack"
+  },
   {
    "id": "r1bqkb1r/ppppnppp/8/3PN3/4n3/2P5/PP3PPP/RNBQKB1R b KQkq -|d7d6",
    "line": [
@@ -47,13 +248,13 @@
    },
    "scoreBefore": {
     "type": "cp",
-    "value": 19
+    "value": 33
    },
    "scoreAfter": {
     "type": "cp",
-    "value": 644
+    "value": 652
    },
-   "drop": 39.7,
+   "drop": 38.7,
    "verdict": "blunder",
    "refutation": {
     "uci": [
@@ -64,9 +265,9 @@
      "e5c6",
      "d8b6",
      "c6d4",
-     "e8d8",
-     "e1g1",
-     "a7a6"
+     "c8d7",
+     "b5d7",
+     "e8d7"
     ],
     "san": [
      "Bb5+",
@@ -76,11 +277,11 @@
      "Nxc6",
      "Qb6",
      "Nd4+",
-     "Kd8",
-     "O-O",
-     "a6"
+     "Bd7",
+     "Bxd7+",
+     "Kxd7"
     ],
-    "why": "White wins a pawn."
+    "why": "White wins a pawn. Stockfish rates the position +6.5."
    },
    "opening": "Ponziani Opening: Jaenisch Counterattack"
   },
@@ -114,13 +315,13 @@
    },
    "scoreBefore": {
     "type": "cp",
-    "value": 27
+    "value": 37
    },
    "scoreAfter": {
     "type": "cp",
-    "value": 349
+    "value": 360
    },
-   "drop": 25.8,
+   "drop": 25.6,
    "verdict": "mistake",
    "refutation": {
     "uci": [
@@ -132,8 +333,8 @@
      "d7d5",
      "e5f3",
      "c7c6",
-     "c1f4",
-     "c8f5"
+     "c1g5",
+     "a7a5"
     ],
     "san": [
      "Nxe5",
@@ -144,8 +345,8 @@
      "d5",
      "Nf3",
      "c6",
-     "Bf4",
-     "Bf5"
+     "Bg5",
+     "a5"
     ],
     "why": "White wins a knight."
    },
@@ -181,40 +382,926 @@
    },
    "scoreBefore": {
     "type": "cp",
-    "value": -25
+    "value": 0
    },
    "scoreAfter": {
     "type": "cp",
-    "value": 329
+    "value": 354
    },
-   "drop": 29.4,
+   "drop": 28.6,
    "verdict": "mistake",
    "refutation": {
     "uci": [
      "b2b4",
-     "e4c3",
-     "b1c3",
-     "f8b4",
-     "c1d2",
-     "e8g8",
-     "d1a4",
-     "d8e7",
-     "a1b1",
-     "c7c5"
+     "c7c6",
+     "f1e2",
+     "d7d6",
+     "e1g1",
+     "e4f6",
+     "b4a5",
+     "f6d5",
+     "c3c4",
+     "d5c7"
     ],
     "san": [
      "b4",
-     "Nxc3",
-     "Nxc3",
-     "Bxb4",
-     "Bd2",
+     "c6",
+     "Be2",
+     "d6",
      "O-O",
+     "Nf6",
+     "bxa5",
+     "Nxd5",
+     "c4",
+     "Nc7"
+    ],
+    "why": "White wins a knight for a pawn."
+   },
+   "opening": "Ponziani Opening: Jaenisch Counterattack"
+  },
+  {
+   "id": "r1bqk1nr/pppp1ppp/1bn5/8/3PP3/2N2N2/PP3PPP/R1BQKB1R b KQkq -|g8f6",
+   "line": [
+    "e4",
+    "e5",
+    "Nf3",
+    "Nc6",
+    "c3",
+    "Bc5",
+    "d4",
+    "exd4",
+    "cxd4",
+    "Bb6",
+    "Nc3"
+   ],
+   "fen": "r1bqk1nr/pppp1ppp/1bn5/8/3PP3/2N2N2/PP3PPP/R1BQKB1R b KQkq - 2 6",
+   "victim": "black",
+   "kind": "exploit",
+   "move": {
+    "uci": "g8f6",
+    "san": "Nf6"
+   },
+   "popular": {
+    "games": 20275,
+    "share": 0.2849253081128178
+   },
+   "book": {
+    "games": 0,
+    "share": 0
+   },
+   "scoreBefore": {
+    "type": "cp",
+    "value": 120
+   },
+   "scoreAfter": {
+    "type": "cp",
+    "value": 437
+   },
+   "drop": 22.5,
+   "verdict": "mistake",
+   "refutation": {
+    "uci": [
+     "e4e5",
+     "f6g8",
+     "d4d5",
+     "c6b8",
+     "f1b5",
+     "h7h6",
+     "d5d6",
+     "c7d6",
+     "e5d6",
+     "g8f6"
+    ],
+    "san": [
+     "e5",
+     "Ng8",
+     "d5",
+     "Nb8",
+     "Bb5",
+     "h6",
+     "d6",
+     "cxd6",
+     "exd6",
+     "Nf6"
+    ],
+    "why": "No immediate material win, but Stockfish rates the position +4.4. Black's winning chances fall from 39% to 17%."
+   },
+   "opening": "Ponziani Opening"
+  },
+  {
+   "id": "r2qkbnr/ppp2ppp/2npb3/4p3/2B1P3/2P2N2/PP1P1PPP/RNBQK2R w KQkq -|d2d4",
+   "line": [
+    "e4",
+    "e5",
+    "Nf3",
+    "Nc6",
+    "c3",
+    "d6",
+    "Bc4",
+    "Be6"
+   ],
+   "fen": "r2qkbnr/ppp2ppp/2npb3/4p3/2B1P3/2P2N2/PP1P1PPP/RNBQK2R w KQkq - 2 5",
+   "victim": "white",
+   "kind": "avoid",
+   "move": {
+    "uci": "d2d4",
+    "san": "d4"
+   },
+   "popular": {
+    "games": 16249,
+    "share": 0.11729673931090241
+   },
+   "book": {
+    "games": 0,
+    "share": 0
+   },
+   "scoreBefore": {
+    "type": "cp",
+    "value": 81
+   },
+   "scoreAfter": {
+    "type": "cp",
+    "value": -397
+   },
+   "drop": 38.6,
+   "verdict": "blunder",
+   "refutation": {
+    "uci": [
+     "e6c4",
+     "b1a3",
+     "c4a6",
+     "b2b4",
+     "b7b5",
+     "d1e2",
+     "a6c8",
+     "e2b5",
+     "c8d7",
+     "b5e2"
+    ],
+    "san": [
+     "Bxc4",
+     "Na3",
+     "Ba6",
+     "b4",
+     "b5",
+     "Qe2",
+     "Bc8",
+     "Qxb5",
+     "Bd7",
+     "Qe2"
+    ],
+    "why": "Black wins a bishop for a pawn."
+   },
+   "opening": "Ponziani Opening"
+  },
+  {
+   "id": "r1bqk2r/pppp1pp1/2n2n1p/2b5/2BpP3/2P2N2/PP3PPP/RNBQ1RK1 w kq -|e4e5",
+   "line": [
+    "e4",
+    "e5",
+    "Nf3",
+    "Nc6",
+    "c3",
+    "Nf6",
+    "Bc4",
+    "h6",
+    "O-O",
+    "Bc5",
+    "d4",
+    "exd4"
+   ],
+   "fen": "r1bqk2r/pppp1pp1/2n2n1p/2b5/2BpP3/2P2N2/PP3PPP/RNBQ1RK1 w kq - 0 7",
+   "victim": "white",
+   "kind": "avoid",
+   "move": {
+    "uci": "e4e5",
+    "san": "e5"
+   },
+   "popular": {
+    "games": 13372,
+    "share": 0.09428454585195944
+   },
+   "book": {
+    "games": 0,
+    "share": 0
+   },
+   "scoreBefore": {
+    "type": "cp",
+    "value": 401
+   },
+   "scoreAfter": {
+    "type": "cp",
+    "value": 110
+   },
+   "drop": 21.4,
+   "verdict": "mistake",
+   "refutation": {
+    "uci": [
+     "f6h7",
+     "c3d4",
+     "d7d5",
+     "c4b3",
+     "c5b6",
+     "b1c3",
+     "c6e7",
+     "h2h3",
+     "h7f8",
+     "c3e2"
+    ],
+    "san": [
+     "Nh7",
+     "cxd4",
+     "d5",
+     "Bb3",
+     "Bb6",
+     "Nc3",
+     "Ne7",
+     "h3",
+     "Nf8",
+     "Ne2"
+    ],
+    "why": "No immediate material win, but Stockfish rates the position +1.1. White's winning chances fall from 81% to 60%."
+   },
+   "opening": "Ponziani Opening: Neumann Gambit"
+  },
+  {
+   "id": "r1bqkb1r/pppp1ppp/2n5/4P3/3p2n1/2P2N2/PP3PPP/RNBQKB1R w KQkq -|f3d4",
+   "line": [
+    "e4",
+    "e5",
+    "Nf3",
+    "Nc6",
+    "c3",
+    "Nf6",
+    "d4",
+    "exd4",
+    "e5",
+    "Ng4"
+   ],
+   "fen": "r1bqkb1r/pppp1ppp/2n5/4P3/3p2n1/2P2N2/PP3PPP/RNBQKB1R w KQkq - 1 6",
+   "victim": "white",
+   "kind": "avoid",
+   "move": {
+    "uci": "f3d4",
+    "san": "Nxd4"
+   },
+   "popular": {
+    "games": 13273,
+    "share": 0.11973838520523229
+   },
+   "book": {
+    "games": 0,
+    "share": 0
+   },
+   "scoreBefore": {
+    "type": "cp",
+    "value": 138
+   },
+   "scoreAfter": {
+    "type": "cp",
+    "value": -100
+   },
+   "drop": 21.5,
+   "verdict": "mistake",
+   "refutation": {
+    "uci": [
+     "g4e5",
+     "f1e2",
+     "d7d5",
+     "e1g1",
+     "f8e7",
+     "d4c6",
+     "b7c6",
+     "c1e3",
+     "e8g8",
+     "b1d2"
+    ],
+    "san": [
+     "Ngxe5",
+     "Be2",
+     "d5",
+     "O-O",
+     "Be7",
+     "Nxc6",
+     "bxc6",
+     "Be3",
+     "O-O",
+     "Nd2"
+    ],
+    "why": "Black wins a pawn."
+   },
+   "opening": "Ponziani Opening: Jaenisch Counterattack"
+  },
+  {
+   "id": "r1bqk1nr/pppp1ppp/1bn5/3P4/4P3/5N2/PP3PPP/RNBQKB1R b KQkq -|c6a5",
+   "line": [
+    "e4",
+    "e5",
+    "Nf3",
+    "Nc6",
+    "c3",
+    "Bc5",
+    "d4",
+    "exd4",
+    "cxd4",
+    "Bb6",
+    "d5"
+   ],
+   "fen": "r1bqk1nr/pppp1ppp/1bn5/3P4/4P3/5N2/PP3PPP/RNBQKB1R b KQkq - 0 6",
+   "victim": "black",
+   "kind": "exploit",
+   "move": {
+    "uci": "c6a5",
+    "san": "Na5"
+   },
+   "popular": {
+    "games": 13056,
+    "share": 0.0773248996126648
+   },
+   "book": {
+    "games": 0,
+    "share": 0
+   },
+   "scoreBefore": {
+    "type": "cp",
+    "value": 110
+   },
+   "scoreAfter": {
+    "type": "cp",
+    "value": 501
+   },
+   "drop": 26.4,
+   "verdict": "mistake",
+   "refutation": {
+    "uci": [
+     "f1d3",
+     "g8e7",
+     "b2b4",
+     "a5c6",
+     "d5c6",
+     "d7c6",
+     "d1c2",
+     "e7g6",
+     "e1g1",
+     "c8g4"
+    ],
+    "san": [
+     "Bd3",
+     "Ne7",
+     "b4",
+     "Nac6",
+     "dxc6",
+     "dxc6",
+     "Qc2",
+     "Ng6",
+     "O-O",
+     "Bg4"
+    ],
+    "why": "White wins a knight for a pawn. Stockfish rates the position +5.0."
+   },
+   "opening": "Ponziani Opening"
+  },
+  {
+   "id": "r1bqkb1r/ppp2ppp/2n5/3np3/2B5/2P2N2/PP1P1PPP/RNBQK2R w KQkq -|c4d5",
+   "line": [
+    "e4",
+    "e5",
+    "Nf3",
+    "Nc6",
+    "c3",
+    "Nf6",
+    "Bc4",
+    "d5",
+    "exd5",
+    "Nxd5"
+   ],
+   "fen": "r1bqkb1r/ppp2ppp/2n5/3np3/2B5/2P2N2/PP1P1PPP/RNBQK2R w KQkq - 0 6",
+   "victim": "white",
+   "kind": "avoid",
+   "move": {
+    "uci": "c4d5",
+    "san": "Bxd5"
+   },
+   "popular": {
+    "games": 12637,
+    "share": 0.09182865239981107
+   },
+   "book": {
+    "games": 0,
+    "share": 0
+   },
+   "scoreBefore": {
+    "type": "cp",
+    "value": 55
+   },
+   "scoreAfter": {
+    "type": "cp",
+    "value": -228
+   },
+   "drop": 24.9,
+   "verdict": "mistake",
+   "refutation": {
+    "uci": [
+     "d8d5",
+     "e1g1",
+     "c8g4",
+     "h2h3",
+     "g4h5",
+     "c3c4",
+     "d5d6",
+     "b1c3",
+     "e8c8",
+     "g2g4"
+    ],
+    "san": [
+     "Qxd5",
+     "O-O",
+     "Bg4",
+     "h3",
+     "Bh5",
+     "c4",
+     "Qd6",
+     "Nc3",
+     "O-O-O",
+     "g4"
+    ],
+    "why": "Black wins a bishop."
+   },
+   "opening": "Ponziani Opening: Neumann Gambit"
+  },
+  {
+   "id": "r1bqk1nr/pppp1ppp/2n5/8/1b1PP3/5N2/PP1B1PPP/RN1QKB1R b KQkq -|d7d6",
+   "line": [
+    "e4",
+    "e5",
+    "Nf3",
+    "Nc6",
+    "c3",
+    "Bc5",
+    "d4",
+    "exd4",
+    "cxd4",
+    "Bb4+",
+    "Bd2"
+   ],
+   "fen": "r1bqk1nr/pppp1ppp/2n5/8/1b1PP3/5N2/PP1B1PPP/RN1QKB1R b KQkq - 2 6",
+   "victim": "black",
+   "kind": "exploit",
+   "move": {
+    "uci": "d7d6",
+    "san": "d6"
+   },
+   "popular": {
+    "games": 12362,
+    "share": 0.05647482343051888
+   },
+   "book": {
+    "games": 0,
+    "share": 0
+   },
+   "scoreBefore": {
+    "type": "cp",
+    "value": 102
+   },
+   "scoreAfter": {
+    "type": "cp",
+    "value": 601
+   },
+   "drop": 30.9,
+   "verdict": "blunder",
+   "refutation": {
+    "uci": [
+     "d2b4",
+     "c6b4",
+     "d1a4",
+     "b4c6",
+     "d4d5",
+     "g8e7",
+     "d5c6",
+     "b7c6",
+     "a4c2",
+     "e8g8"
+    ],
+    "san": [
+     "Bxb4",
+     "Nxb4",
+     "Qa4+",
+     "Nc6",
+     "d5",
+     "Ne7",
+     "dxc6",
+     "bxc6",
+     "Qc2",
+     "O-O"
+    ],
+    "why": "White wins a knight for a pawn. Stockfish rates the position +6.0."
+   },
+   "opening": "Ponziani Opening"
+  },
+  {
+   "id": "r1bqkb1r/ppp2ppp/2n2n2/3pp3/2B1P3/2P2N2/PP1P1PPP/RNBQK2R w KQkq -|d2d4",
+   "line": [
+    "e4",
+    "e5",
+    "Nf3",
+    "Nc6",
+    "c3",
+    "Nf6",
+    "Bc4",
+    "d5"
+   ],
+   "fen": "r1bqkb1r/ppp2ppp/2n2n2/3pp3/2B1P3/2P2N2/PP1P1PPP/RNBQK2R w KQkq - 0 5",
+   "victim": "white",
+   "kind": "avoid",
+   "move": {
+    "uci": "d2d4",
+    "san": "d4"
+   },
+   "popular": {
+    "games": 11599,
+    "share": 0.06483329141164305
+   },
+   "book": {
+    "games": 0,
+    "share": 0
+   },
+   "scoreBefore": {
+    "type": "cp",
+    "value": 58
+   },
+   "scoreAfter": {
+    "type": "cp",
+    "value": -540
+   },
+   "drop": 43.3,
+   "verdict": "blunder",
+   "refutation": {
+    "uci": [
+     "d5c4",
+     "e1g1",
+     "f6e4",
+     "d1e2",
+     "c8f5",
+     "f1d1",
+     "f8e7",
+     "d4e5",
+     "d8c8",
+     "f3d4"
+    ],
+    "san": [
+     "dxc4",
+     "O-O",
+     "Nxe4",
+     "Qe2",
+     "Bf5",
+     "Rd1",
+     "Be7",
+     "dxe5",
+     "Qc8",
+     "Nd4"
+    ],
+    "why": "Black wins a bishop. Stockfish rates the position -5.4."
+   },
+   "opening": "Ponziani Opening: Neumann Gambit"
+  },
+  {
+   "id": "r1bqkb1r/ppp2ppp/2np1n2/4p3/2BPP3/2P2N2/PP3PPP/RNBQK2R b KQkq -|c8e6",
+   "line": [
+    "e4",
+    "e5",
+    "Nf3",
+    "Nc6",
+    "c3",
+    "Nf6",
+    "Bc4",
+    "d6",
+    "d4"
+   ],
+   "fen": "r1bqkb1r/ppp2ppp/2np1n2/4p3/2BPP3/2P2N2/PP3PPP/RNBQK2R b KQkq - 0 5",
+   "victim": "black",
+   "kind": "exploit",
+   "move": {
+    "uci": "c8e6",
+    "san": "Be6"
+   },
+   "popular": {
+    "games": 10188,
+    "share": 0.08125114643230268
+   },
+   "book": {
+    "games": 0,
+    "share": 0
+   },
+   "scoreBefore": {
+    "type": "cp",
+    "value": 7
+   },
+   "scoreAfter": {
+    "type": "cp",
+    "value": 520
+   },
+   "drop": 36.5,
+   "verdict": "blunder",
+   "refutation": {
+    "uci": [
+     "d4d5",
+     "e6d7",
+     "d5c6",
+     "d7c6",
+     "b1d2",
+     "d8d7",
+     "d1e2",
+     "g7g5",
+     "b2b4",
+     "a7a6"
+    ],
+    "san": [
+     "d5",
+     "Bd7",
+     "dxc6",
+     "Bxc6",
+     "Nbd2",
+     "Qd7",
+     "Qe2",
+     "g5",
+     "b4",
+     "a6"
+    ],
+    "why": "White wins a knight for a pawn. Stockfish rates the position +5.2."
+   },
+   "opening": "Ponziani Opening: Neumann Gambit"
+  },
+  {
+   "id": "r1bqkb1r/ppp2pp1/2n2n1p/3pp3/2B1P3/2PP1N2/PP3PPP/RNBQK2R w KQkq -|c4b3",
+   "line": [
+    "e4",
+    "e5",
+    "Nf3",
+    "Nc6",
+    "c3",
+    "Nf6",
+    "Bc4",
+    "h6",
+    "d3",
+    "d5"
+   ],
+   "fen": "r1bqkb1r/ppp2pp1/2n2n1p/3pp3/2B1P3/2PP1N2/PP3PPP/RNBQK2R w KQkq - 0 6",
+   "victim": "white",
+   "kind": "avoid",
+   "move": {
+    "uci": "c4b3",
+    "san": "Bb3"
+   },
+   "popular": {
+    "games": 10009,
+    "share": 0.08329935001706101
+   },
+   "book": {
+    "games": 0,
+    "share": 0
+   },
+   "scoreBefore": {
+    "type": "cp",
+    "value": 111
+   },
+   "scoreAfter": {
+    "type": "cp",
+    "value": -190
+   },
+   "drop": 26.9,
+   "verdict": "mistake",
+   "refutation": {
+    "uci": [
+     "d5e4",
+     "d3e4",
+     "d8d1",
+     "b3d1",
+     "f6e4",
+     "b1d2",
+     "e4d2",
+     "c1d2",
+     "e5e4",
+     "f3g1"
+    ],
+    "san": [
+     "dxe4",
+     "dxe4",
+     "Qxd1+",
+     "Bxd1",
+     "Nxe4",
+     "Nbd2",
+     "Nxd2",
+     "Bxd2",
+     "e4",
+     "Ng1"
+    ],
+    "why": "Black wins a pawn."
+   },
+   "opening": "Ponziani Opening: Neumann Gambit"
+  },
+  {
+   "id": "r2qkbnr/ppp2ppp/2np4/3Pp3/4P1b1/2P2N2/PP3PPP/RNBQKB1R b KQkq -|c6a5",
+   "line": [
+    "e4",
+    "e5",
+    "Nf3",
+    "Nc6",
+    "c3",
+    "d6",
+    "d4",
+    "Bg4",
+    "d5"
+   ],
+   "fen": "r2qkbnr/ppp2ppp/2np4/3Pp3/4P1b1/2P2N2/PP3PPP/RNBQKB1R b KQkq - 0 5",
+   "victim": "black",
+   "kind": "exploit",
+   "move": {
+    "uci": "c6a5",
+    "san": "Na5"
+   },
+   "popular": {
+    "games": 9904,
+    "share": 0.12776881893827002
+   },
+   "book": {
+    "games": 0,
+    "share": 0
+   },
+   "scoreBefore": {
+    "type": "cp",
+    "value": 101
+   },
+   "scoreAfter": {
+    "type": "cp",
+    "value": 588
+   },
+   "drop": 30.5,
+   "verdict": "blunder",
+   "refutation": {
+    "uci": [
+     "b2b4",
+     "c7c6",
+     "b4a5",
+     "f8e7",
+     "a5a6",
+     "a8b8",
+     "a6b7",
+     "c6d5",
+     "f1b5",
+     "e8f8"
+    ],
+    "san": [
+     "b4",
+     "c6",
+     "bxa5",
+     "Be7",
+     "a6",
+     "Rb8",
+     "axb7",
+     "cxd5",
+     "Bb5+",
+     "Kf8"
+    ],
+    "why": "White wins a knight. Stockfish rates the position +5.9."
+   },
+   "opening": "Ponziani Opening"
+  },
+  {
+   "id": "r1bqkb1r/pppp1ppp/2n5/3P4/4n3/5N2/PP3PPP/RNBQKB1R b KQkq -|c6a5",
+   "line": [
+    "e4",
+    "e5",
+    "Nf3",
+    "Nc6",
+    "c3",
+    "Nf6",
+    "d4",
+    "exd4",
+    "cxd4",
+    "Nxe4",
+    "d5"
+   ],
+   "fen": "r1bqkb1r/pppp1ppp/2n5/3P4/4n3/5N2/PP3PPP/RNBQKB1R b KQkq - 0 6",
+   "victim": "black",
+   "kind": "exploit",
+   "move": {
+    "uci": "c6a5",
+    "san": "Na5"
+   },
+   "popular": {
+    "games": 9347,
+    "share": 0.05719233193213038
+   },
+   "book": {
+    "games": 0,
+    "share": 0
+   },
+   "scoreBefore": {
+    "type": "cp",
+    "value": -91
+   },
+   "scoreAfter": {
+    "type": "cp",
+    "value": 241
+   },
+   "drop": 29.1,
+   "verdict": "mistake",
+   "refutation": {
+    "uci": [
+     "d1a4",
+     "d8e7",
+     "a4a5",
+     "e4g3",
+     "c1e3",
+     "e7b4",
+     "a5b4",
+     "f8b4",
+     "b1c3",
+     "g3h1"
+    ],
+    "san": [
      "Qa4",
      "Qe7",
-     "Rb1",
-     "c5"
+     "Qxa5",
+     "Ng3+",
+     "Be3",
+     "Qb4+",
+     "Qxb4",
+     "Bxb4+",
+     "Nc3",
+     "Nxh1"
     ],
-    "why": "White wins a knight for two pawns."
+    "why": "No immediate material win, but Stockfish rates the position +2.4. Black's winning chances fall from 58% to 29%."
+   },
+   "opening": "Ponziani Opening: Jaenisch Counterattack"
+  },
+  {
+   "id": "r1bqk2r/pppp1ppp/2n5/3nP3/1b1P4/5N2/PP3PPP/RNBQKB1R w KQkq -|b1c3",
+   "line": [
+    "e4",
+    "e5",
+    "Nf3",
+    "Nc6",
+    "c3",
+    "Nf6",
+    "d4",
+    "exd4",
+    "e5",
+    "Nd5",
+    "cxd4",
+    "Bb4+"
+   ],
+   "fen": "r1bqk2r/pppp1ppp/2n5/3nP3/1b1P4/5N2/PP3PPP/RNBQKB1R w KQkq - 1 7",
+   "victim": "white",
+   "kind": "avoid",
+   "move": {
+    "uci": "b1c3",
+    "san": "Nc3"
+   },
+   "popular": {
+    "games": 7749,
+    "share": 0.12997970377576865
+   },
+   "book": {
+    "games": 0,
+    "share": 0
+   },
+   "scoreBefore": {
+    "type": "cp",
+    "value": 34
+   },
+   "scoreAfter": {
+    "type": "cp",
+    "value": -327
+   },
+   "drop": 30,
+   "verdict": "blunder",
+   "refutation": {
+    "uci": [
+     "d5c3",
+     "b2c3",
+     "b4c3",
+     "c1d2",
+     "c3a1",
+     "d1a1",
+     "d7d6",
+     "d2g5",
+     "c6e7",
+     "f1d3"
+    ],
+    "san": [
+     "Nxc3",
+     "bxc3",
+     "Bxc3+",
+     "Bd2",
+     "Bxa1",
+     "Qxa1",
+     "d6",
+     "Bg5",
+     "Ne7",
+     "Bd3"
+    ],
+    "why": "Black wins a rook and a pawn for a bishop."
    },
    "opening": "Ponziani Opening: Jaenisch Counterattack"
   },
@@ -250,13 +1337,13 @@
    },
    "scoreBefore": {
     "type": "cp",
-    "value": 50
+    "value": 34
    },
    "scoreAfter": {
     "type": "cp",
-    "value": 592
+    "value": 582
    },
-   "drop": 35.3,
+   "drop": 36.4,
    "verdict": "blunder",
    "refutation": {
     "uci": [
@@ -268,7 +1355,7 @@
      "e8g8",
      "e1g1",
      "d6e8",
-     "d5b3",
+     "f1e1",
      "e8f6"
     ],
     "san": [
@@ -280,10 +1367,622 @@
      "O-O",
      "O-O",
      "Ne8",
-     "Qb3",
+     "Re1",
      "Nf6"
     ],
-    "why": "White wins a knight."
+    "why": "White wins a knight. Stockfish rates the position +5.8."
+   },
+   "opening": "Ponziani Opening: Jaenisch Counterattack"
+  },
+  {
+   "id": "r1bqkb1r/ppp2pp1/2n4p/3np3/2B5/2PP1N2/PP3PPP/RNBQK2R w KQkq -|c4d5",
+   "line": [
+    "e4",
+    "e5",
+    "Nf3",
+    "Nc6",
+    "c3",
+    "Nf6",
+    "Bc4",
+    "h6",
+    "d3",
+    "d5",
+    "exd5",
+    "Nxd5"
+   ],
+   "fen": "r1bqkb1r/ppp2pp1/2n4p/3np3/2B5/2PP1N2/PP3PPP/RNBQK2R w KQkq - 0 7",
+   "victim": "white",
+   "kind": "avoid",
+   "move": {
+    "uci": "c4d5",
+    "san": "Bxd5"
+   },
+   "popular": {
+    "games": 7463,
+    "share": 0.07242256036022048
+   },
+   "book": {
+    "games": 0,
+    "share": 0
+   },
+   "scoreBefore": {
+    "type": "cp",
+    "value": 99
+   },
+   "scoreAfter": {
+    "type": "cp",
+    "value": -202
+   },
+   "drop": 26.8,
+   "verdict": "mistake",
+   "refutation": {
+    "uci": [
+     "d8d5",
+     "e1g1",
+     "c8f5",
+     "f3e1",
+     "f8e7",
+     "c3c4",
+     "d5d7",
+     "b1c3",
+     "f5e6",
+     "c1e3"
+    ],
+    "san": [
+     "Qxd5",
+     "O-O",
+     "Bf5",
+     "Ne1",
+     "Be7",
+     "c4",
+     "Qd7",
+     "Nc3",
+     "Be6",
+     "Be3"
+    ],
+    "why": "Black wins a bishop."
+   },
+   "opening": "Ponziani Opening: Neumann Gambit"
+  },
+  {
+   "id": "r1b1kb1r/ppppqppp/2n2n2/4P3/3P4/5N2/PP3PPP/RNBQKB1R b KQkq -|e7b4",
+   "line": [
+    "e4",
+    "e5",
+    "Nf3",
+    "Nc6",
+    "c3",
+    "Nf6",
+    "d4",
+    "exd4",
+    "e5",
+    "Qe7",
+    "cxd4"
+   ],
+   "fen": "r1b1kb1r/ppppqppp/2n2n2/4P3/3P4/5N2/PP3PPP/RNBQKB1R b KQkq - 0 6",
+   "victim": "black",
+   "kind": "exploit",
+   "move": {
+    "uci": "e7b4",
+    "san": "Qb4+"
+   },
+   "popular": {
+    "games": 6980,
+    "share": 0.1076081091497726
+   },
+   "book": {
+    "games": 0,
+    "share": 0
+   },
+   "scoreBefore": {
+    "type": "cp",
+    "value": 61
+   },
+   "scoreAfter": {
+    "type": "cp",
+    "value": 409
+   },
+   "drop": 26.3,
+   "verdict": "mistake",
+   "refutation": {
+    "uci": [
+     "c1d2",
+     "b4e7",
+     "b1c3",
+     "d7d5",
+     "f1e2",
+     "f6e4",
+     "c3d5",
+     "e7d7",
+     "d5c3",
+     "e4d2"
+    ],
+    "san": [
+     "Bd2",
+     "Qe7",
+     "Nc3",
+     "d5",
+     "Be2",
+     "Ne4",
+     "Nxd5",
+     "Qd7",
+     "Nc3",
+     "Nxd2"
+    ],
+    "why": "No immediate material win, but Stockfish rates the position +4.1. Black's winning chances fall from 44% to 18%."
+   },
+   "opening": "Ponziani Opening: Jaenisch Counterattack"
+  },
+  {
+   "id": "r1bqkb1r/pppp1pp1/2n2n1p/4p3/2B1P3/1QP2N2/PP1P1PPP/RNB1K2R b KQkq -|f8c5",
+   "line": [
+    "e4",
+    "e5",
+    "Nf3",
+    "Nc6",
+    "c3",
+    "Nf6",
+    "Bc4",
+    "h6",
+    "Qb3"
+   ],
+   "fen": "r1bqkb1r/pppp1pp1/2n2n1p/4p3/2B1P3/1QP2N2/PP1P1PPP/RNB1K2R b KQkq - 1 5",
+   "victim": "black",
+   "kind": "exploit",
+   "move": {
+    "uci": "f8c5",
+    "san": "Bc5"
+   },
+   "popular": {
+    "games": 5649,
+    "share": 0.08334193948156562
+   },
+   "book": {
+    "games": 0,
+    "share": 0
+   },
+   "scoreBefore": {
+    "type": "cp",
+    "value": 9
+   },
+   "scoreAfter": {
+    "type": "cp",
+    "value": 264
+   },
+   "drop": 21.7,
+   "verdict": "mistake",
+   "refutation": {
+    "uci": [
+     "c4f7",
+     "e8f8",
+     "e1g1",
+     "d8e7",
+     "f7d5",
+     "g7g5",
+     "d2d4",
+     "e5d4",
+     "d5c6",
+     "b7c6"
+    ],
+    "san": [
+     "Bxf7+",
+     "Kf8",
+     "O-O",
+     "Qe7",
+     "Bd5",
+     "g5",
+     "d4",
+     "exd4",
+     "Bxc6",
+     "bxc6"
+    ],
+    "why": "No immediate material win, but Stockfish rates the position +2.6. Black's winning chances fall from 49% to 27%."
+   },
+   "opening": "Ponziani Opening: Neumann Gambit"
+  },
+  {
+   "id": "r1bqkbnr/ppp2ppp/2n5/1B1pp3/4P3/2P2N2/PP1P1PPP/RNBQK2R b KQkq -|c8d7",
+   "line": [
+    "e4",
+    "e5",
+    "Nf3",
+    "Nc6",
+    "c3",
+    "d5",
+    "Bb5"
+   ],
+   "fen": "r1bqkbnr/ppp2ppp/2n5/1B1pp3/4P3/2P2N2/PP1P1PPP/RNBQK2R b KQkq - 1 4",
+   "victim": "black",
+   "kind": "exploit",
+   "move": {
+    "uci": "c8d7",
+    "san": "Bd7"
+   },
+   "popular": {
+    "games": 5425,
+    "share": 0.14453562103692652
+   },
+   "book": {
+    "games": 0,
+    "share": 0
+   },
+   "scoreBefore": {
+    "type": "cp",
+    "value": -36
+   },
+   "scoreAfter": {
+    "type": "cp",
+    "value": 242
+   },
+   "drop": 24.2,
+   "verdict": "mistake",
+   "refutation": {
+    "uci": [
+     "e4d5",
+     "e5e4",
+     "d5c6",
+     "b7c6",
+     "b5c4",
+     "e4f3",
+     "d1f3",
+     "d8e7",
+     "e1d1",
+     "g8f6"
+    ],
+    "san": [
+     "exd5",
+     "e4",
+     "dxc6",
+     "bxc6",
+     "Bc4",
+     "exf3",
+     "Qxf3",
+     "Qe7+",
+     "Kd1",
+     "Nf6"
+    ],
+    "why": "White wins a pawn."
+   },
+   "opening": "Ponziani Opening: Spanish Variation"
+  },
+  {
+   "id": "r1bqkbnr/ppp3pp/2np4/4pp2/2B1P3/2P2N2/PP1P1PPP/RNBQK2R w KQkq -|d2d4",
+   "line": [
+    "e4",
+    "e5",
+    "Nf3",
+    "Nc6",
+    "c3",
+    "d6",
+    "Bc4",
+    "f5"
+   ],
+   "fen": "r1bqkbnr/ppp3pp/2np4/4pp2/2B1P3/2P2N2/PP1P1PPP/RNBQK2R w KQkq - 0 5",
+   "victim": "white",
+   "kind": "avoid",
+   "move": {
+    "uci": "d2d4",
+    "san": "d4"
+   },
+   "popular": {
+    "games": 5270,
+    "share": 0.20157588739290086
+   },
+   "book": {
+    "games": 0,
+    "share": 0
+   },
+   "scoreBefore": {
+    "type": "cp",
+    "value": 74
+   },
+   "scoreAfter": {
+    "type": "cp",
+    "value": -172
+   },
+   "drop": 22.1,
+   "verdict": "mistake",
+   "refutation": {
+    "uci": [
+     "f5e4",
+     "c4g8",
+     "e4f3",
+     "g8d5",
+     "f3g2",
+     "d5g2",
+     "d8h4",
+     "c1e3",
+     "f8e7",
+     "d1b3"
+    ],
+    "san": [
+     "fxe4",
+     "Bxg8",
+     "exf3",
+     "Bd5",
+     "fxg2",
+     "Bxg2",
+     "Qh4",
+     "Be3",
+     "Be7",
+     "Qb3"
+    ],
+    "why": "Black wins a pawn."
+   },
+   "opening": "Ponziani Opening"
+  },
+  {
+   "id": "r1bqk1nr/pppp1ppp/1bn5/8/3PP3/2N2N2/PP3PPP/R1BQKB1R b KQkq -|d8f6",
+   "line": [
+    "e4",
+    "e5",
+    "Nf3",
+    "Nc6",
+    "c3",
+    "Bc5",
+    "d4",
+    "exd4",
+    "cxd4",
+    "Bb6",
+    "Nc3"
+   ],
+   "fen": "r1bqk1nr/pppp1ppp/1bn5/8/3PP3/2N2N2/PP3PPP/R1BQKB1R b KQkq - 2 6",
+   "victim": "black",
+   "kind": "exploit",
+   "move": {
+    "uci": "d8f6",
+    "san": "Qf6"
+   },
+   "popular": {
+    "games": 4933,
+    "share": 0.06932362736969322
+   },
+   "book": {
+    "games": 0,
+    "share": 0
+   },
+   "scoreBefore": {
+    "type": "cp",
+    "value": 100
+   },
+   "scoreAfter": {
+    "type": "cp",
+    "value": 398
+   },
+   "drop": 22.1,
+   "verdict": "mistake",
+   "refutation": {
+    "uci": [
+     "e4e5",
+     "f6d8",
+     "d4d5",
+     "c6b8",
+     "a2a4",
+     "b6a5",
+     "d1d4",
+     "d8e7",
+     "c1d2",
+     "d7d6"
+    ],
+    "san": [
+     "e5",
+     "Qd8",
+     "d5",
+     "Nb8",
+     "a4",
+     "Ba5",
+     "Qd4",
+     "Qe7",
+     "Bd2",
+     "d6"
+    ],
+    "why": "No immediate material win, but Stockfish rates the position +4.0. Black's winning chances fall from 41% to 19%."
+   },
+   "opening": "Ponziani Opening"
+  },
+  {
+   "id": "r1b1kb1r/ppppqppp/2n2n2/4P3/3p4/2P2N2/PP3PPP/RNBQKB1R w KQkq -|d1e2",
+   "line": [
+    "e4",
+    "e5",
+    "Nf3",
+    "Nc6",
+    "c3",
+    "Nf6",
+    "d4",
+    "exd4",
+    "e5",
+    "Qe7"
+   ],
+   "fen": "r1b1kb1r/ppppqppp/2n2n2/4P3/3p4/2P2N2/PP3PPP/RNBQKB1R w KQkq - 1 6",
+   "victim": "white",
+   "kind": "avoid",
+   "move": {
+    "uci": "d1e2",
+    "san": "Qe2"
+   },
+   "popular": {
+    "games": 4556,
+    "share": 0.06287086357740182
+   },
+   "book": {
+    "games": 0,
+    "share": 0
+   },
+   "scoreBefore": {
+    "type": "cp",
+    "value": 67
+   },
+   "scoreAfter": {
+    "type": "cp",
+    "value": -166
+   },
+   "drop": 21,
+   "verdict": "mistake",
+   "refutation": {
+    "uci": [
+     "d4d3",
+     "e2d3",
+     "d7d6",
+     "f1e2",
+     "d6e5",
+     "d3c2",
+     "c8g4",
+     "e1g1",
+     "e5e4",
+     "f3d4"
+    ],
+    "san": [
+     "d3",
+     "Qxd3",
+     "d6",
+     "Be2",
+     "dxe5",
+     "Qc2",
+     "Bg4",
+     "O-O",
+     "e4",
+     "Nd4"
+    ],
+    "why": "No immediate material win, but Stockfish rates the position -1.7. White's winning chances fall from 56% to 35%."
+   },
+   "opening": "Ponziani Opening: Jaenisch Counterattack"
+  },
+  {
+   "id": "r1b1kb1r/ppppqppp/2n2n2/4P3/3P4/5N2/PP3PPP/RNBQKB1R b KQkq -|c6d4",
+   "line": [
+    "e4",
+    "e5",
+    "Nf3",
+    "Nc6",
+    "c3",
+    "Nf6",
+    "d4",
+    "exd4",
+    "e5",
+    "Qe7",
+    "cxd4"
+   ],
+   "fen": "r1b1kb1r/ppppqppp/2n2n2/4P3/3P4/5N2/PP3PPP/RNBQKB1R b KQkq - 0 6",
+   "victim": "black",
+   "kind": "exploit",
+   "move": {
+    "uci": "c6d4",
+    "san": "Nxd4"
+   },
+   "popular": {
+    "games": 3706,
+    "share": 0.05713404763740076
+   },
+   "book": {
+    "games": 0,
+    "share": 0
+   },
+   "scoreBefore": {
+    "type": "cp",
+    "value": 58
+   },
+   "scoreAfter": {
+    "type": "cp",
+    "value": 558
+   },
+   "drop": 33.3,
+   "verdict": "blunder",
+   "refutation": {
+    "uci": [
+     "d1d4",
+     "d7d6",
+     "f1c4",
+     "d6e5",
+     "d4e5",
+     "c8g4",
+     "b1c3",
+     "e8c8",
+     "e1g1",
+     "e7b4"
+    ],
+    "san": [
+     "Qxd4",
+     "d6",
+     "Bc4",
+     "dxe5",
+     "Qxe5",
+     "Bg4",
+     "Nc3",
+     "O-O-O",
+     "O-O",
+     "Qb4"
+    ],
+    "why": "White wins a knight. Stockfish rates the position +5.6."
+   },
+   "opening": "Ponziani Opening: Jaenisch Counterattack"
+  },
+  {
+   "id": "r1b1kb1r/ppppqppp/2n2n2/4P3/3P4/5N2/PP3PPP/RNBQKB1R b KQkq -|f6g4",
+   "line": [
+    "e4",
+    "e5",
+    "Nf3",
+    "Nc6",
+    "c3",
+    "Nf6",
+    "d4",
+    "exd4",
+    "e5",
+    "Qe7",
+    "cxd4"
+   ],
+   "fen": "r1b1kb1r/ppppqppp/2n2n2/4P3/3P4/5N2/PP3PPP/RNBQKB1R b KQkq - 0 6",
+   "victim": "black",
+   "kind": "exploit",
+   "move": {
+    "uci": "f6g4",
+    "san": "Ng4"
+   },
+   "popular": {
+    "games": 3642,
+    "share": 0.056147383026285365
+   },
+   "book": {
+    "games": 0,
+    "share": 0
+   },
+   "scoreBefore": {
+    "type": "cp",
+    "value": 77
+   },
+   "scoreAfter": {
+    "type": "cp",
+    "value": 447
+   },
+   "drop": 26.8,
+   "verdict": "mistake",
+   "refutation": {
+    "uci": [
+     "h2h3",
+     "g4e5",
+     "d4e5",
+     "c6e5",
+     "c1e3",
+     "f7f5",
+     "g2g3",
+     "b7b6",
+     "f1g2",
+     "c8a6"
+    ],
+    "san": [
+     "h3",
+     "Ngxe5",
+     "dxe5",
+     "Nxe5",
+     "Be3",
+     "f5",
+     "g3",
+     "b6",
+     "Bg2",
+     "Ba6"
+    ],
+    "why": "White wins a knight for two pawns. Stockfish rates the position +4.5."
    },
    "opening": "Ponziani Opening: Jaenisch Counterattack"
   },
@@ -319,13 +2018,13 @@
    },
    "scoreBefore": {
     "type": "cp",
-    "value": 40
+    "value": 50
    },
    "scoreAfter": {
     "type": "cp",
-    "value": 327
+    "value": 360
    },
-   "drop": 23.2,
+   "drop": 24.4,
    "verdict": "mistake",
    "refutation": {
     "uci": [
@@ -333,26 +2032,26 @@
      "c5a6",
      "e2e4",
      "d8e7",
-     "f1a6",
-     "b7a6",
      "b1c3",
+     "f7f5",
+     "e4f5",
      "d7d5",
-     "c3d5",
-     "e7d7"
+     "f5f4",
+     "a6b4"
     ],
     "san": [
      "cxd4",
      "Na6",
      "Qe4",
      "Qe7",
-     "Bxa6",
-     "bxa6",
      "Nc3",
+     "f5",
+     "Qxf5",
      "d5",
-     "Nxd5",
-     "Qd7"
+     "Qf4",
+     "Nab4"
     ],
-    "why": "White wins a knight and two pawns for a bishop."
+    "why": "White wins two pawns."
    },
    "opening": "Ponziani Opening: Jaenisch Counterattack"
   }
