@@ -8,9 +8,11 @@ export { base as unguardedTest };
  * Every test using this `test` fails if the page logged a console error or
  * warning, threw an exception, or a request failed.
  */
-export const test = base.extend<{ problems: string[] }>({
+export const test = base.extend<{ problems: string[]; allowedProblems: RegExp | null }>({
+  /** Problems a test causes on purpose (e.g. a mocked HTTP 401). Set with `test.use(...)`. */
+  allowedProblems: [null, { option: true }],
   problems: [
-    async ({ page }, use) => {
+    async ({ page, allowedProblems }, use) => {
       const problems: string[] = [];
       page.on('console', (message) => {
         if (message.type() === 'error' || message.type() === 'warning') {
@@ -23,7 +25,8 @@ export const test = base.extend<{ problems: string[] }>({
         if (response.status() >= 400) problems.push(`HTTP ${response.status()}: ${response.url()}`);
       });
       await use(problems);
-      expect(problems, 'the page should produce no errors').toEqual([]);
+      const unexpected = problems.filter((problem) => !allowedProblems?.test(problem));
+      expect(unexpected, 'the page should produce no errors').toEqual([]);
     },
     { auto: true },
   ],

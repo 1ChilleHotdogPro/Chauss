@@ -8,12 +8,17 @@ import { parseUciMove, pvToSan, toUci } from './analysis/pv';
 import { verdictSentence } from './analysis/verdictText';
 import { Engine } from './engine/engine';
 import { createWorkerTransport, engineUrl } from './engine/workerTransport';
+import { createMemoryCache, createStorageCache, layerCaches, type KeyValueStorage } from './explorer/cache';
+import { ExplorerClient } from './explorer/client';
+import { describeResult } from './explorer/describe';
+import { loadSettings, saveSettings } from './explorer/settings';
 import { Game } from './game/game';
 import { createBoard, type Arrow } from './ui/board';
 import { renderEnginePanel, type EnginePanelModel } from './ui/enginePanel';
 import { createEvalBar } from './ui/evalBar';
 import { renderMoveList, updateMoveMarks } from './ui/moveList';
 import { createPromotionPicker } from './ui/promotion';
+import { createSettingsPanel } from './ui/settingsPanel';
 
 /** The engine reports its three best moves (used for the arrows and the lines list). */
 const MULTI_PV = 3;
@@ -55,6 +60,37 @@ const engine = new Engine(createWorkerTransport(engineUrl(import.meta.env.BASE_U
   onStateChange: scheduleEngineRender,
 });
 const analysis = new Analysis(engine, { multiPv: MULTI_PV, onUpdate: scheduleEngineRender });
+
+/** localStorage, or undefined where the browser forbids it (some private windows). */
+function browserStorage(): KeyValueStorage | undefined {
+  try {
+    return window.localStorage;
+  } catch {
+    return undefined;
+  }
+}
+
+const storage = browserStorage();
+const settingsPanel = createSettingsPanel({
+  dialog: byId<HTMLDialogElement>('settings'),
+  openButton: byId<HTMLButtonElement>('open-settings'),
+  initial: loadSettings(storage),
+  onChange: (settings) => saveSettings(storage, settings),
+  onTest: async () => {
+    const { ratings, speeds } = settingsPanel.settings();
+    // Always ask Lichess afresh: a remembered answer would not test the connection.
+    const result = await explorer.lichess(game.fen(), { ratings, speeds }, { skipCache: true });
+    return describeResult(result);
+  },
+});
+
+/** The live Lichess opening explorer. Only used when the user has set a token. */
+const explorer = new ExplorerClient({
+  fetch: (url, init) => fetch(url, init),
+  getToken: () => settingsPanel.settings().token,
+  cache: layerCaches(createMemoryCache(), createStorageCache(storage)),
+  minIntervalMs: 250,
+});
 
 /** Called by the board after the user dropped a piece on a legal square. */
 function handleUserMove(from: string, to: string): void {
@@ -210,6 +246,7 @@ document.addEventListener('keydown', (event) => {
   if (event.ctrlKey || event.metaKey || event.altKey) return;
   const target = event.target;
   if (target instanceof HTMLInputElement || target instanceof HTMLTextAreaElement) return;
+  if (settingsPanel.isOpen()) return; // no board hotkeys while the Settings dialog is open
 
   if (promotion.isOpen()) {
     if (event.key === 'Escape') promotion.cancel();

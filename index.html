@@ -14,6 +14,7 @@
       <header class="site-header">
         <h1>Chauss</h1>
         <p>Ponziani Opening Trainer</p>
+        <button id="open-settings" class="settings-button" type="button">Settings</button>
       </header>
 
       <main class="layout">
@@ -65,6 +66,62 @@
         </aside>
       </main>
     </div>
+
+    <dialog id="settings" class="settings" aria-labelledby="settings-title">
+      <div class="settings-body">
+        <h2 id="settings-title">Settings</h2>
+
+        <section>
+          <h3>Lichess token</h3>
+          <p class="hint">
+            Only needed for live data from Lichess (positions outside the bundled opening data, or other rating
+            groups). Create one at
+            <a href="https://lichess.org/account/oauth/token" target="_blank" rel="noopener noreferrer"
+              >lichess.org/account/oauth/token</a
+            >
+            with no boxes ticked. It is stored in this browser only and sent only to Lichess.
+          </p>
+          <div class="token-row">
+            <input
+              id="token"
+              type="password"
+              autocomplete="off"
+              spellcheck="false"
+              placeholder="Paste your token here"
+              aria-label="Lichess token"
+            />
+            <button id="token-show" type="button" aria-pressed="false">Show</button>
+            <button id="token-clear" type="button">Clear</button>
+          </div>
+          <p id="token-state" class="hint"></p>
+        </section>
+
+        <section>
+          <h3>Rating groups (popular at your level)</h3>
+          <div id="rating-bands" class="checks"></div>
+          <p id="rating-summary" class="hint"></p>
+        </section>
+
+        <section>
+          <h3>Game speeds</h3>
+          <div id="speeds" class="checks"></div>
+        </section>
+
+        <section>
+          <h3>Connection</h3>
+          <button id="explorer-test" type="button">Test connection</button>
+          <p id="explorer-test-result" class="test-result" role="status" hidden></p>
+        </section>
+
+        <p id="settings-save-warning" class="test-result" data-status="error" hidden>
+          Your browser would not store these settings, so they will be lost when you close the page.
+        </p>
+
+        <div class="settings-footer">
+          <button id="settings-close" type="button">Close</button>
+        </div>
+      </div>
+    </dialog>
     <script type="module" src="/src/main.ts"></script>
   </body>
 </html>
