@@ -46,11 +46,13 @@ Each row shows how often the move is played, how many games, and the results (Wh
 
 A coloured mark (`?!`, `?`, `??`) means Stockfish thinks the move gives something away. Click the mark to see **why**: the best reply, the line, the score, and one sentence built from that line (for example "White wins a knight"). **Rank every legal move** asks Stockfish to score all moves in the position, worst first. **Common mistakes in this opening** lists the losing moves that are played most often — for your opponents to make, and for you to avoid.
 
+At ten key positions a short **idea** explains what matters there (for example which move masters play, and which popular mistakes to punish). Each idea is checked against the bundled data by a test: every number and claim in it must match the data, or the idea is not shown.
+
 Nothing here is written from memory: the names and numbers come from the Lichess opening explorer, the marks and lines from Stockfish.
 
 ### Bundled data and live data
 
-The app ships with a snapshot of the Ponziani tree (`src/data/ponziani.json`), so it works offline and without an account. It stops where a move is played in fewer than 3% of games or too few games, and where a move leaves the Ponziani for another opening.
+The app ships with a snapshot of the Ponziani tree (`src/data/ponziani.json`: 826 positions, built 13 November 2026 from Lichess games rated 1000–1399 and master games, every move scored by Stockfish), so it works offline and without an account. It stops where a move is played in fewer than 3% of games or too few games, and where a move leaves the Ponziani for another opening.
 
 For positions outside the snapshot, or for other rating groups, the app can ask Lichess directly. That needs a personal token:
 
