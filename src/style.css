@@ -1,0 +1,298 @@
+:root {
+  color-scheme: light dark;
+  --bg: #f3efe7;
+  --panel: #ffffff;
+  --text: #24211d;
+  --muted: #6b655c;
+  --border: #d9d2c5;
+  --accent: #5b7f3a;
+  --accent-text: #ffffff;
+  --button: #ece7dc;
+  --button-hover: #e0d9cb;
+  font-family: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+  font-size: 16px;
+  line-height: 1.45;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #1f1d1a;
+    --panel: #2a2723;
+    --text: #ece7de;
+    --muted: #a59e92;
+    --border: #423d36;
+    --accent: #86b35a;
+    --accent-text: #14130f;
+    --button: #38342e;
+    --button-hover: #46413a;
+  }
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--text);
+}
+
+#app {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 16px;
+}
+
+.site-header {
+  display: flex;
+  align-items: baseline;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
+.site-header h1 {
+  margin: 0;
+  font-size: 1.5rem;
+}
+
+.site-header p {
+  margin: 0;
+  color: var(--muted);
+}
+
+.layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 320px;
+  gap: 20px;
+  align-items: start;
+}
+
+@media (max-width: 760px) {
+  .layout {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+/* The board is a square that fits the column and the window height. */
+.board-wrap {
+  position: relative;
+  width: min(100%, calc(100vh - 110px));
+  min-width: 240px;
+  aspect-ratio: 1 / 1;
+  margin: 0 auto;
+}
+
+#board {
+  width: 100%;
+  height: 100%;
+}
+
+cg-board {
+  border-radius: 4px;
+}
+
+/* Coordinates: letters along the bottom edge, numbers down the left edge, inside the board. */
+.cg-wrap coords {
+  font-size: 11px;
+  font-weight: 600;
+  opacity: 1;
+}
+
+/* Dark text on light squares, light text on dark squares (a1 is a dark square).
+   The theme's own colours assume numbers on the right edge, so they are set here. */
+.cg-wrap.orientation-white coords.ranks coord:nth-child(even),
+.cg-wrap.orientation-white coords.files coord:nth-child(even),
+.cg-wrap.orientation-black coords.ranks coord:nth-child(odd),
+.cg-wrap.orientation-black coords.files coord:nth-child(odd) {
+  color: rgba(70, 50, 30, 0.8);
+}
+
+.cg-wrap.orientation-white coords.ranks coord:nth-child(odd),
+.cg-wrap.orientation-white coords.files coord:nth-child(odd),
+.cg-wrap.orientation-black coords.ranks coord:nth-child(even),
+.cg-wrap.orientation-black coords.files coord:nth-child(even) {
+  color: rgba(255, 248, 235, 0.9);
+}
+
+.cg-wrap coords.ranks {
+  top: 0;
+  left: 3px;
+  width: 12px;
+  height: 100%;
+}
+
+.cg-wrap coords.ranks coord {
+  transform: none;
+  padding-top: 2px;
+}
+
+.cg-wrap coords.files {
+  left: 0;
+  bottom: 1px;
+  width: 100%;
+  height: 16px;
+  text-align: right;
+}
+
+.cg-wrap coords.files coord {
+  padding-right: 4px;
+}
+
+.panel {
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 14px;
+}
+
+.panel h2 {
+  margin: 16px 0 6px;
+  font-size: 0.85rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--muted);
+}
+
+.status {
+  margin: 0 0 12px;
+  font-weight: 600;
+  font-size: 1.05rem;
+}
+
+.controls {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+button {
+  font: inherit;
+  color: inherit;
+  background: var(--button);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 6px 10px;
+  cursor: pointer;
+}
+
+button:hover:not(:disabled) {
+  background: var(--button-hover);
+}
+
+button:disabled {
+  opacity: 0.45;
+  cursor: default;
+}
+
+button:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 1px;
+}
+
+.moves {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  max-height: 320px;
+  overflow-y: auto;
+}
+
+.moves li {
+  display: grid;
+  grid-template-columns: 2.4em 1fr 1fr;
+  align-items: center;
+  gap: 4px;
+  padding: 1px 0;
+}
+
+.move-number {
+  color: var(--muted);
+  text-align: right;
+  padding-right: 4px;
+}
+
+.move-gap {
+  color: var(--muted);
+  padding-left: 8px;
+}
+
+.moves .move {
+  text-align: left;
+  background: transparent;
+  border-color: transparent;
+  padding: 3px 8px;
+}
+
+.moves .move.current {
+  background: var(--accent);
+  color: var(--accent-text);
+  font-weight: 600;
+}
+
+.hint {
+  margin: 0;
+  color: var(--muted);
+  font-size: 0.9rem;
+}
+
+.fen {
+  margin: 16px 0 0;
+  font-size: 0.75rem;
+  color: var(--muted);
+  overflow-wrap: anywhere;
+}
+
+.fen-label {
+  font-weight: 600;
+  margin-right: 4px;
+  cursor: help;
+}
+
+/* Promotion picker: covers the board while a choice is needed. */
+.promotion {
+  position: absolute;
+  inset: 0;
+  z-index: 20;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0, 0, 0, 0.45);
+  border-radius: 4px;
+}
+
+.promotion[hidden] {
+  display: none;
+}
+
+.promotion-dialog {
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 12px 14px;
+  box-shadow: 0 6px 24px rgba(0, 0, 0, 0.35);
+  max-width: 92%;
+}
+
+.promotion-dialog p {
+  margin: 0 0 8px;
+  font-weight: 600;
+}
+
+.promotion-choices {
+  display: flex;
+  gap: 6px;
+}
+
+.promotion-choices button {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  min-width: 64px;
+  font-size: 0.8rem;
+}
+
+.promotion-glyph {
+  font-size: 2rem;
+  line-height: 1.1;
+}

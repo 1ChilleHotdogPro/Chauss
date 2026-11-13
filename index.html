@@ -1,0 +1,51 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Chauss — Ponziani Opening Trainer</title>
+    <link
+      rel="icon"
+      href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E%E2%99%99%3C/text%3E%3C/svg%3E"
+    />
+  </head>
+  <body>
+    <div id="app">
+      <header class="site-header">
+        <h1>Chauss</h1>
+        <p>Ponziani Opening Trainer</p>
+      </header>
+
+      <main class="layout">
+        <section class="board-area" aria-label="Chess board">
+          <div class="board-wrap">
+            <div id="board"></div>
+            <div id="promotion" class="promotion" hidden></div>
+          </div>
+        </section>
+
+        <aside class="panel">
+          <p id="status" class="status" role="status" aria-live="polite"></p>
+
+          <div class="controls">
+            <button id="prev" type="button" title="Previous move (Left arrow)" aria-label="Previous move">&#9664;</button>
+            <button id="next" type="button" title="Next move (Right arrow)" aria-label="Next move">&#9654;</button>
+            <button id="flip" type="button" title="Flip board (F)">Flip board</button>
+            <button id="undo" type="button" title="Take back the last move">Undo</button>
+            <button id="reset" type="button" title="Start a new game">New game</button>
+          </div>
+
+          <h2>Moves</h2>
+          <ol id="moves" class="moves"></ol>
+          <p id="moves-empty" class="hint">No moves yet. Click or drag a white piece to start.</p>
+
+          <p class="fen">
+            <span class="fen-label" title="FEN: a one-line text description of the position">FEN</span>
+            <code id="fen"></code>
+          </p>
+        </aside>
+      </main>
+    </div>
+    <script type="module" src="/src/main.ts"></script>
+  </body>
+</html>
