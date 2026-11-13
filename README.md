@@ -2,7 +2,7 @@
 
 A browser app for learning the **Ponziani Opening as White** (1.e4 e5 2.Nf3 Nc6 3.c3): which moves are theory, which opponent moves are bad, and how to punish them.
 
-**Status:** Phase 4 — Explore mode. Click through the opening and see, at every position, the book moves (master games) and the moves popular at your level (Lichess), with mistakes flagged and Stockfish's refutation for each. Drill and play-against-a-bot modes come in later phases (see `CLAUDE.md`).
+**Status:** all three modes work — **Explore** (look up any position), **Drill** (learn your moves with spaced repetition) and **Play** (a game against a bot that plays like people at your level, or one that makes the common mistakes on purpose). A GitHub Pages workflow is ready; the site is not published yet.
 
 ## Run it locally
 
@@ -75,6 +75,32 @@ npm run snapshot
 
 crawls, scores every position with Stockfish and writes the file. It is slow on purpose (one request every 3.5 seconds) and can be stopped and restarted: answers are kept in `.cache/`. The settings used are recorded inside the file.
 
+## Drill
+
+The app plays Black and you play White. In every position you must find **your repertoire move**: the move masters play most there, unless Stockfish rates another move clearly better (more than 5 points of winning chances). Black's replies are chosen the way players at your level choose them, weighted by how often they are played.
+
+- A wrong move is taken back. You see the right move (an arrow) and why it is the one; play it to go on.
+- Each position is a card with its own review date (spaced repetition, SM-2). Positions you miss come back soon; ones you know well come back later. The next line aims at a card that is due, then at a new one.
+- **Statistics** lists every position with its tries, misses and next review. Your progress is stored in this browser only: **Save a backup file** keeps it safe, **Load a backup file** brings it back (also on another computer).
+
+The evaluation and the arrows are switched off in a drill, so you think for yourself.
+
+## Play
+
+A game against a bot that plays Black, starting from move 1. Choose the bot:
+
+- **Realistic** — plays the moves people at your level play, each as often as they play it.
+- **Punish me** — prefers the moves Stockfish calls mistakes (among those people really play), then moves that head for a known common mistake. Use it to practise punishing them.
+
+The eval bar and arrows start hidden here too; switch them on with `E` and `A` if you want them.
+
+## Leaving the opening data
+
+When a drill line or a game reaches a position the opening data does not cover, the app asks what to do, every time:
+
+- **Stop: show Stockfish's verdict** — who stands better and by how much, the best move, Stockfish's main line, the verdict on the last move and, where one is written, the key idea of the line.
+- **Play on against Stockfish** — a weakened Stockfish takes over Black. Pick how strong: Easy (Skill Level 0, looks 4 half-moves ahead), Medium (Skill Level 5, depth 8) or Hard (Skill Level 10, depth 12).
+
 ## The engine
 
 Stockfish runs in your browser, in the background. After each move it compares the winning chances before and after the move:
@@ -86,6 +112,12 @@ Stockfish runs in your browser, in the background. After each move it compares t
 | `??` | Blunder | 30 points or more |
 
 Winning chances come from the engine's score using the same formula as Lichess. The eval bar shows White's winning chances as the light part; `+0.5` means White is half a pawn better, `#3` means White can force checkmate in 3.
+
+## Publishing on GitHub Pages
+
+`.github/workflows/deploy.yml` builds the site, runs the unit and browser tests, and publishes it at <https://1chillehotdogpro.github.io/Chauss/> on every push to `main`.
+
+One-time setup: on GitHub, open the repository's **Settings → Pages** and set **Source** to **GitHub Actions**. Then push `main`. The run shows up under the **Actions** tab; when it is green, the site is live.
 
 ## Licence
 
