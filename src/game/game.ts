@@ -153,6 +153,38 @@ export class Game {
     this.rebuild();
   }
 
+  /**
+   * Replace the whole game with a line of moves in normal notation ("e4", "Nf3", ...), played from
+   * the start position, and show its last position. If any move is not legal, nothing changes and
+   * false is returned.
+   */
+  loadLine(sans: readonly string[]): boolean {
+    const chess = new Chess(this.startFen);
+    const records: MoveRecord[] = [];
+    for (const san of sans) {
+      let move;
+      try {
+        move = chess.move(san);
+      } catch {
+        return false;
+      }
+      const record: MoveRecord = {
+        ply: records.length + 1,
+        san: move.san,
+        from: move.from,
+        to: move.to,
+        color: move.color === 'w' ? 'white' : 'black',
+        fenAfter: move.after,
+      };
+      if (move.promotion && move.promotion !== 'p' && move.promotion !== 'k') record.promotion = move.promotion;
+      records.push(record);
+    }
+    this.moves = records;
+    this.cursor = records.length;
+    this.chess = chess;
+    return true;
+  }
+
   /** Replay from the start so chess.js also knows the history (needed for repetition draws). */
   private rebuild(): void {
     const chess = new Chess(this.startFen);

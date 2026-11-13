@@ -13,6 +13,11 @@ export type EngineState = 'loading' | 'ready' | 'failed';
 export interface AnalyseRequest {
   fen: string;
   depth: number;
+  /**
+   * How many of its best moves the engine should report for this search (MultiPV).
+   * Left out: the engine's default from EngineOptions. A large number ranks every legal move.
+   */
+  multiPv?: number;
   /** Called for every exact line the engine reports for this request. */
   onInfo(info: InfoLine): void;
   /**
@@ -43,16 +48,20 @@ export class Engine {
   private pending: AnalyseRequest | null = null;
   private stopping = false;
   private readonly onStateChange: ((state: EngineState) => void) | undefined;
+  private readonly defaultMultiPv: number;
+  /** The MultiPV value the engine is currently set to. */
+  private activeMultiPv: number;
 
   constructor(
     private readonly transport: Transport,
     options: EngineOptions = {},
   ) {
     this.onStateChange = options.onStateChange;
-    const multiPv = options.multiPv ?? 1;
+    this.defaultMultiPv = options.multiPv ?? 1;
+    this.activeMultiPv = this.defaultMultiPv;
 
     transport.onError((message) => this.fail(message));
-    transport.onLine((line) => this.handleLine(line, multiPv));
+    transport.onLine((line) => this.handleLine(line));
     transport.post('uci');
   }
 
@@ -102,18 +111,24 @@ export class Engine {
   private start(request: AnalyseRequest): void {
     this.current = request;
     this.stopping = false;
+    // Options may only change between searches — which is exactly where we are.
+    const multiPv = request.multiPv ?? this.defaultMultiPv;
+    if (multiPv !== this.activeMultiPv) {
+      this.activeMultiPv = multiPv;
+      this.transport.post(`setoption name MultiPV value ${multiPv}`);
+    }
     this.transport.post(`position fen ${request.fen}`);
     this.transport.post(`go depth ${request.depth}`);
   }
 
-  private handleLine(line: string, multiPv: number): void {
+  private handleLine(line: string): void {
     if (this.stateValue === 'failed') return;
 
     if (this.stateValue === 'loading') {
       if (line.startsWith('id name ')) {
         this.nameValue = line.slice('id name '.length).trim();
       } else if (line === 'uciok') {
-        this.transport.post(`setoption name MultiPV value ${multiPv}`);
+        this.transport.post(`setoption name MultiPV value ${this.defaultMultiPv}`);
         this.transport.post('isready');
       } else if (line === 'readyok') {
         this.setState('ready');

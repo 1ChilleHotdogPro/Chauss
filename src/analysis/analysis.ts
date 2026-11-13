@@ -36,7 +36,11 @@ export interface AnalysisOptions {
   verdictDepth?: number;
   /** Depth the position on the board is deepened to afterwards. */
   maxDepth?: number;
-  /** How many lines the engine reports (must match the engine's MultiPV setting). */
+  /** Depth for extra positions asked for with setExtras (refutations). */
+  extraDepth?: number;
+  /** Depth of the search that ranks every legal move (setRanking). */
+  rankDepth?: number;
+  /** How many lines the engine reports for a normal search. */
   multiPv?: number;
   /** Called whenever a result changed. */
   onUpdate?: () => void;
@@ -48,31 +52,49 @@ interface Entry {
   completedDepth: number;
 }
 
+/**
+ * - main: a normal search (the engine's few best lines)
+ * - rank: one search that scores every legal move (a very large MultiPV)
+ */
+type TargetKind = 'main' | 'rank';
+
 interface Target {
   fen: string;
   depth: number;
+  kind: TargetKind;
 }
+
+/** Larger than the number of legal moves in any chess position, so every move is reported. */
+const ALL_MOVES = 256;
 
 /**
  * Decides what the engine should look at next, remembers the results per position, and turns
  * them into verdicts for the moves of the game.
  *
- * Order of work: first the position on the board (quickly, to verdict depth), then the other
- * positions of the line that still lack a result (nearest first), then the position on the board
- * again, deeper.
+ * Order of work:
+ *   1. the position on the board, quickly, to verdict depth;
+ *   2. a ranking of every legal move, if one was asked for;
+ *   3. extra positions that were asked for (refutations of bad moves);
+ *   4. the other positions of the line that still lack a result, nearest first;
+ *   5. the position on the board again, deeper.
  */
 export class Analysis {
   readonly verdictDepth: number;
   readonly maxDepth: number;
+  readonly extraDepth: number;
+  readonly rankDepth: number;
   private readonly multiPv: number;
   private readonly onUpdate: () => void;
 
   private readonly cache = new Map<string, Entry>();
+  private readonly rankCache = new Map<string, Entry>();
   private readonly judgements = new Map<string, MoveJudgement>();
 
   private fens: string[] = [];
   private moves: string[] = [];
   private ply = 0;
+  private extras: string[] = [];
+  private rankFen: string | null = null;
 
   private running: Target | null = null;
   private batchDepth = -1;
@@ -86,6 +108,8 @@ export class Analysis {
   ) {
     this.verdictDepth = options.verdictDepth ?? 12;
     this.maxDepth = Math.max(options.maxDepth ?? 20, this.verdictDepth);
+    this.extraDepth = options.extraDepth ?? 16;
+    this.rankDepth = options.rankDepth ?? 12;
     this.multiPv = options.multiPv ?? 3;
     this.onUpdate = options.onUpdate ?? (() => {});
   }
@@ -103,6 +127,23 @@ export class Analysis {
     this.schedule();
   }
 
+  /**
+   * Positions outside the line that should be searched too (to `extraDepth`), most wanted first —
+   * e.g. the position after a bad move, to find its refutation. Replaces the previous list.
+   */
+  setExtras(fens: readonly string[]): void {
+    if (fens.length === this.extras.length && fens.every((fen, index) => fen === this.extras[index])) return;
+    this.extras = [...fens];
+    this.schedule();
+  }
+
+  /** Ask for (or, with null, cancel) a ranking of every legal move in a position. */
+  setRanking(fen: string | null): void {
+    if (fen === this.rankFen) return;
+    this.rankFen = fen;
+    this.schedule();
+  }
+
   /** The best result so far for the position on the board. */
   current(): PositionEval | undefined {
     const fen = this.fens[this.ply];
@@ -113,7 +154,20 @@ export class Analysis {
     return this.cache.get(fen)?.eval;
   }
 
-  /** True while the engine still has work to do for the current line. */
+  /** True once `fen` has been searched to at least `depth` (or the game is over there). */
+  isReady(fen: string, depth: number): boolean {
+    return this.reached({ fen, depth, kind: 'main' });
+  }
+
+  /**
+   * Every legal move of a position with its score, best first — available once the ranking search
+   * asked for with setRanking has finished; undefined until then.
+   */
+  ranking(fen: string): PositionEval | undefined {
+    return this.reached({ fen, depth: this.rankDepth, kind: 'rank' }) ? this.rankCache.get(fen)?.eval : undefined;
+  }
+
+  /** True while the engine still has work to do. */
   busy(): boolean {
     return this.running !== null;
   }
@@ -133,7 +187,7 @@ export class Analysis {
     const known = this.judgements.get(key);
     if (known) return known;
 
-    if (!this.reached(before, this.verdictDepth) || !this.reached(after, this.verdictDepth)) return undefined;
+    if (!this.isReady(before, this.verdictDepth) || !this.isReady(after, this.verdictDepth)) return undefined;
     const bestBefore = this.cache.get(before)?.eval.lines[0];
     const bestAfter = this.cache.get(after)?.eval.lines[0];
     if (!bestBefore || !bestAfter) return undefined;
@@ -152,26 +206,32 @@ export class Analysis {
     return judgement;
   }
 
-  private reached(fen: string, depth: number): boolean {
-    const entry = this.cache.get(fen);
-    return entry !== undefined && entry.completedDepth >= depth;
+  private store(kind: TargetKind): Map<string, Entry> {
+    return kind === 'rank' ? this.rankCache : this.cache;
+  }
+
+  private reached(target: Target): boolean {
+    const entry = this.store(target.kind).get(target.fen);
+    return entry !== undefined && entry.completedDepth >= target.depth;
   }
 
   private nextTarget(): Target | null {
+    const candidates: Target[] = [];
     const current = this.fens[this.ply];
-    if (current === undefined) return null;
-    if (!this.reached(current, this.verdictDepth)) return { fen: current, depth: this.verdictDepth };
+    if (current !== undefined) candidates.push({ fen: current, depth: this.verdictDepth, kind: 'main' });
+    if (this.rankFen !== null) candidates.push({ fen: this.rankFen, depth: this.rankDepth, kind: 'rank' });
+    for (const fen of this.extras) candidates.push({ fen, depth: this.extraDepth, kind: 'main' });
 
     // The rest of the line, nearest to the current position first (the move just played matters most).
     for (let distance = 1; distance < this.fens.length; distance++) {
       for (const index of [this.ply - distance, this.ply + distance]) {
         const fen = this.fens[index];
-        if (fen !== undefined && !this.reached(fen, this.verdictDepth)) return { fen, depth: this.verdictDepth };
+        if (fen !== undefined) candidates.push({ fen, depth: this.verdictDepth, kind: 'main' });
       }
     }
+    if (current !== undefined) candidates.push({ fen: current, depth: this.maxDepth, kind: 'main' });
 
-    if (!this.reached(current, this.maxDepth)) return { fen: current, depth: this.maxDepth };
-    return null;
+    return candidates.find((target) => !this.reached(target)) ?? null;
   }
 
   private schedule(): void {
@@ -183,7 +243,8 @@ export class Analysis {
       }
       return;
     }
-    if (this.running && this.running.fen === target.fen && this.running.depth === target.depth) return;
+    const running = this.running;
+    if (running && running.fen === target.fen && running.depth === target.depth && running.kind === target.kind) return;
     this.start(target);
   }
 
@@ -197,6 +258,7 @@ export class Analysis {
     this.engine.analyse({
       fen: target.fen,
       depth: target.depth,
+      multiPv: target.kind === 'rank' ? ALL_MOVES : this.multiPv,
       onInfo: (info) => {
         if (this.running === target) this.handleInfo(target, mover, info);
       },
@@ -215,16 +277,19 @@ export class Analysis {
     }
     this.batch.set(info.multipv, { score: toWhiteScore(info.score, mover), pv: info.pv });
     this.batchDirty = true;
-    if (this.batch.size >= this.multiPv) this.commitBatch(target);
+    // A normal search reports a known number of lines: publish as soon as they are all in.
+    // A ranking has as many lines as there are legal moves: publish when the depth is over.
+    if (target.kind === 'main' && this.batch.size >= this.multiPv) this.commitBatch(target);
   }
 
   private handleDone(target: Target, bestMove: string | null): void {
     this.commitBatch(target);
-    let entry = this.cache.get(target.fen);
+    const store = this.store(target.kind);
+    let entry = store.get(target.fen);
     if (!entry) {
       // The engine finished without reporting anything; remember that so we do not ask forever.
       entry = { eval: { fen: target.fen, depth: 0, lines: [], terminal: false }, completedDepth: 0 };
-      this.cache.set(target.fen, entry);
+      store.set(target.fen, entry);
     }
     if (bestMove === null) {
       entry.eval = { ...entry.eval, terminal: true };
@@ -244,12 +309,13 @@ export class Analysis {
     const lines = [...this.batch.entries()].sort((a, b) => a[0] - b[0]).map(([, line]) => line);
     const depth = this.batchDepth;
 
-    const entry = this.cache.get(target.fen);
+    const store = this.store(target.kind);
+    const entry = store.get(target.fen);
     if (entry && entry.eval.depth > depth) return;
     if (entry && entry.eval.depth === depth && entry.eval.lines.length > lines.length) return;
 
     const evaluation: PositionEval = { fen: target.fen, depth, lines, terminal: entry?.eval.terminal ?? false };
-    this.cache.set(target.fen, { eval: evaluation, completedDepth: entry?.completedDepth ?? -1 });
+    store.set(target.fen, { eval: evaluation, completedDepth: entry?.completedDepth ?? -1 });
     this.onUpdate();
   }
 }

@@ -214,6 +214,30 @@ describe('searching', () => {
     expect(transport.takeSent()).toEqual([`position fen ${FEN_B}`, 'go depth 12']);
   });
 
+  it('changes MultiPV only between searches, and only when a request asks for a different value', () => {
+    const { transport, engine } = readyEngine(3);
+
+    // Same as the default: no extra command.
+    engine.analyse({ ...record(FEN_A).request, multiPv: 3 });
+    expect(transport.takeSent()).toEqual([`position fen ${FEN_A}`, 'go depth 12']);
+
+    // A different value, asked for mid-search: nothing but "stop" until the old search has ended.
+    engine.analyse({ ...record(FEN_B).request, multiPv: 256 });
+    expect(transport.takeSent()).toEqual(['stop']);
+    transport.emit('bestmove e2e4');
+    expect(transport.takeSent()).toEqual(['setoption name MultiPV value 256', `position fen ${FEN_B}`, 'go depth 12']);
+
+    // Same value again: not repeated.
+    transport.emit('bestmove e7e5');
+    engine.analyse({ ...record(FEN_C).request, multiPv: 256 });
+    expect(transport.takeSent()).toEqual([`position fen ${FEN_C}`, 'go depth 12']);
+
+    // A request without a value goes back to the default.
+    transport.emit('bestmove g1f3');
+    engine.analyse(record(FEN_A).request);
+    expect(transport.takeSent()).toEqual(['setoption name MultiPV value 3', `position fen ${FEN_A}`, 'go depth 12']);
+  });
+
   it('ignores stray output when nothing is being searched', () => {
     const { transport, engine } = readyEngine();
     transport.emit('info depth 3 multipv 1 score cp 10 pv e2e4', 'bestmove e2e4');

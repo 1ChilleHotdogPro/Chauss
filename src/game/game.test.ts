@@ -247,6 +247,44 @@ describe('moving through the game', () => {
     expect(game.fen()).toBe(START);
   });
 
+  it('loadLine replaces the game with a line in normal notation', () => {
+    const game = new Game();
+    playAll(game, ['d2d4', 'd7d5']);
+    expect(game.loadLine(['e4', 'e5', 'Nf3', 'Nc6', 'c3'])).toBe(true);
+    expect(sans(game)).toEqual(['e4', 'e5', 'Nf3', 'Nc6', 'c3']);
+    expect(game.fen()).toBe(PONZIANI);
+    expect(game.currentPly()).toBe(5);
+    expect(game.history()[2]).toMatchObject({ ply: 3, from: 'g1', to: 'f3', color: 'white' });
+
+    // The loaded game behaves like a played one.
+    game.back();
+    expect(game.lastMove()?.san).toBe('Nc6');
+    expect(game.play('f1', 'c4')?.san).toBe('Bc4');
+    expect(sans(game)).toEqual(['e4', 'e5', 'Nf3', 'Nc6', 'Bc4']);
+  });
+
+  it('loadLine changes nothing when a move is not legal', () => {
+    const game = new Game();
+    playAll(game, ['d2d4', 'd7d5']);
+    expect(game.loadLine(['e4', 'e5', 'Ke3'])).toBe(false);
+    expect(sans(game)).toEqual(['d4', 'd5']);
+    expect(game.currentPly()).toBe(2);
+  });
+
+  it('loadLine with no moves gives the start position, and keeps promotions', () => {
+    const game = new Game();
+    playAll(game, ['e2e4']);
+    expect(game.loadLine([])).toBe(true);
+    expect(game.fen()).toBe(START);
+
+    const promo = new Game('8/P6k/8/8/8/8/8/K7 w - - 0 1');
+    expect(promo.loadLine(['a8=R'])).toBe(true);
+    expect(promo.history()[0]?.promotion).toBe('r');
+    promo.goTo(0);
+    promo.goTo(1);
+    expect(promo.fen()).toBe('R7/7k/8/8/8/8/8/K7 b - - 0 1');
+  });
+
   it('reset returns to the start position', () => {
     const game = new Game();
     playAll(game, line);

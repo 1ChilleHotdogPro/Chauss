@@ -234,6 +234,130 @@ describe('collecting results', () => {
   });
 });
 
+describe('extra positions (refutations)', () => {
+  const EXTRA = 'rnbqkbnr/pppp1ppp/8/4p3/4P3/5N2/PPPP1PPP/RNBQKB1R b KQkq - 1 2';
+  const EXTRA2 = 'rnbqkbnr/pppp1ppp/8/4p3/4P3/2N5/PPPP1PPP/R1BQKBNR b KQkq - 1 2';
+
+  it('are searched after the position on the board and before the rest of the line', () => {
+    const { engine, analysis } = setup({ maxDepth: 12 });
+    analysis.setLine([F0, F1], ['e2e4'], 1);
+    analysis.setExtras([EXTRA]);
+    engine.answer(three('e7e5', cp(-30))); // F1, on the board
+    expect(engine.last.fen).toBe(EXTRA);
+    expect(engine.last.depth).toBe(analysis.extraDepth);
+    expect(analysis.isReady(EXTRA, analysis.extraDepth)).toBe(false);
+
+    engine.answer(three('b8c6', cp(-25)));
+    expect(analysis.isReady(EXTRA, analysis.extraDepth)).toBe(true);
+    expect(analysis.evalFor(EXTRA)?.lines[0]?.pv).toEqual(['b8c6']);
+    expect(engine.last.fen).toBe(F0); // now the rest of the line
+  });
+
+  it('are taken in the order given, and asking again for the same list changes nothing', () => {
+    const { engine, analysis } = setup({ maxDepth: 12 });
+    analysis.setLine([F0], [], 0);
+    engine.answer(three('e2e4', cp(30)));
+    analysis.setExtras([EXTRA, EXTRA2]);
+    analysis.setExtras([EXTRA, EXTRA2]);
+    analysis.setExtras([EXTRA, EXTRA2]);
+    expect(engine.requests.map((r) => r.fen)).toEqual([F0, EXTRA]);
+    engine.answer(three('b8c6', cp(-25)));
+    expect(engine.last.fen).toBe(EXTRA2);
+  });
+
+  it('are dropped when no longer wanted', () => {
+    const { engine, analysis } = setup({ maxDepth: 12 });
+    analysis.setLine([F0], [], 0);
+    engine.answer(three('e2e4', cp(30)));
+    analysis.setExtras([EXTRA]);
+    expect(analysis.busy()).toBe(true);
+    analysis.setExtras([]);
+    expect(engine.stops).toBe(1);
+    expect(analysis.busy()).toBe(false);
+  });
+
+  it('do not delay the position on the board', () => {
+    const { engine, analysis } = setup();
+    analysis.setExtras([EXTRA]);
+    analysis.setLine([F0], [], 0);
+    expect(engine.last.fen).toBe(F0);
+  });
+});
+
+describe('ranking every legal move', () => {
+  const ranked = [
+    { score: cp(30), pv: ['e2e4'] },
+    { score: cp(25), pv: ['d2d4'] },
+    { score: cp(20), pv: ['g1f3'] },
+    { score: cp(10), pv: ['c2c4'] },
+    { score: cp(-40), pv: ['g2g4'] },
+  ];
+
+  it('runs one search that asks the engine for all moves, right after the position on the board', () => {
+    const { engine, analysis } = setup({ maxDepth: 12 });
+    analysis.setLine([F0], [], 0);
+    analysis.setRanking(F0);
+    engine.answer(three('e2e4', cp(30)));
+
+    expect(engine.last.fen).toBe(F0);
+    expect(engine.last.depth).toBe(analysis.rankDepth);
+    expect(engine.last.multiPv).toBe(256);
+    expect(analysis.ranking(F0)).toBeUndefined();
+
+    engine.answer(ranked);
+    expect(analysis.ranking(F0)?.lines.map((line) => line.pv[0])).toEqual(['e2e4', 'd2d4', 'g1f3', 'c2c4', 'g2g4']);
+    expect(analysis.busy()).toBe(false);
+  });
+
+  it('is only available once the search has finished', () => {
+    const { engine, analysis } = setup({ maxDepth: 12 });
+    analysis.setLine([F0], [], 0);
+    engine.answer(three('e2e4', cp(30)));
+    analysis.setRanking(F0);
+    engine.answer(ranked, { depth: 6, finish: false });
+    expect(analysis.ranking(F0)).toBeUndefined();
+    engine.answer(ranked, { depth: analysis.rankDepth });
+    expect(analysis.ranking(F0)?.depth).toBe(analysis.rankDepth);
+  });
+
+  it('is kept apart from the normal result for the same position', () => {
+    const { engine, analysis } = setup({ maxDepth: 12 });
+    analysis.setLine([F0], [], 0);
+    engine.answer(three('d2d4', cp(33)));
+    analysis.setRanking(F0);
+    engine.answer(ranked);
+    // The normal result (three lines, used for bar and arrows) is untouched.
+    expect(analysis.current()?.lines).toHaveLength(3);
+    expect(analysis.current()?.lines[0]?.pv).toEqual(['d2d4']);
+    expect(analysis.ranking(F0)?.lines).toHaveLength(5);
+  });
+
+  it('is remembered: asking again does not search again', () => {
+    const { engine, analysis } = setup({ maxDepth: 12 });
+    analysis.setLine([F0], [], 0);
+    engine.answer(three('e2e4', cp(30)));
+    analysis.setRanking(F0);
+    engine.answer(ranked);
+    const count = engine.requests.length;
+    analysis.setRanking(null);
+    analysis.setRanking(F0);
+    expect(engine.requests).toHaveLength(count);
+    expect(analysis.ranking(F0)?.lines).toHaveLength(5);
+  });
+
+  it('can be cancelled mid-search', () => {
+    const { engine, analysis } = setup();
+    analysis.setLine([F0], [], 0);
+    engine.answer(three('e2e4', cp(30)));
+    analysis.setRanking(F0);
+    expect(engine.last.multiPv).toBe(256);
+    analysis.setRanking(null);
+    // Straight on to deepening the position on the board, with the normal number of lines.
+    expect(engine.last.depth).toBe(20);
+    expect(engine.last.multiPv).toBe(3);
+  });
+});
+
 describe('verdicts', () => {
   it('has no verdict until both positions around the move are known', () => {
     const { engine, analysis } = setup();

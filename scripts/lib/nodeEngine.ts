@@ -47,6 +47,8 @@ export interface Evaluator {
   ready(): Promise<string>;
   /** Stockfish's score for a position at the fixed depth, from White's point of view. */
   evaluate(fen: string): Promise<Score>;
+  /** The same, together with the engine's best line (moves in engine spelling). */
+  evaluateLine(fen: string): Promise<{ score: Score; pv: string[] }>;
   close(): void;
 }
 
@@ -65,6 +67,26 @@ export function createEvaluator(enginePath: string, depth: number): Evaluator {
     },
   });
 
+  const evaluateLine = (fen: string): Promise<{ score: Score; pv: string[] }> =>
+    new Promise((resolve, reject) => {
+      if (failure) {
+        reject(new Error(failure));
+        return;
+      }
+      let last: { score: UciScore; pv: string[] } | null = null;
+      engine.analyse({
+        fen,
+        depth,
+        onInfo: (info) => {
+          if (info.multipv === 1) last = { score: info.score, pv: info.pv };
+        },
+        onDone: () => {
+          if (last) resolve({ score: toWhiteScore(last.score, sideToMove(fen)), pv: last.pv });
+          else reject(new Error(`the engine gave no score for ${fen}`));
+        },
+      });
+    });
+
   return {
     ready: () =>
       new Promise((resolve, reject) => {
@@ -72,25 +94,8 @@ export function createEvaluator(enginePath: string, depth: number): Evaluator {
         else if (engine.state() === 'failed') reject(new Error(engine.error()));
         else whenReady = { resolve, reject };
       }),
-    evaluate: (fen) =>
-      new Promise((resolve, reject) => {
-        if (failure) {
-          reject(new Error(failure));
-          return;
-        }
-        let last: UciScore | null = null;
-        engine.analyse({
-          fen,
-          depth,
-          onInfo: (info) => {
-            if (info.multipv === 1) last = info.score;
-          },
-          onDone: () => {
-            if (last) resolve(toWhiteScore(last, sideToMove(fen)));
-            else reject(new Error(`the engine gave no score for ${fen}`));
-          },
-        });
-      }),
+    evaluate: async (fen) => (await evaluateLine(fen)).score,
+    evaluateLine,
     close: () => engine.dispose(),
   };
 }
