@@ -3,22 +3,41 @@ import '@lichess-org/chessground/assets/chessground.base.css';
 import '@lichess-org/chessground/assets/chessground.brown.css';
 import '@lichess-org/chessground/assets/chessground.cburnett.css';
 import './style.css';
+import { Chess } from 'chess.js';
 import { Analysis } from './analysis/analysis';
-import { parseUciMove, pvToSan, toUci } from './analysis/pv';
+import { formatScore } from './analysis/eval';
+import { numberedLine, parseUciMove, pvToSan, toUci } from './analysis/pv';
 import { verdictSentence } from './analysis/verdictText';
 import { Engine } from './engine/engine';
 import { createWorkerTransport, engineUrl } from './engine/workerTransport';
 import { createMemoryCache, createStorageCache, layerCaches, type KeyValueStorage } from './explorer/cache';
 import { ExplorerClient } from './explorer/client';
 import { describeResult } from './explorer/describe';
-import { loadSettings, saveSettings } from './explorer/settings';
+import { describeRatings, loadSettings, saveSettings } from './explorer/settings';
+import type { RatingBand } from './explorer/types';
+import { loadTraps } from './explore/loadTraps';
+import type { ExploreMove } from './explore/position';
+import { buildRanking } from './explore/ranking';
+import { explainRefutation } from './explore/refutation';
+import { ExploreSource } from './explore/source';
+import type { Trap } from './explore/traps';
 import { Game } from './game/game';
+import type { Snapshot } from './snapshot/format';
+import { describeSnapshot, loadSnapshot } from './snapshot/load';
 import { createBoard, type Arrow } from './ui/board';
 import { renderEnginePanel, type EnginePanelModel } from './ui/enginePanel';
 import { createEvalBar } from './ui/evalBar';
+import {
+  compactNumber,
+  renderExplorePanel,
+  sharePercent,
+  type ExplorePanelModel,
+  type RefutationModel,
+} from './ui/explorePanel';
 import { renderMoveList, updateMoveMarks } from './ui/moveList';
 import { createPromotionPicker } from './ui/promotion';
 import { createSettingsPanel } from './ui/settingsPanel';
+import { createTrapsDialog } from './ui/trapsDialog';
 
 /** The engine reports its three best moves (used for the arrows and the lines list). */
 const MULTI_PV = 3;
@@ -75,7 +94,12 @@ const settingsPanel = createSettingsPanel({
   dialog: byId<HTMLDialogElement>('settings'),
   openButton: byId<HTMLButtonElement>('open-settings'),
   initial: loadSettings(storage),
-  onChange: (settings) => saveSettings(storage, settings),
+  onChange: (settings) => {
+    const stored = saveSettings(storage, settings);
+    // Other rating groups, speeds or token: what the explorer shows may change.
+    queueMicrotask(renderExplore);
+    return stored;
+  },
   onTest: async () => {
     const { ratings, speeds } = settingsPanel.settings();
     // Always ask Lichess afresh: a remembered answer would not test the connection.
@@ -89,8 +113,155 @@ const explorer = new ExplorerClient({
   fetch: (url, init) => fetch(url, init),
   getToken: () => settingsPanel.settings().token,
   cache: layerCaches(createMemoryCache(), createStorageCache(storage)),
-  minIntervalMs: 250,
+  // Lichess allows roughly 20 explorer requests a minute; a position needs two.
+  minIntervalMs: 1500,
 });
+
+// The bundled opening data: works offline and needs no token.
+// undefined = still loading, null = could not be loaded.
+let snapshot: Snapshot | null | undefined;
+const snapshotInfo = byId<HTMLElement>('snapshot-info');
+loadSnapshot().then(
+  (loaded) => {
+    snapshot = loaded;
+    snapshotInfo.dataset.state = 'ready';
+    snapshotInfo.dataset.positions = String(loaded.meta.counts.positions);
+    snapshotInfo.textContent = describeSnapshot(loaded.meta);
+    renderExplore();
+  },
+  (error: unknown) => {
+    snapshot = null;
+    snapshotInfo.dataset.state = 'failed';
+    snapshotInfo.textContent = `The bundled opening data could not be loaded (${error instanceof Error ? error.message : String(error)}).`;
+    renderExplore();
+  },
+);
+
+const exploreEl = byId<HTMLElement>('explore');
+const exploreSource = new ExploreSource({
+  snapshot: () => snapshot,
+  settings: () => settingsPanel.settings(),
+  client: explorer,
+  onUpdate: renderExplore,
+});
+
+// What the user asked the Explore panel to show for the position on the board.
+/** The move whose refutation is shown (engine spelling), and the position it belongs to. */
+let explained: { fen: string; uci: string } | null = null;
+/** The position whose every legal move is being ranked. */
+let rankingFen: string | null = null;
+
+const trapsDialog = createTrapsDialog({
+  dialog: byId<HTMLDialogElement>('traps'),
+  openButton: byId<HTMLButtonElement>('open-traps'),
+  onShow: showTrap,
+});
+loadTraps().then(
+  (file) => trapsDialog.setTraps(file),
+  (error: unknown) => trapsDialog.setFailed(error instanceof Error ? error.message : String(error)),
+);
+
+/** Put a trap's position on the board and open the explanation of its bad move. */
+function showTrap(trap: Trap): void {
+  promotion.cancel();
+  if (!game.loadLine(trap.line)) return;
+  explained = { fen: game.fen(), uci: trap.move.uci };
+  render();
+}
+
+/** The position after a move given in engine spelling, or null if the move is not legal. */
+function fenAfter(fen: string, uci: string): string | null {
+  const move = parseUciMove(uci);
+  if (!move) return null;
+  try {
+    return new Chess(fen).move(move).after;
+  } catch {
+    return null;
+  }
+}
+
+/** Why a move is bad: Stockfish's best reply and line, once it has looked. */
+function refutationFor(fen: string, move: ExploreMove): { model: RefutationModel; extra: string | null } {
+  const played = move.popular
+    ? `Played in ${sharePercent(move.popular.share)} of games at this level (${compactNumber(move.popular.games)} games).`
+    : 'Not played at this level.';
+  const model: RefutationModel = { san: move.san, flag: move.flag, playedText: played, result: null };
+
+  const after = fenAfter(fen, move.uci);
+  if (!after) return { model, extra: null };
+  const evaluation = analysis.isReady(after, analysis.extraDepth) ? analysis.evalFor(after) : undefined;
+  const best = evaluation?.lines[0];
+  if (best && best.pv.length > 0) {
+    const sans = pvToSan(after, best.pv, 8);
+    model.result = {
+      bestReply: sans[0] ?? '',
+      line: numberedLine(after, sans),
+      score: formatScore(best.score),
+      why: explainRefutation({ fen: after, pv: best.pv, score: best.score, judgement: move.judgement }),
+    };
+  }
+  return { model, extra: after };
+}
+
+/** Redraw the Explore panel for the position on the board. */
+function renderExplore(): void {
+  const fen = game.fen();
+  // An explanation or a ranking belongs to one position; moving on closes it.
+  if (explained && explained.fen !== fen) explained = null;
+  if (rankingFen !== null && rankingFen !== fen) rankingFen = null;
+
+  const view = exploreSource.view(fen);
+  const settings = settingsPanel.settings();
+  const ratings =
+    view.status === 'ready' && view.origin === 'snapshot' && snapshot
+      ? (snapshot.meta.lichess.ratings as RatingBand[])
+      : settings.ratings;
+
+  let refutation: RefutationModel | null = null;
+  let extra: string | null = null;
+  if (explained && view.status === 'ready') {
+    const move = view.position.moves.find((candidate) => candidate.uci === explained?.uci);
+    if (move) ({ model: refutation, extra } = refutationFor(fen, move));
+  }
+  analysis.setExtras(extra ? [extra] : []);
+  analysis.setRanking(rankingFen);
+
+  let ranking: ExplorePanelModel['ranking'] = { state: 'off' };
+  if (rankingFen !== null) {
+    const ranked = analysis.ranking(rankingFen);
+    ranking = ranked ? { state: 'ready', rows: buildRanking(ranked) } : { state: 'pending' };
+  }
+
+  renderExplorePanel(
+    exploreEl,
+    {
+      view,
+      ratingsLabel: describeRatings(ratings),
+      evalShown,
+      idea: null,
+      selectedUci: refutation ? (explained?.uci ?? null) : null,
+      refutation,
+      ranking,
+    },
+    {
+      onPlay: (uci) => {
+        const move = parseUciMove(uci);
+        if (!move) return;
+        promotion.cancel();
+        game.play(move.from, move.to, move.promotion);
+        render();
+      },
+      onExplain: (uci) => {
+        explained = uci ? { fen: game.fen(), uci } : null;
+        renderExplore();
+      },
+      onToggleRanking: () => {
+        rankingFen = rankingFen === null ? game.fen() : null;
+        renderExplore();
+      },
+    },
+  );
+}
 
 /** Called by the board after the user dropped a piece on a legal square. */
 function handleUserMove(from: string, to: string): void {
@@ -192,6 +363,9 @@ function renderEngine(): void {
     evaluation,
     verdict: currentVerdict(),
   });
+
+  // The Explore panel shows engine results too (refutations, the ranking, the eval column).
+  renderExplore();
 }
 
 // The engine reports many times a second; redraw at most once per frame.
@@ -246,7 +420,7 @@ document.addEventListener('keydown', (event) => {
   if (event.ctrlKey || event.metaKey || event.altKey) return;
   const target = event.target;
   if (target instanceof HTMLInputElement || target instanceof HTMLTextAreaElement) return;
-  if (settingsPanel.isOpen()) return; // no board hotkeys while the Settings dialog is open
+  if (settingsPanel.isOpen() || trapsDialog.isOpen()) return; // no board hotkeys while a dialog is open
 
   if (promotion.isOpen()) {
     if (event.key === 'Escape') promotion.cancel();

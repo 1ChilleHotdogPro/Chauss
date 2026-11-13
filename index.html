@@ -43,6 +43,16 @@
             <button id="reset" type="button" title="Start a new game">New game</button>
           </div>
 
+          <h2>Moves</h2>
+          <ol id="moves" class="moves"></ol>
+          <p id="moves-empty" class="hint">No moves yet. Click or drag a white piece to start.</p>
+
+          <h2>Opening explorer</h2>
+          <div id="explore" class="explore" data-status="loading"></div>
+          <div class="controls explore-actions">
+            <button id="open-traps" type="button">Common mistakes in this opening</button>
+          </div>
+
           <h2>Engine</h2>
           <div class="controls">
             <button id="toggle-eval" type="button" aria-pressed="false" title="Show or hide the evaluation (E)">
@@ -55,10 +65,6 @@
           <p id="engine-status" class="hint engine-status" data-state="loading">Engine: loading Stockfish…</p>
           <ol id="engine-lines" class="engine-lines" hidden></ol>
 
-          <h2>Moves</h2>
-          <ol id="moves" class="moves"></ol>
-          <p id="moves-empty" class="hint">No moves yet. Click or drag a white piece to start.</p>
-
           <p class="fen">
             <span class="fen-label" title="FEN: a one-line text description of the position">FEN</span>
             <code id="fen"></code>
@@ -66,6 +72,16 @@
         </aside>
       </main>
     </div>
+
+    <dialog id="traps" class="settings traps" aria-labelledby="traps-title">
+      <div class="settings-body">
+        <h2 id="traps-title">Common mistakes in this opening</h2>
+        <div id="traps-body"><p class="hint">Loading…</p></div>
+        <div class="settings-footer">
+          <button id="traps-close" type="button">Close</button>
+        </div>
+      </div>
+    </dialog>
 
     <dialog id="settings" class="settings" aria-labelledby="settings-title">
       <div class="settings-body">
@@ -111,6 +127,11 @@
           <h3>Connection</h3>
           <button id="explorer-test" type="button">Test connection</button>
           <p id="explorer-test-result" class="test-result" role="status" hidden></p>
+        </section>
+
+        <section>
+          <h3>Bundled opening data</h3>
+          <p id="snapshot-info" class="hint" data-state="loading">Loading…</p>
         </section>
 
         <p id="settings-save-warning" class="test-result" data-status="error" hidden>

@@ -39,6 +39,8 @@ export async function openApp(page: Page): Promise<void> {
 
 /** Screen position of the middle of a square such as "e4", whichever way the board is turned. */
 export async function squareCenter(page: Page, square: string): Promise<{ x: number; y: number }> {
+  // Like a person would: make sure the board is on screen before clicking on it.
+  await page.locator('cg-board').scrollIntoViewIfNeeded();
   const box = await page.locator('cg-board').boundingBox();
   if (!box) throw new Error('board not visible');
   const blackAtBottom = await page

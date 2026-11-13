@@ -161,7 +161,7 @@ body {
 
 .layout {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) 320px;
+  grid-template-columns: minmax(0, 1fr) 400px;
   gap: 20px;
   align-items: start;
 }
@@ -368,8 +368,16 @@ button:focus-visible {
   list-style: none;
   margin: 0;
   padding: 0;
-  max-height: 320px;
+  max-height: 124px;
   overflow-y: auto;
+}
+
+/* On a wide screen the board stays in view while the (longer) side panel scrolls. */
+@media (min-width: 761px) {
+  .board-area {
+    position: sticky;
+    top: 8px;
+  }
 }
 
 .moves li {
@@ -425,6 +433,264 @@ button:focus-visible {
 
 .moves .move.current[data-verdict] {
   color: var(--accent-text);
+}
+
+/* ---- Opening explorer ---- */
+.explore h3 {
+  margin: 10px 0 4px;
+  font-size: 0.85rem;
+}
+
+.opening-name {
+  margin: 0;
+  font-weight: 600;
+}
+
+.opening-eco {
+  display: inline-block;
+  padding: 0 5px;
+  border-radius: 4px;
+  background: var(--button);
+  font-size: 0.8rem;
+  font-weight: 700;
+}
+
+.explore-idea,
+.explore-note {
+  margin: 6px 0 0;
+  padding: 6px 8px;
+  border-radius: 4px;
+  background: var(--button);
+  font-size: 0.85rem;
+}
+
+.explore-note {
+  border-left: 4px solid var(--inaccuracy);
+}
+
+.explore-idea {
+  border-left: 4px solid var(--accent);
+}
+
+.explore-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.85rem;
+}
+
+.explore-table th {
+  padding: 2px 4px;
+  color: var(--muted);
+  font-size: 0.7rem;
+  font-weight: 600;
+  text-align: left;
+  text-transform: uppercase;
+}
+
+.explore-table td {
+  padding: 2px 4px;
+  white-space: nowrap;
+}
+
+.explore-table tr.selected td {
+  background: var(--button);
+}
+
+.explore-share,
+.explore-games,
+.explore-eval {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
+.explore-games {
+  color: var(--muted);
+}
+
+.explore-table td:nth-child(4) {
+  width: 100%;
+}
+
+.explore-move {
+  min-width: 3.4em;
+  padding: 2px 6px;
+  font-weight: 600;
+  text-align: left;
+}
+
+.explore-recommended {
+  margin-left: 3px;
+  color: var(--accent);
+}
+
+/* Results bar: White wins | draws | Black wins. */
+.results-bar {
+  display: flex;
+  min-width: 70px;
+  height: 14px;
+  border: 1px solid var(--border);
+  border-radius: 3px;
+  overflow: hidden;
+  font-size: 9px;
+  line-height: 12px;
+  text-align: center;
+}
+
+.results-white {
+  background: #f4f1ea;
+  color: #2b2823;
+}
+
+.results-draw {
+  background: #9a948a;
+  color: #fff;
+}
+
+.results-black {
+  background: #3b3834;
+  color: #f4f1ea;
+}
+
+.flag {
+  min-width: 2em;
+  padding: 1px 5px;
+  border-color: transparent;
+  color: #fff;
+  font-weight: 700;
+}
+
+.flag[data-flag='inaccuracy'] {
+  background: var(--inaccuracy);
+}
+
+.flag[data-flag='mistake'] {
+  background: var(--mistake);
+}
+
+.flag[data-flag='blunder'] {
+  background: var(--blunder);
+}
+
+.flag:hover:not(:disabled) {
+  filter: brightness(1.12);
+}
+
+/* The flag whose explanation is open keeps its own colour, with a ring around it. */
+.flag[aria-pressed='true'] {
+  border-color: var(--text);
+  color: #fff;
+}
+
+.flag[data-flag='inaccuracy'][aria-pressed='true'],
+.flag[data-flag='inaccuracy'][aria-pressed='true']:hover:not(:disabled) {
+  background: var(--inaccuracy);
+}
+
+.flag[data-flag='mistake'][aria-pressed='true'],
+.flag[data-flag='mistake'][aria-pressed='true']:hover:not(:disabled) {
+  background: var(--mistake);
+}
+
+.flag[data-flag='blunder'][aria-pressed='true'],
+.flag[data-flag='blunder'][aria-pressed='true']:hover:not(:disabled) {
+  background: var(--blunder);
+}
+
+.refutation {
+  margin-top: 8px;
+  padding: 8px;
+  border-left: 4px solid var(--mistake);
+  border-radius: 4px;
+  background: var(--button);
+  font-size: 0.9rem;
+}
+
+.refutation[data-flag='blunder'] {
+  border-left-color: var(--blunder);
+}
+
+.refutation[data-flag='inaccuracy'] {
+  border-left-color: var(--inaccuracy);
+}
+
+.refutation p {
+  margin: 0 0 4px;
+}
+
+.refutation-line {
+  font-size: 0.85rem;
+}
+
+.refutation-close {
+  padding: 2px 8px;
+  font-size: 0.8rem;
+}
+
+.ranking {
+  margin-top: 8px;
+}
+
+.ranking-list {
+  list-style: none;
+  max-height: 220px;
+  margin: 4px 0 0;
+  padding: 0;
+  overflow-y: auto;
+  font-size: 0.85rem;
+}
+
+.ranking-list li {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1px 0;
+}
+
+.ranking-list li[data-flag='inaccuracy'] .explore-move {
+  color: var(--inaccuracy);
+}
+
+.ranking-list li[data-flag='mistake'] .explore-move {
+  color: var(--mistake);
+}
+
+.ranking-list li[data-flag='blunder'] .explore-move {
+  color: var(--blunder);
+}
+
+.explore-actions {
+  margin-top: 8px;
+}
+
+/* Traps dialog */
+.traps {
+  width: min(680px, calc(100vw - 24px));
+}
+
+.trap-list {
+  margin: 0;
+  padding-left: 1.4em;
+}
+
+.trap {
+  margin-bottom: 10px;
+}
+
+.trap p {
+  margin: 0 0 2px;
+}
+
+.trap-lead {
+  color: var(--muted);
+}
+
+.trap-punish {
+  font-size: 0.9rem;
+}
+
+.trap-show {
+  padding: 2px 8px;
+  font-size: 0.8rem;
 }
 
 /* One sentence about the last move. */

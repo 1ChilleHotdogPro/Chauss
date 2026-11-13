@@ -1,0 +1,360 @@
+{
+ "meta": {
+  "formatVersion": 1,
+  "createdAt": "2026-11-13T12:46:19.884Z",
+  "snapshotCreatedAt": "2026-11-13T08:03:19.704Z",
+  "engine": {
+   "name": "Stockfish 19 Lite WASM",
+   "depth": 22
+  },
+  "rule": {
+   "minShare": 0.05,
+   "minGames": 1000,
+   "minDrop": 20,
+   "maxCandidates": 60
+  }
+ },
+ "traps": [
+  {
+   "id": "r1bqkb1r/ppppnppp/8/3PN3/4n3/2P5/PP3PPP/RNBQKB1R b KQkq -|d7d6",
+   "line": [
+    "e4",
+    "e5",
+    "Nf3",
+    "Nc6",
+    "c3",
+    "Nf6",
+    "d4",
+    "Nxe4",
+    "d5",
+    "Ne7",
+    "Nxe5"
+   ],
+   "fen": "r1bqkb1r/ppppnppp/8/3PN3/4n3/2P5/PP3PPP/RNBQKB1R b KQkq - 0 6",
+   "victim": "black",
+   "kind": "exploit",
+   "move": {
+    "uci": "d7d6",
+    "san": "d6"
+   },
+   "popular": {
+    "games": 35397,
+    "share": 0.5330151033745426
+   },
+   "book": {
+    "games": 0,
+    "share": 0
+   },
+   "scoreBefore": {
+    "type": "cp",
+    "value": 19
+   },
+   "scoreAfter": {
+    "type": "cp",
+    "value": 644
+   },
+   "drop": 39.7,
+   "verdict": "blunder",
+   "refutation": {
+    "uci": [
+     "f1b5",
+     "c7c6",
+     "d5c6",
+     "b7c6",
+     "e5c6",
+     "d8b6",
+     "c6d4",
+     "e8d8",
+     "e1g1",
+     "a7a6"
+    ],
+    "san": [
+     "Bb5+",
+     "c6",
+     "dxc6",
+     "bxc6",
+     "Nxc6",
+     "Qb6",
+     "Nd4+",
+     "Kd8",
+     "O-O",
+     "a6"
+    ],
+    "why": "White wins a pawn."
+   },
+   "opening": "Ponziani Opening: Jaenisch Counterattack"
+  },
+  {
+   "id": "r1bqkb1r/pppp1ppp/2n2n2/4P3/3p4/2P2N2/PP3PPP/RNBQKB1R b KQkq -|c6e5",
+   "line": [
+    "e4",
+    "e5",
+    "Nf3",
+    "Nc6",
+    "c3",
+    "Nf6",
+    "d4",
+    "exd4",
+    "e5"
+   ],
+   "fen": "r1bqkb1r/pppp1ppp/2n2n2/4P3/3p4/2P2N2/PP3PPP/RNBQKB1R b KQkq - 0 5",
+   "victim": "black",
+   "kind": "exploit",
+   "move": {
+    "uci": "c6e5",
+    "san": "Nxe5"
+   },
+   "popular": {
+    "games": 30755,
+    "share": 0.06176397345886284
+   },
+   "book": {
+    "games": 0,
+    "share": 0
+   },
+   "scoreBefore": {
+    "type": "cp",
+    "value": 27
+   },
+   "scoreAfter": {
+    "type": "cp",
+    "value": 349
+   },
+   "drop": 25.8,
+   "verdict": "mistake",
+   "refutation": {
+    "uci": [
+     "f3e5",
+     "d8e7",
+     "d1e2",
+     "d4c3",
+     "b1c3",
+     "d7d5",
+     "e5f3",
+     "c7c6",
+     "c1f4",
+     "c8f5"
+    ],
+    "san": [
+     "Nxe5",
+     "Qe7",
+     "Qe2",
+     "dxc3",
+     "Nxc3",
+     "d5",
+     "Nf3",
+     "c6",
+     "Bf4",
+     "Bf5"
+    ],
+    "why": "White wins a knight."
+   },
+   "opening": "Ponziani Opening: Jaenisch Counterattack"
+  },
+  {
+   "id": "r1bqkb1r/pppp1ppp/2n5/3Pp3/4n3/2P2N2/PP3PPP/RNBQKB1R b KQkq -|c6a5",
+   "line": [
+    "e4",
+    "e5",
+    "Nf3",
+    "Nc6",
+    "c3",
+    "Nf6",
+    "d4",
+    "Nxe4",
+    "d5"
+   ],
+   "fen": "r1bqkb1r/pppp1ppp/2n5/3Pp3/4n3/2P2N2/PP3PPP/RNBQKB1R b KQkq - 0 5",
+   "victim": "black",
+   "kind": "exploit",
+   "move": {
+    "uci": "c6a5",
+    "san": "Na5"
+   },
+   "popular": {
+    "games": 28308,
+    "share": 0.1843364785403114
+   },
+   "book": {
+    "games": 0,
+    "share": 0
+   },
+   "scoreBefore": {
+    "type": "cp",
+    "value": -25
+   },
+   "scoreAfter": {
+    "type": "cp",
+    "value": 329
+   },
+   "drop": 29.4,
+   "verdict": "mistake",
+   "refutation": {
+    "uci": [
+     "b2b4",
+     "e4c3",
+     "b1c3",
+     "f8b4",
+     "c1d2",
+     "e8g8",
+     "d1a4",
+     "d8e7",
+     "a1b1",
+     "c7c5"
+    ],
+    "san": [
+     "b4",
+     "Nxc3",
+     "Nxc3",
+     "Bxb4",
+     "Bd2",
+     "O-O",
+     "Qa4",
+     "Qe7",
+     "Rb1",
+     "c5"
+    ],
+    "why": "White wins a knight for two pawns."
+   },
+   "opening": "Ponziani Opening: Jaenisch Counterattack"
+  },
+  {
+   "id": "r1bqkb1r/ppppnppp/8/3PN3/4n3/2P5/PP3PPP/RNBQKB1R b KQkq -|e7d5",
+   "line": [
+    "e4",
+    "e5",
+    "Nf3",
+    "Nc6",
+    "c3",
+    "Nf6",
+    "d4",
+    "Nxe4",
+    "d5",
+    "Ne7",
+    "Nxe5"
+   ],
+   "fen": "r1bqkb1r/ppppnppp/8/3PN3/4n3/2P5/PP3PPP/RNBQKB1R b KQkq - 0 6",
+   "victim": "black",
+   "kind": "exploit",
+   "move": {
+    "uci": "e7d5",
+    "san": "Nxd5"
+   },
+   "popular": {
+    "games": 7508,
+    "share": 0.11305696517038354
+   },
+   "book": {
+    "games": 0,
+    "share": 0
+   },
+   "scoreBefore": {
+    "type": "cp",
+    "value": 50
+   },
+   "scoreAfter": {
+    "type": "cp",
+    "value": 592
+   },
+   "drop": 35.3,
+   "verdict": "blunder",
+   "refutation": {
+    "uci": [
+     "d1d5",
+     "e4d6",
+     "e5f3",
+     "f8e7",
+     "f1d3",
+     "e8g8",
+     "e1g1",
+     "d6e8",
+     "d5b3",
+     "e8f6"
+    ],
+    "san": [
+     "Qxd5",
+     "Nd6",
+     "Nf3",
+     "Be7",
+     "Bd3",
+     "O-O",
+     "O-O",
+     "Ne8",
+     "Qb3",
+     "Nf6"
+    ],
+    "why": "White wins a knight."
+   },
+   "opening": "Ponziani Opening: Jaenisch Counterattack"
+  },
+  {
+   "id": "r1bqkb1r/pppp1ppp/2n5/4P3/3pn3/2P2N2/PP2QPPP/RNB1KB1R b KQkq -|e4c5",
+   "line": [
+    "e4",
+    "e5",
+    "Nf3",
+    "Nc6",
+    "c3",
+    "Nf6",
+    "d4",
+    "exd4",
+    "e5",
+    "Ne4",
+    "Qe2"
+   ],
+   "fen": "r1bqkb1r/pppp1ppp/2n5/4P3/3pn3/2P2N2/PP2QPPP/RNB1KB1R b KQkq - 2 6",
+   "victim": "black",
+   "kind": "exploit",
+   "move": {
+    "uci": "e4c5",
+    "san": "Nc5"
+   },
+   "popular": {
+    "games": 2556,
+    "share": 0.3029153827921308
+   },
+   "book": {
+    "games": 5,
+    "share": 0.07936507936507936
+   },
+   "scoreBefore": {
+    "type": "cp",
+    "value": 40
+   },
+   "scoreAfter": {
+    "type": "cp",
+    "value": 327
+   },
+   "drop": 23.2,
+   "verdict": "mistake",
+   "refutation": {
+    "uci": [
+     "c3d4",
+     "c5a6",
+     "e2e4",
+     "d8e7",
+     "f1a6",
+     "b7a6",
+     "b1c3",
+     "d7d5",
+     "c3d5",
+     "e7d7"
+    ],
+    "san": [
+     "cxd4",
+     "Na6",
+     "Qe4",
+     "Qe7",
+     "Bxa6",
+     "bxa6",
+     "Nc3",
+     "d5",
+     "Nxd5",
+     "Qd7"
+    ],
+    "why": "White wins a knight and two pawns for a bishop."
+   },
+   "opening": "Ponziani Opening: Jaenisch Counterattack"
+  }
+ ]
+}

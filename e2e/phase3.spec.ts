@@ -153,7 +153,12 @@ test('Test connection asks about the position on the board, with the chosen grou
   await page.locator('#explorer-test').click();
   await expect(page.locator('#explorer-test-result')).toHaveAttribute('data-status', 'ok');
 
-  const url = new URL(requests.filter((request) => request.method() === 'GET')[0]!.url());
+  // (The Explore panel may fetch live data for the new groups too; the connection test is the
+  // last Lichess request made.)
+  const lichessRequests = requests.filter(
+    (request) => request.method() === 'GET' && new URL(request.url()).pathname === '/lichess',
+  );
+  const url = new URL(lichessRequests.at(-1)!.url());
   expect(url.searchParams.get('ratings')).toBe('1400');
   expect(url.searchParams.get('speeds')).toBe('rapid');
   expect(url.searchParams.get('fen')).toBe('rnbqkbnr/pppp1ppp/8/4p3/4P3/8/PPPP1PPP/RNBQKBNR w KQkq - 0 2');

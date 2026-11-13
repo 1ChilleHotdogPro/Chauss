@@ -73,5 +73,12 @@ export function renderMoveList(
     row.append(button);
   }
 
-  current?.scrollIntoView({ block: 'nearest' });
+  // Keep the current move visible by scrolling the list itself — never the page, which would
+  // push the board out of view.
+  if (current) {
+    const listBox = list.getBoundingClientRect();
+    const moveBox = current.getBoundingClientRect();
+    if (moveBox.bottom > listBox.bottom) list.scrollTop += moveBox.bottom - listBox.bottom;
+    else if (moveBox.top < listBox.top) list.scrollTop -= listBox.top - moveBox.top;
+  }
 }
