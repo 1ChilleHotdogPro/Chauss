@@ -9,6 +9,9 @@
   --accent-text: #ffffff;
   --button: #ece7dc;
   --button-hover: #e0d9cb;
+  --inaccuracy: #a8790a;
+  --mistake: #c2610c;
+  --blunder: #c0392b;
   font-family: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
   font-size: 16px;
   line-height: 1.45;
@@ -25,6 +28,9 @@
     --accent-text: #14130f;
     --button: #38342e;
     --button-hover: #46413a;
+    --inaccuracy: #e0b23c;
+    --mistake: #f0914a;
+    --blunder: #ef6b5e;
   }
 }
 
@@ -74,13 +80,89 @@ body {
   }
 }
 
-/* The board is a square that fits the column and the window height. */
+/* The eval bar and the board side by side; together they fit the column and the window height. */
+.board-row {
+  --bar: 30px;
+  --gap: 8px;
+  display: flex;
+  gap: var(--gap);
+  align-items: stretch;
+  width: min(100%, calc(100vh - 110px + var(--bar) + var(--gap)));
+  margin: 0 auto;
+}
+
+/* The board is a square. */
 .board-wrap {
   position: relative;
-  width: min(100%, calc(100vh - 110px));
-  min-width: 240px;
+  flex: 1 1 0;
+  min-width: 0;
+  align-self: flex-start;
   aspect-ratio: 1 / 1;
-  margin: 0 auto;
+}
+
+/* Eval bar: the dark part is Black's share, the light part (.evalbar-fill) is White's. */
+.evalbar {
+  position: relative;
+  flex: 0 0 var(--bar);
+  background: #3b3834;
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+/* When switched off it keeps its space, so the board does not jump when it is switched on. */
+.evalbar[hidden] {
+  display: block;
+  visibility: hidden;
+}
+
+@media (max-width: 760px) {
+  /* On a phone the space matters more: the hidden bar takes none. */
+  .evalbar[hidden] {
+    display: none;
+  }
+}
+
+.evalbar-fill {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 50%;
+  background: #f4f1ea;
+  transition: height 0.3s ease;
+}
+
+/* Board flipped: White is at the top, so its share grows from the top. */
+.evalbar[data-orientation='black'] .evalbar-fill {
+  bottom: auto;
+  top: 0;
+}
+
+.evalbar-score {
+  position: absolute;
+  left: 0;
+  right: 0;
+  text-align: center;
+  font-size: 10px;
+  font-weight: 700;
+  line-height: 1.2;
+}
+
+.evalbar-score.at-bottom {
+  bottom: 3px;
+}
+
+.evalbar-score.at-top {
+  top: 3px;
+}
+
+.evalbar-score.on-white {
+  color: #2b2823;
+}
+
+.evalbar-score.on-black {
+  color: #f4f1ea;
 }
 
 #board {
@@ -228,6 +310,104 @@ button:focus-visible {
   background: var(--accent);
   color: var(--accent-text);
   font-weight: 600;
+}
+
+/* Verdict marks (?!, ?, ??) come from data-mark, so the button text stays the plain move. */
+.moves .move[data-mark]::after {
+  content: attr(data-mark);
+  margin-left: 1px;
+  font-weight: 700;
+}
+
+.moves .move[data-verdict='inaccuracy'] {
+  color: var(--inaccuracy);
+}
+
+.moves .move[data-verdict='mistake'] {
+  color: var(--mistake);
+}
+
+.moves .move[data-verdict='blunder'] {
+  color: var(--blunder);
+}
+
+.moves .move.current[data-verdict] {
+  color: var(--accent-text);
+}
+
+/* One sentence about the last move. */
+.verdict {
+  margin: -6px 0 12px;
+  padding: 6px 8px;
+  border-left: 4px solid var(--border);
+  border-radius: 4px;
+  background: var(--button);
+  font-size: 0.9rem;
+}
+
+.verdict[data-verdict='pending'] {
+  color: var(--muted);
+}
+
+.verdict[data-verdict='best'],
+.verdict[data-verdict='good'] {
+  border-left-color: var(--accent);
+}
+
+.verdict[data-verdict='inaccuracy'] {
+  border-left-color: var(--inaccuracy);
+}
+
+.verdict[data-verdict='mistake'] {
+  border-left-color: var(--mistake);
+}
+
+.verdict[data-verdict='blunder'] {
+  border-left-color: var(--blunder);
+}
+
+.engine-status {
+  margin-top: 8px;
+}
+
+.engine-status[data-state='failed'] {
+  color: var(--blunder);
+}
+
+/* The engine's top lines (only while the eval is shown). */
+.engine-lines {
+  list-style: none;
+  margin: 6px 0 0;
+  padding: 0;
+  font-size: 0.85rem;
+}
+
+.engine-lines li {
+  display: grid;
+  grid-template-columns: 3.2em 1fr;
+  gap: 6px;
+  padding: 2px 0;
+}
+
+.line-score {
+  font-weight: 700;
+  text-align: right;
+}
+
+.line-moves {
+  color: var(--muted);
+  overflow-wrap: anywhere;
+}
+
+button[aria-pressed='true'] {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: var(--accent-text);
+}
+
+button[aria-pressed='true']:hover:not(:disabled) {
+  background: var(--accent);
+  filter: brightness(1.08);
 }
 
 .hint {

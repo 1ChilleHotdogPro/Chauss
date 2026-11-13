@@ -18,14 +18,21 @@
 
       <main class="layout">
         <section class="board-area" aria-label="Chess board">
-          <div class="board-wrap">
-            <div id="board"></div>
-            <div id="promotion" class="promotion" hidden></div>
+          <div class="board-row">
+            <div id="evalbar" class="evalbar" role="img" aria-label="Evaluation bar" hidden>
+              <div class="evalbar-fill"></div>
+              <span class="evalbar-score"></span>
+            </div>
+            <div class="board-wrap">
+              <div id="board"></div>
+              <div id="promotion" class="promotion" hidden></div>
+            </div>
           </div>
         </section>
 
         <aside class="panel">
           <p id="status" class="status" role="status" aria-live="polite"></p>
+          <p id="verdict" class="verdict" aria-live="polite" hidden></p>
 
           <div class="controls">
             <button id="prev" type="button" title="Previous move (Left arrow)" aria-label="Previous move">&#9664;</button>
@@ -34,6 +41,18 @@
             <button id="undo" type="button" title="Take back the last move">Undo</button>
             <button id="reset" type="button" title="Start a new game">New game</button>
           </div>
+
+          <h2>Engine</h2>
+          <div class="controls">
+            <button id="toggle-eval" type="button" aria-pressed="false" title="Show or hide the evaluation (E)">
+              Show eval
+            </button>
+            <button id="toggle-arrows" type="button" aria-pressed="false" title="Show or hide best-move arrows (A)">
+              Show arrows
+            </button>
+          </div>
+          <p id="engine-status" class="hint engine-status" data-state="loading">Engine: loading Stockfish…</p>
+          <ol id="engine-lines" class="engine-lines" hidden></ol>
 
           <h2>Moves</h2>
           <ol id="moves" class="moves"></ol>

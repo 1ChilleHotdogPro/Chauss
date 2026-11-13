@@ -1,6 +1,8 @@
 import { test as base, expect, type Page } from '@playwright/test';
 
 export { expect };
+/** The plain Playwright test, without the "no errors" guard — for tests that cause an error on purpose. */
+export { base as unguardedTest };
 
 /**
  * Every test using this `test` fails if the page logged a console error or

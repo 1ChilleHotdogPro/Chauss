@@ -1,4 +1,32 @@
+import type { Verdict } from '../analysis/eval';
+import { verdictName, verdictSymbol } from '../analysis/verdictText';
 import type { MoveRecord } from '../game/game';
+
+/**
+ * Put the engine's verdict on each move button: "?!", "?" or "??" after the move (drawn by CSS
+ * from `data-mark`, so the button's text stays the plain move) and a tooltip naming it.
+ */
+export function updateMoveMarks(
+  list: HTMLOListElement,
+  verdictFor: (ply: number) => Verdict | undefined,
+): void {
+  for (const button of list.querySelectorAll<HTMLButtonElement>('button.move')) {
+    const verdict = verdictFor(Number(button.dataset.ply));
+    const current = button.dataset.verdict;
+    if (verdict === current) continue;
+    if (!verdict) {
+      delete button.dataset.verdict;
+      delete button.dataset.mark;
+      button.removeAttribute('title');
+      continue;
+    }
+    button.dataset.verdict = verdict;
+    const mark = verdictSymbol(verdict);
+    if (mark) button.dataset.mark = mark;
+    else delete button.dataset.mark;
+    button.title = verdictName(verdict);
+  }
+}
 
 /**
  * Renders the moves as "1. e4 e5  2. Nf3 Nc6 ...". Each move is a button that
