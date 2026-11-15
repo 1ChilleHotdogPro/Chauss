@@ -53,7 +53,11 @@ function wrongMove(card: Card): { uci: string; san: string } {
 }
 
 const storedProgress = (page: Page) =>
-  page.evaluate((key) => JSON.parse(localStorage.getItem(key) ?? 'null') as Progress | null, PROGRESS_STORAGE_KEY);
+  page.evaluate((key) => {
+    // Version 2 of the stored data: the progress of every opening; these tests look at the Ponziani's.
+    const store = JSON.parse(localStorage.getItem(key) ?? 'null') as { openings: Record<string, Progress> } | null;
+    return store ? (store.openings.ponziani ?? null) : null;
+  }, PROGRESS_STORAGE_KEY);
 
 test('Drill mode sets up the first line and hides the answers', async ({ page }) => {
   await startDrill(page);
@@ -242,12 +246,12 @@ test('Statistics lists every position; a backup can be saved, and loaded after a
   const backupText = readFileSync(backupPath, 'utf8');
   const parsed = importProgress(backupText);
   expect(parsed.ok).toBe(true);
-  if (parsed.ok) expect(parsed.progress.cards[card.key]).toMatchObject({ attempts: 1, errors: 1 });
+  if (parsed.ok) expect(parsed.store.openings.ponziani!.cards[card.key]).toMatchObject({ attempts: 1, errors: 1 });
 
   // Reset (after confirming) empties everything.
   page.once('dialog', (dialog) => void dialog.accept());
   await page.locator('#stats-reset').click();
-  await expect(page.locator('#stats-message')).toHaveText('Progress reset.');
+  await expect(page.locator('#stats-message')).toHaveText('Progress for the Ponziani reset.');
   await expect(first.locator('td').nth(2)).toHaveText('–');
   expect((await storedProgress(page))?.cards).toEqual({});
 

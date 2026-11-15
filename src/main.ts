@@ -13,7 +13,7 @@ import { pickOpponentMove, trapRoutes, type BotChoice, type TrapRoutes } from '.
 import { stopSummary, strengthById, treeStatus } from './bot/outOfBook';
 import { loadPlaySettings, savePlaySettings, type PlaySettings } from './bot/playSettings';
 import { DrillController } from './drill/controller';
-import { loadProgress, saveProgress, type Progress } from './drill/progress';
+import { loadProgress, loadStore, progressOf, saveProgress, saveStore, withProgress, type Progress } from './drill/progress';
 import { statsRows } from './drill/stats';
 import { Engine } from './engine/engine';
 import { createWorkerTransport, engineUrl } from './engine/workerTransport';
@@ -173,7 +173,7 @@ Promise.all([loadSnapshot(OPENING_ID), assetsFor(OPENING_ID).ideas()]).then(
       progress,
       onProgress: (changed) => {
         progress = changed;
-        saveProgress(storage, changed);
+        saveProgress(storage, OPENING_ID, changed);
         statsDialog.refresh();
       },
     });
@@ -198,7 +198,7 @@ type Mode = 'explore' | 'drill' | 'play';
 let mode: Mode = 'explore';
 let repertoire: Repertoire | null = null;
 let drill: DrillController | null = null;
-let progress: Progress = loadProgress(storage);
+let progress: Progress = loadProgress(storage, OPENING_ID);
 /** True while the app is showing the opponent's reply in a drill (no moving pieces meanwhile). */
 let drillShowing = false;
 let drillTimer: ReturnType<typeof setTimeout> | undefined;
@@ -220,11 +220,12 @@ const statsDialog = createStatsDialog({
   dialog: byId<HTMLDialogElement>('stats'),
   openButton: byId<HTMLButtonElement>('open-stats'),
   rows: () => (repertoire ? statsRows(repertoire, progress, Date.now()) : []),
-  progress: () => progress,
-  onReplace: (replaced) => {
-    progress = replaced;
-    drill?.setProgress(replaced);
-    const stored = saveProgress(storage, replaced);
+  store: () => withProgress(loadStore(storage), OPENING_ID, progress),
+  opening: { id: OPENING_ID, name: getOpening(OPENING_ID).name },
+  onReplace: (replacedStore) => {
+    progress = progressOf(replacedStore, OPENING_ID);
+    drill?.setProgress(progress);
+    const stored = saveStore(storage, replacedStore);
     renderDrill();
     return stored;
   },

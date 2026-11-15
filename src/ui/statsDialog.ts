@@ -1,4 +1,11 @@
-import { exportProgress, importProgress, type Progress } from '../drill/progress';
+import {
+  countPositions,
+  emptyProgress,
+  exportProgress,
+  importProgress,
+  withProgress,
+  type ProgressStore,
+} from '../drill/progress';
 import { statsSummary, type StatsRow } from '../drill/stats';
 
 export interface StatsDialogOptions {
@@ -6,9 +13,12 @@ export interface StatsDialogOptions {
   openButton: HTMLButtonElement;
   /** The rows to show, worked out afresh each time the dialog opens or the progress changes. */
   rows(): StatsRow[];
-  progress(): Progress;
+  /** What is stored for every opening (the current one included, as it is now). */
+  store(): ProgressStore;
+  /** The opening being drilled: only its progress is reset. */
+  opening: { id: string; name: string };
   /** Replace the stored progress (import or reset). Returns false if it could not be stored. */
-  onReplace(progress: Progress): boolean;
+  onReplace(store: ProgressStore): boolean;
 }
 
 export interface StatsDialog {
@@ -75,7 +85,7 @@ export function createStatsDialog(options: StatsDialogOptions): StatsDialog {
   }
 
   exportButton.addEventListener('click', () => {
-    const text = exportProgress(options.progress());
+    const text = exportProgress(options.store());
     const url = URL.createObjectURL(new Blob([text], { type: 'application/json' }));
     const link = document.createElement('a');
     link.href = url;
@@ -98,9 +108,13 @@ export function createStatsDialog(options: StatsDialogOptions): StatsDialog {
         say(result.error, false);
         return;
       }
-      const stored = options.onReplace(result.progress);
+      // Openings in the file replace the ones here; openings not in the file are kept.
+      const stored = options.onReplace({
+        version: 2,
+        openings: { ...options.store().openings, ...result.store.openings },
+      });
       draw();
-      const count = Object.keys(result.progress.cards).length;
+      const count = countPositions(result.store);
       say(
         stored
           ? `Backup loaded: progress for ${count} position${count === 1 ? '' : 's'}.`
@@ -111,10 +125,12 @@ export function createStatsDialog(options: StatsDialogOptions): StatsDialog {
   });
 
   resetButton.addEventListener('click', () => {
-    if (!window.confirm('Delete all drill progress in this browser? This cannot be undone (unless you saved a backup file).')) return;
-    options.onReplace({ version: 1, cards: {} });
+    const { id, name } = options.opening;
+    const question = `Delete all drill progress for the ${name} in this browser? Other openings are kept. This cannot be undone (unless you saved a backup file).`;
+    if (!window.confirm(question)) return;
+    options.onReplace(withProgress(options.store(), id, emptyProgress()));
     draw();
-    say('Progress reset.', true);
+    say(`Progress for the ${options.opening.name} reset.`, true);
   });
 
   openButton.addEventListener('click', () => {
