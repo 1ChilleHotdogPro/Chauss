@@ -39,7 +39,9 @@ export type IdeaCheck =
   /** `san` scores best of the listed moves, for the side to move. */
   | { kind: 'engine-top'; line: string[]; san: string }
   /** The snapshot's Lichess games come from exactly these rating groups (for texts that name them). */
-  | { kind: 'ratings'; line: string[]; ratings: number[] };
+  | { kind: 'ratings'; line: string[]; ratings: number[] }
+  /** The explorer's name for the position after `san` contains `name` (for texts that name a variation). */
+  | { kind: 'opening-after'; line: string[]; san: string; name: string };
 
 /** Follow moves from the start position through the snapshot's links. */
 export function nodeAfter(snapshot: Snapshot, line: readonly string[]): SnapshotNode | undefined {
@@ -62,6 +64,10 @@ export function failedCheck(snapshot: Snapshot, check: IdeaCheck): string | null
     return have === want ? null : `the snapshot's rating groups are ${have}, not ${want}`;
   }
   const where = check.line.join(' ') || 'the start position';
+  if (check.kind === 'opening-after') {
+    const named = nodeAfter(snapshot, [...check.line, check.san])?.opening?.name;
+    return named?.includes(check.name) ? null : `after ${where} ${check.san} the explorer's name is "${named ?? 'none'}", not "${check.name}"`;
+  }
   const node = nodeAfter(snapshot, check.line);
   if (!node) return `the snapshot has no position after ${where}`;
   const position: ExplorePosition = buildExplorePosition(node);

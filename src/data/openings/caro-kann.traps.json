@@ -1,0 +1,351 @@
+{
+ "meta": {
+  "formatVersion": 1,
+  "side": "black",
+  "createdAt": "2026-11-15T05:43:44.451Z",
+  "snapshotCreatedAt": "2026-11-15T05:42:06.625Z",
+  "engine": {
+   "name": "Stockfish 19 Lite WASM",
+   "depth": 22
+  },
+  "rule": {
+   "minShare": 0.05,
+   "minGames": 1000,
+   "minDrop": 20,
+   "maxCandidates": 60
+  }
+ },
+ "traps": [
+  {
+   "id": "rn1qkbnr/pp2pppp/2p5/3pPb2/3P3P/8/PPP2PP1/RNBQKBNR b KQkq -|e7e6",
+   "line": [
+    "e4",
+    "c6",
+    "d4",
+    "d5",
+    "e5",
+    "Bf5",
+    "h4"
+   ],
+   "fen": "rn1qkbnr/pp2pppp/2p5/3pPb2/3P3P/8/PPP2PP1/RNBQKBNR b KQkq - 0 4",
+   "victim": "black",
+   "kind": "avoid",
+   "move": {
+    "uci": "e7e6",
+    "san": "e6"
+   },
+   "popular": {
+    "games": 54180,
+    "share": 0.4624879427054435
+   },
+   "book": {
+    "games": 1,
+    "share": 0.00018501387604070305
+   },
+   "scoreBefore": {
+    "type": "cp",
+    "value": 40
+   },
+   "scoreAfter": {
+    "type": "cp",
+    "value": 398
+   },
+   "drop": 27.6,
+   "verdict": "mistake",
+   "refutation": {
+    "uci": [
+     "g2g4",
+     "f5e4",
+     "f2f3",
+     "f7f5",
+     "f3e4",
+     "f5e4",
+     "b1c3",
+     "c6c5",
+     "g1e2",
+     "b8c6"
+    ],
+    "san": [
+     "g4",
+     "Be4",
+     "f3",
+     "f5",
+     "fxe4",
+     "fxe4",
+     "Nc3",
+     "c5",
+     "Nge2",
+     "Nc6"
+    ],
+    "why": "White wins a bishop for a pawn."
+   },
+   "opening": "Caro-Kann Defense: Advance Variation, Tal Variation"
+  },
+  {
+   "id": "rnbqkbnr/pp2pppp/2p5/8/4p3/3P1N2/PPP2PPP/RNBQKB1R w KQkq -|f3e5",
+   "line": [
+    "e4",
+    "c6",
+    "Nf3",
+    "d5",
+    "d3",
+    "dxe4"
+   ],
+   "fen": "rnbqkbnr/pp2pppp/2p5/8/4p3/3P1N2/PPP2PPP/RNBQKB1R w KQkq - 0 4",
+   "victim": "white",
+   "kind": "exploit",
+   "move": {
+    "uci": "f3e5",
+    "san": "Ne5"
+   },
+   "popular": {
+    "games": 26497,
+    "share": 0.0637392984034505
+   },
+   "book": {
+    "games": 0,
+    "share": 0
+   },
+   "scoreBefore": {
+    "type": "cp",
+    "value": 29
+   },
+   "scoreAfter": {
+    "type": "cp",
+    "value": -506
+   },
+   "drop": 39.2,
+   "verdict": "blunder",
+   "refutation": {
+    "uci": [
+     "d8a5",
+     "b1c3",
+     "a5e5",
+     "d3e4",
+     "e5c7",
+     "f2f4",
+     "e7e5",
+     "f4f5",
+     "h7h5",
+     "c1e3"
+    ],
+    "san": [
+     "Qa5+",
+     "Nc3",
+     "Qxe5",
+     "dxe4",
+     "Qc7",
+     "f4",
+     "e5",
+     "f5",
+     "h5",
+     "Be3"
+    ],
+    "why": "Black wins a knight for a pawn. Stockfish rates the position -5.1."
+   },
+   "opening": "Caro-Kann Defense: Endgame Offer"
+  },
+  {
+   "id": "rnbqkbnr/pp2pppp/8/3pN3/8/8/PPPP1PPP/RNBQKB1R b KQkq -|f7f6",
+   "line": [
+    "e4",
+    "c6",
+    "Nf3",
+    "d5",
+    "exd5",
+    "cxd5",
+    "Ne5"
+   ],
+   "fen": "rnbqkbnr/pp2pppp/8/3pN3/8/8/PPPP1PPP/RNBQKB1R b KQkq - 1 4",
+   "victim": "black",
+   "kind": "avoid",
+   "move": {
+    "uci": "f7f6",
+    "san": "f6"
+   },
+   "popular": {
+    "games": 6744,
+    "share": 0.08972022297018639
+   },
+   "book": {
+    "games": 0,
+    "share": 0
+   },
+   "scoreBefore": {
+    "type": "cp",
+    "value": 11
+   },
+   "scoreAfter": {
+    "type": "cp",
+    "value": 457
+   },
+   "drop": 33.3,
+   "verdict": "blunder",
+   "refutation": {
+    "uci": [
+     "f1b5",
+     "b8c6",
+     "e5c6",
+     "b7c6",
+     "b5c6",
+     "c8d7",
+     "c6d5",
+     "a8c8",
+     "b1c3",
+     "e7e6"
+    ],
+    "san": [
+     "Bb5+",
+     "Nc6",
+     "Nxc6",
+     "bxc6",
+     "Bxc6+",
+     "Bd7",
+     "Bxd5",
+     "Rc8",
+     "Nc3",
+     "e6"
+    ],
+    "why": "White wins two pawns. Stockfish rates the position +4.6."
+   },
+   "opening": "Caro-Kann Defense: Apocalypse Attack"
+  },
+  {
+   "id": "rn1qkbnr/pp3ppp/2p1p3/3p4/3PP3/2N2Q1P/PPP2PP1/R1B1KB1R b KQkq -|c6c5",
+   "line": [
+    "e4",
+    "c6",
+    "Nf3",
+    "d5",
+    "Nc3",
+    "Bg4",
+    "h3",
+    "Bxf3",
+    "Qxf3",
+    "e6",
+    "d4"
+   ],
+   "fen": "rn1qkbnr/pp3ppp/2p1p3/3p4/3PP3/2N2Q1P/PPP2PP1/R1B1KB1R b KQkq - 0 6",
+   "victim": "black",
+   "kind": "avoid",
+   "move": {
+    "uci": "c6c5",
+    "san": "c5"
+   },
+   "popular": {
+    "games": 3225,
+    "share": 0.22817319937738786
+   },
+   "book": {
+    "games": 0,
+    "share": 0
+   },
+   "scoreBefore": {
+    "type": "cp",
+    "value": 18
+   },
+   "scoreAfter": {
+    "type": "cp",
+    "value": 412
+   },
+   "drop": 30.4,
+   "verdict": "blunder",
+   "refutation": {
+    "uci": [
+     "e4d5",
+     "c5d4",
+     "d5e6",
+     "f7e6",
+     "f3b7",
+     "b8d7",
+     "c3e4",
+     "a8b8",
+     "b7a7",
+     "b8b6"
+    ],
+    "san": [
+     "exd5",
+     "cxd4",
+     "dxe6",
+     "fxe6",
+     "Qxb7",
+     "Nd7",
+     "Ne4",
+     "Rb8",
+     "Qxa7",
+     "Rb6"
+    ],
+    "why": "White wins two pawns. Stockfish rates the position +4.1."
+   },
+   "opening": "Caro-Kann Defense: Two Knights Attack, Mindeno Variation, Exchange Line"
+  },
+  {
+   "id": "rn1qkbnr/pp3ppp/2p1p1b1/3pP3/3P2P1/2N5/PPP2P1P/R1BQKBNR w KQkq -|f2f4",
+   "line": [
+    "e4",
+    "c6",
+    "d4",
+    "d5",
+    "e5",
+    "Bf5",
+    "Nc3",
+    "e6",
+    "g4",
+    "Bg6"
+   ],
+   "fen": "rn1qkbnr/pp3ppp/2p1p1b1/3pP3/3P2P1/2N5/PPP2P1P/R1BQKBNR w KQkq - 1 6",
+   "victim": "white",
+   "kind": "exploit",
+   "move": {
+    "uci": "f2f4",
+    "san": "f4"
+   },
+   "popular": {
+    "games": 2917,
+    "share": 0.1394892884468248
+   },
+   "book": {
+    "games": 0,
+    "share": 0
+   },
+   "scoreBefore": {
+    "type": "cp",
+    "value": 7
+   },
+   "scoreAfter": {
+    "type": "cp",
+    "value": -230
+   },
+   "drop": 20.6,
+   "verdict": "mistake",
+   "refutation": {
+    "uci": [
+     "d8h4",
+     "e1d2",
+     "h7h5",
+     "g1f3",
+     "h4f2",
+     "f1e2",
+     "h5g4",
+     "h1f1",
+     "f2g2",
+     "f1g1"
+    ],
+    "san": [
+     "Qh4+",
+     "Kd2",
+     "h5",
+     "Nf3",
+     "Qf2+",
+     "Be2",
+     "hxg4",
+     "Rf1",
+     "Qg2",
+     "Rg1"
+    ],
+    "why": "Black wins a pawn."
+   },
+   "opening": "Caro-Kann Defense: Advance Variation, Van der Wiel Attack"
+  }
+ ]
+}

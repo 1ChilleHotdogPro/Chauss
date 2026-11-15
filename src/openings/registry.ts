@@ -48,6 +48,8 @@ export const OPENINGS: readonly OpeningDef[] = [
     name: 'Caro-Kann',
     side: 'black',
     rootLine: ['e4', 'c6'],
+    // As the explorer names the position after 1.e4 c6 (seen in the first crawl).
+    family: 'Caro-Kann Defense',
     // 1.e4 c6 is far more played than the Ponziani, so the position limit does the cutting: the
     // most played positions (and all book lines) come first. About an hour of crawling.
     crawl: { minShare: 0.03, minGames: 10000, minGamesMasters: 20, maxPly: 24, maxPositions: 400, depth: 18 },

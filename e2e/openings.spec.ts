@@ -14,7 +14,11 @@ const OPENING_KEY = 'chauss.opening.v1';
 
 const picker = (page: Page) => page.locator('#opening-picker');
 const header = (page: Page) => page.locator('#open-picker');
-const choose = (page: Page, id: string) => picker(page).locator(`.opening-choice[data-opening="${id}"]`).click();
+/** Choosing reloads the page: let Stockfish finish loading first, so the reload does not cut its download short. */
+const choose = async (page: Page, id: string): Promise<void> => {
+  await expect(page.locator('#engine-status')).toHaveAttribute('data-state', 'ready', { timeout: 20_000 });
+  await picker(page).locator(`.opening-choice[data-opening="${id}"]`).click();
+};
 const storedOpening = (page: Page) => page.evaluate((key) => localStorage.getItem(key), OPENING_KEY);
 
 test.describe('first visit', () => {
@@ -31,10 +35,12 @@ test.describe('first visit', () => {
     await expect(picker(page).locator('.opening-choice[data-opening="ponziani"]')).toContainText('You play White');
     await expect(picker(page).locator('.opening-choice[data-opening="ponziani"]')).toContainText('1.e4 e5 2.Nf3 Nc6 3.c3');
     await expect(picker(page).locator('.opening-choice[data-opening="caro-kann"]')).toContainText('You play Black');
+    await expect(picker(page).locator('.opening-choice[data-opening="caro-kann"]')).toBeEnabled(); // its data is built
+    await expect(picker(page)).not.toContainText('Coming soon');
     await expect(picker(page).locator('.opening-choice[data-opening="caro-kann"]')).toContainText('1.e4 c6');
     await expect(header(page)).toHaveText('Choose an opening ▾');
     await expect(picker(page).locator('#opening-close')).toBeHidden();
-    await page.screenshot({ path: 'test-results/openings-picker.png', fullPage: true });
+    await page.screenshot({ path: 'test-results/openings-picker.png' });
 
     // It cannot be dismissed with Escape, and the board hotkeys are off while it is open.
     await page.keyboard.press('Escape');

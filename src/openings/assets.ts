@@ -17,6 +17,11 @@ export const OPENING_ASSETS: Record<string, OpeningAssets> = {
     trapsUrl: new URL('../data/openings/ponziani.traps.json', import.meta.url).href,
     ideas: () => import('../explore/ideas/ponziani').then((module) => module.IDEAS),
   },
+  'caro-kann': {
+    snapshotUrl: new URL('../data/openings/caro-kann.json', import.meta.url).href,
+    trapsUrl: new URL('../data/openings/caro-kann.traps.json', import.meta.url).href,
+    ideas: () => import('../explore/ideas/caro-kann').then((module) => module.IDEAS),
+  },
 };
 
 /** True when the opening's data files are part of the site (an opening can be listed before they are built). */
