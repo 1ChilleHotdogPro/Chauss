@@ -65,7 +65,7 @@ export const IDEAS: readonly Idea[] = [
   {
     line: at('e4', 'c6', 'd4', 'd5', 'e5'),
     text:
-      'Masters play 4...Bf5 in 77% of their games (55% of Lichess games rated 1000–1399; +0.4 for White). 4...e6 (10% at this level) scores +0.7 and 4...f6 (5%) +1.0.',
+      'Masters play 3...Bf5 in 77% of their games (55% of Lichess games rated 1000–1399; +0.4 for White). 3...e6 (10% at this level) scores +0.7 and 3...f6 (5%) +1.0.',
     checks: [
       { kind: 'book-top', line: at('e4', 'c6', 'd4', 'd5', 'e5'), san: 'Bf5' },
       { kind: 'book-share', line: at('e4', 'c6', 'd4', 'd5', 'e5'), san: 'Bf5', ...pct(77) },
@@ -95,7 +95,7 @@ export const IDEAS: readonly Idea[] = [
   {
     line: at('e4', 'c6', 'd4', 'd5', 'e5', 'Bf5', 'h4'),
     text:
-      'After 5.h4, the reply 5...e6? is played in 46% of Lichess games rated 1000–1399, and Stockfish calls it a mistake: +3.9 for White.',
+      'After 4.h4, the reply 4...e6? is played in 46% of Lichess games rated 1000–1399, and Stockfish calls it a mistake: +3.9 for White.',
     checks: [
       BAND,
       { kind: 'popular-share', line: at('e4', 'c6', 'd4', 'd5', 'e5', 'Bf5', 'h4'), san: 'e6', ...pct(46) },

@@ -1,6 +1,11 @@
-# Chauss — Ponziani Opening Trainer
+# Chauss — Opening Trainer
 
-A browser app for learning the **Ponziani Opening as White** (1.e4 e5 2.Nf3 Nc6 3.c3): which moves are theory, which opponent moves are bad, and how to punish them.
+A browser app for learning chess openings from the side you play: which moves are theory, which opponent moves are bad, and how to punish them. Two openings so far, chosen in a picker on your first visit and switched from the button in the header:
+
+- the **Ponziani Opening as White** (1.e4 e5 2.Nf3 Nc6 3.c3);
+- the **Caro-Kann Defence as Black** (1.e4 c6).
+
+Progress is kept separately for each opening.
 
 **Status:** all three modes work — **Explore** (look up any position), **Drill** (learn your moves with spaced repetition) and **Play** (a game against a bot that plays like people at your level, or one that makes the common mistakes on purpose). A GitHub Pages workflow is ready; the site is not published yet.
 
@@ -22,8 +27,8 @@ Then open the address Vite prints (it ends in `/Chauss/`).
 | `npm run build` | Type-checks and builds the site into `dist/` |
 | `npm test` | Unit tests for the chess and engine logic (Vitest), including a run of the real engine file |
 | `npm run test:e2e` | Browser tests against the built site (Playwright; first run `npx playwright install chromium`) |
-| `npm run snapshot` | Rebuilds the bundled opening data from Lichess (slow; needs a token — see below) |
-| `npm run traps` | Rebuilds the list of common mistakes from the bundled data (no network) |
+| `npm run snapshot` | Rebuilds the Ponziani data from Lichess (slow; needs a token — see below). Add `-- --opening=caro-kann` for another opening |
+| `npm run traps` | Rebuilds an opening's list of common mistakes from its data (no network); also takes `-- --opening=<id>` |
 
 On Windows PowerShell, if `npm` is blocked by the script policy, use `npm.cmd` instead (for example `npm.cmd run dev`).
 
@@ -52,7 +57,7 @@ Nothing here is written from memory: the names and numbers come from the Lichess
 
 ### Bundled data and live data
 
-The app ships with a snapshot of the Ponziani tree (`src/data/ponziani.json`: 826 positions, built 13 November 2026 from Lichess games rated 1000–1399 and master games, every move scored by Stockfish), so it works offline and without an account. It stops where a move is played in fewer than 3% of games or too few games, and where a move leaves the Ponziani for another opening.
+The app ships with a snapshot of each opening's tree, so it works offline and without an account: `src/data/openings/ponziani.json` (826 positions, built 13 November 2026) and `src/data/openings/caro-kann.json` (400 positions, built 15 November 2026), both from Lichess games rated 1000–1399 and master games, every move scored by Stockfish. The Ponziani tree stops where a move is played in fewer than 3% of games or too few games, and where a move leaves the Ponziani for another opening; the Caro-Kann tree is cut at 400 positions, the most played ones first. Each opening also has a list of common mistakes (`<id>.traps.json`) and a few written key ideas, every number in them checked against the data by a test.
 
 For positions outside the snapshot, or for other rating groups, the app can ask Lichess directly. That needs a personal token:
 
@@ -75,11 +80,11 @@ shows how big the tree would be for different settings, and
 npm run snapshot
 ```
 
-crawls, scores every position with Stockfish and writes the file. It is slow on purpose (one request every 3.5 seconds) and can be stopped and restarted: answers are kept in `.cache/`. The settings used are recorded inside the file.
+crawls (add `--opening=caro-kann` to either command for the Caro-Kann; the openings and their settings are listed in `src/openings/registry.ts`), scores every position with Stockfish and writes the file. It is slow on purpose (one request every 3.5 seconds) and can be stopped and restarted: answers are kept in `.cache/`. The settings used are recorded inside the file.
 
 ## Drill
 
-The app plays Black and you play White. In every position you must find **your repertoire move**: the move masters play most there, unless Stockfish rates another move clearly better (more than 5 points of winning chances). Black's replies are chosen the way players at your level choose them, weighted by how often they are played.
+The app plays the other colour and you play yours (White in the Ponziani, Black in the Caro-Kann, where the app plays 1.e4 and you must find 1...c6). In every position you must find **your repertoire move**: the move masters play most there, unless Stockfish rates another move clearly better (more than 5 points of winning chances). The opponent's replies are chosen the way players at your level choose them, weighted by how often they are played.
 
 - A wrong move is taken back. You see the right move (an arrow) and why it is the one; play it to go on.
 - Each position is a card with its own review date (spaced repetition, SM-2). Positions you miss come back soon; ones you know well come back later. The next line aims at a card that is due, then at a new one.
@@ -89,7 +94,7 @@ The evaluation and the arrows are switched off in a drill, so you think for your
 
 ## Play
 
-A game against a bot that plays Black, starting from move 1. Choose the bot:
+A game against a bot that plays the other colour, starting from move 1. Choose the bot:
 
 - **Realistic** — plays the moves people at your level play, each as often as they play it.
 - **Punish me** — prefers the moves Stockfish calls mistakes (among those people really play), then moves that head for a known common mistake. Use it to practise punishing them.
@@ -101,7 +106,7 @@ The eval bar and arrows start hidden here too; switch them on with `E` and `A` i
 When a drill line or a game reaches a position the opening data does not cover, the app asks what to do, every time:
 
 - **Stop: show Stockfish's verdict** — who stands better and by how much, the best move, Stockfish's main line, the verdict on the last move and, where one is written, the key idea of the line.
-- **Play on against Stockfish** — a weakened Stockfish takes over Black. Pick how strong: Easy (Skill Level 0, looks 4 half-moves ahead), Medium (Skill Level 5, depth 8) or Hard (Skill Level 10, depth 12).
+- **Play on against Stockfish** — a weakened Stockfish takes over the opponent's side. Pick how strong: Easy (Skill Level 0, looks 4 half-moves ahead), Medium (Skill Level 5, depth 8) or Hard (Skill Level 10, depth 12).
 
 ## The engine
 
