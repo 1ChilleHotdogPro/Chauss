@@ -167,13 +167,13 @@ test('every legal move can be ranked by Stockfish', async ({ page }) => {
   const legalMoves = new Chess('r1bqkbnr/pppp1ppp/2n5/4p3/4P3/2P2N2/PP1P1PPP/RNBQKB1R b KQkq - 0 3').moves().length;
   await expect(items).toHaveCount(legalMoves, { timeout: 60_000 });
 
-  // Most punished first: the top of the list is flagged, the bottom is not.
-  await expect(items.first()).toHaveAttribute('data-flag', /^(mistake|blunder)$/);
-  await expect(items.last()).toHaveAttribute('data-flag', 'none');
+  // Best first: the top of the list is not flagged, the bottom is.
+  await expect(items.first()).toHaveAttribute('data-flag', 'none');
+  await expect(items.last()).toHaveAttribute('data-flag', /^(mistake|blunder)$/);
 
   // Clicking a ranked move plays it; the ranking belongs to the old position and goes away.
-  const lastSan = (await items.last().locator('.explore-move').textContent())!;
-  await items.last().locator('.explore-move').click();
+  const lastSan = (await items.first().locator('.explore-move').textContent())!;
+  await items.first().locator('.explore-move').click();
   expect((await moveTexts(page)).at(-1)).toBe(lastSan);
   await expect(page.locator('#ranking-list')).toHaveCount(0);
   await expect(page.locator('#toggle-ranking')).toHaveAttribute('aria-pressed', 'false');

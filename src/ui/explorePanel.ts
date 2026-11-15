@@ -204,7 +204,7 @@ function rankingSection(model: ExplorePanelModel, handlers: ExplorePanelHandlers
   if (model.ranking.state === 'pending') {
     section.append(el('p', 'hint', 'Stockfish is scoring every legal move…'));
   } else if (model.ranking.state === 'ready') {
-    section.append(el('p', 'hint', 'Every legal move, most punished first:'));
+    section.append(el('p', 'hint', 'Every legal move, best first:'));
     const list = el('ol', 'ranking-list');
     list.id = 'ranking-list';
     for (const row of model.ranking.rows) {

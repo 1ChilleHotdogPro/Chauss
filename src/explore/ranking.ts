@@ -15,8 +15,7 @@ export interface RankedMove {
 
 /**
  * Turn a "rank every legal move" search into rows for the screen: each legal move with its score
- * and how much worse it is than the best one. Most punished first — the point of the list is to
- * see which moves lose, and how badly.
+ * and how much worse it is than the best one. Best move first, worst last.
  */
 export function buildRanking(evaluation: PositionEval): RankedMove[] {
   const best = evaluation.lines[0];
@@ -39,6 +38,6 @@ export function buildRanking(evaluation: PositionEval): RankedMove[] {
       flag: verdict === 'inaccuracy' || verdict === 'mistake' || verdict === 'blunder' ? verdict : 'none',
     });
   });
-  // The engine lists best first; show the worst first, keeping the engine's order among equals.
-  return rows.reverse();
+  // The engine already lists the best move first and the worst last.
+  return rows;
 }

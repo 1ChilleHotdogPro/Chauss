@@ -15,7 +15,7 @@ const evaluation = (fen: string, lines: [string, Score][]): PositionEval => ({
 });
 
 describe('buildRanking', () => {
-  it('lists every move with notation, score and flag, most punished first', () => {
+  it('lists every move with notation, score and flag, best move first, worst last', () => {
     const rows = buildRanking(
       evaluation(START, [
         ['e2e4', cp(30)],
@@ -26,15 +26,15 @@ describe('buildRanking', () => {
       ]),
     );
     expect(rows.map((row) => [row.san, row.flag])).toEqual([
-      ['f3', 'blunder'],
-      ['g4', 'mistake'],
-      ['h4', 'inaccuracy'],
-      ['Nf3', 'none'],
       ['e4', 'none'],
+      ['Nf3', 'none'],
+      ['h4', 'inaccuracy'],
+      ['g4', 'mistake'],
+      ['f3', 'blunder'],
     ]);
-    expect(rows.at(-1)?.judgement.verdict).toBe('best');
-    expect(rows[0]?.uci).toBe('f2f3');
-    expect(rows[0]?.score).toEqual(cp(-500));
+    expect(rows[0]?.judgement.verdict).toBe('best');
+    expect(rows.at(-1)?.uci).toBe('f2f3');
+    expect(rows.at(-1)?.score).toEqual(cp(-500));
   });
 
   it("judges from Black's side when Black is to move", () => {
@@ -46,8 +46,8 @@ describe('buildRanking', () => {
       ]),
     );
     expect(rows.map((row) => [row.san, row.flag])).toEqual([
-      ['g5', 'mistake'],
       ['e5', 'none'],
+      ['g5', 'mistake'],
     ]);
   });
 
@@ -58,8 +58,8 @@ describe('buildRanking', () => {
         ['f7f6', { type: 'mate', winner: 'white', moves: 4 }],
       ]),
     );
-    expect(rows[0]).toMatchObject({ san: 'f6', flag: 'blunder' });
-    expect(rows[0]?.judgement.note).toEqual({ kind: 'allows-mate', moves: 4 });
+    expect(rows.at(-1)).toMatchObject({ san: 'f6', flag: 'blunder' });
+    expect(rows.at(-1)?.judgement.note).toEqual({ kind: 'allows-mate', moves: 4 });
   });
 
   it('skips lines that are empty or not legal, and copes with no lines', () => {
