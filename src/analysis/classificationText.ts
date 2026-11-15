@@ -1,6 +1,6 @@
 import type { Side } from '../game/game';
 import type { Classification, MoveClassification } from './classify';
-import type { Verdict } from './eval';
+import { opposite, type Verdict } from './eval';
 
 export interface ClassificationInfo {
   /** "Brilliant", "Book move", ... */
@@ -61,7 +61,7 @@ export function classificationSentence(input: {
     case 'good':
       return `${san} is a good move.${best}`;
     case 'miss':
-      return `${san} is a miss: it lets ${NAME[mover === 'white' ? 'black' : 'white']}'s mistake go unpunished — ${chances}${note}.${best}`;
+      return `${san} is a miss: it lets ${NAME[opposite(mover)]}'s mistake go unpunished — ${chances}${note}.${best}`;
     case 'inaccuracy':
     case 'mistake':
     case 'blunder':

@@ -29,7 +29,8 @@ export function defaultAnalysisSettings(): AnalysisSettings {
 }
 
 export function searchLimit(settings: AnalysisSettings): SearchLimit {
-  return (SEARCH_LIMITS.find((choice) => choice.id === settings.limit) ?? SEARCH_LIMITS[2]!).limit;
+  const find = (id: string) => SEARCH_LIMITS.find((choice) => choice.id === id);
+  return (find(settings.limit) ?? find(DEFAULT_SEARCH_LIMIT_ID)!).limit;
 }
 
 /** Turn anything (missing, hand-edited or corrupt data) into valid settings. */

@@ -433,7 +433,6 @@ function analysisBookLookup(): Promise<BookLookup> {
 
 function ensureAnalysisEngine(): Engine {
   analysisEngine ??= new Engine(createWorkerTransport(engineUrl(import.meta.env.BASE_URL)), {
-    multiPv: 2,
     onStateChange: (state) => {
       if (state === 'failed' && analysisState === 'running') {
         analysisError = `Stockfish could not be started: ${analysisEngine?.error() ?? 'unknown error'}`;
@@ -469,11 +468,6 @@ async function startAnalysis(next: AnalysedGame): Promise<void> {
   game.goTo(0);
   render();
 
-  // A worker that failed earlier answers nothing: start a fresh one, so trying again can work.
-  if (analysisEngine?.state() === 'failed') {
-    analysisEngine.dispose();
-    analysisEngine = null;
-  }
   const engineForRun = ensureAnalysisEngine();
   const moves = game.history().map((move) => ({ san: move.san, uci: toUci(move), fenAfter: move.fenAfter }));
   const book = await analysisBookLookup();
@@ -486,7 +480,14 @@ async function startAnalysis(next: AnalysedGame): Promise<void> {
   });
   if (runId !== analysisRunId) return;
   analysisState = outcome;
+  releaseAnalysisEngine();
   renderEngine();
+}
+
+/** Shut the analysis Stockfish down between runs: it is a large worker, and made again when needed. */
+function releaseAnalysisEngine(): void {
+  analysisEngine?.dispose();
+  analysisEngine = null;
 }
 
 function cancelAnalysis(): void {
@@ -494,6 +495,7 @@ function cancelAnalysis(): void {
   analysisRunId += 1;
   gameAnalyser?.cancel();
   gameAnalyser = null;
+  releaseAnalysisEngine();
   analysisState = 'cancelled';
   scheduleEngineRender();
 }
@@ -538,11 +540,6 @@ playAnalyseButton.addEventListener('click', () => {
   void startAnalysis(next);
 });
 
-/** "14...Qxd4": a move with its number, from the position it was played in. */
-function numberedFrom(fenBefore: string, san: string): string {
-  return numberedLine(fenBefore, [san]);
-}
-
 /** What to say about the move that led to the position on the board, in the Analyse tab. */
 function analysisVerdict(): EnginePanelModel['verdict'] {
   const ply = game.currentPly();
@@ -552,10 +549,10 @@ function analysisVerdict(): EnginePanelModel['verdict'] {
   const bestSan = move.bestMove && move.bestMove !== move.uci ? pvToSan(move.fenBefore, [move.bestMove])[0] : undefined;
   return {
     text: classificationSentence({
-      san: numberedFrom(move.fenBefore, move.san),
+      san: numberedLine(move.fenBefore, [move.san]),
       mover: move.color,
       result: move,
-      bestSan: bestSan ? numberedFrom(move.fenBefore, bestSan) : undefined,
+      bestSan: bestSan ? numberedLine(move.fenBefore, [bestSan]) : undefined,
     }),
     kind: CLASSIFICATION_INFO[move.classification].verdict,
   };
@@ -587,7 +584,6 @@ function renderAnalysis(): void {
       startFen: game.startFen,
     });
   }
-  updateMoveMarks(movesEl, () => undefined);
   updateMoveClasses(movesEl, (ply) => moves[ply - 1]?.classification);
 }
 
@@ -1146,10 +1142,7 @@ function renderEngine(): void {
   board.setArrows(arrows);
 
   if (analysing) renderAnalysis();
-  else {
-    updateMoveClasses(movesEl, () => undefined);
-    updateMoveMarks(movesEl, (ply) => analysis.judgement(ply)?.verdict);
-  }
+  else updateMoveMarks(movesEl, (ply) => analysis.judgement(ply)?.verdict);
 
   renderEnginePanel(enginePanel, {
     engineState: shownEngine.state(),

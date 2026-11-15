@@ -16,6 +16,7 @@ import { parseUciMove } from './pv';
 import {
   attackingMoves,
   captureSquare,
+  flip,
   hasDangerLevels,
   isPieceSafe,
   isPieceTrapped,
@@ -37,13 +38,13 @@ export type Classification =
   | 'miss';
 
 /** Win-% drop (for a move that is not the engine's first choice) below which each label applies. */
-export const GOOD_MOVE_THRESHOLDS = { best: 1, excellent: 4.5, good: VERDICT_THRESHOLDS.inaccuracy } as const;
+const GOOD_MOVE_THRESHOLDS = { best: 1, excellent: 4.5, good: VERDICT_THRESHOLDS.inaccuracy } as const;
 /** Win-% gap between the best and second-best move that makes the best one an only move ("great"). */
-export const GREAT_GAP = 10;
+const GREAT_GAP = 10;
 /** Eval (centipawns, mover's view) from which the position is won anyway, so nothing is "great". */
 const STILL_WINNING_CP = 700;
 /** A move "hands back" the opponent's error when the mover ends within this many points of before it. */
-export const MISS_MARGIN = 5;
+const MISS_MARGIN = 5;
 
 /** How good each label is, for "at least best" comparisons (higher is better). */
 const RANK: Record<Classification, number> = {
@@ -154,7 +155,7 @@ function isGreat(ctx: Context): boolean {
   const after = subjective(ctx.after, ctx.mover);
   if (after.type === 'mate' && after.value > 0) return false; // finding a mate is not "only move" play
   if (ctx.played.captured) {
-    const taken = { color: ctx.played.color === 'w' ? 'b' : 'w', square: captureSquare(ctx.played), type: ctx.played.captured } as const;
+    const taken = { color: flip(ctx.played.color), square: captureSquare(ctx.played), type: ctx.played.captured };
     if (!isPieceSafe(ctx.board, taken)) return false; // taking free material is easy to find
   }
   const top = ctx.before.lines[0]?.score;
@@ -168,8 +169,10 @@ function isBrilliant(ctx: Context): boolean {
   if (!isCandidate(ctx)) return false;
   if (ctx.played.promotion) return false;
   const color = ctx.played.color;
-  const unsafeBefore = unsafePieces(ctx.board, color);
+  // Nothing left to be taken: no sacrifice (and no need for the costlier checks below).
   const unsafeAfter = unsafePieces(ctx.boardAfter, color, ctx.played);
+  if (unsafeAfter.length === 0) return false;
+  const unsafeBefore = unsafePieces(ctx.board, color);
 
   // Moving a piece out of danger is not a sacrifice.
   if (!ctx.boardAfter.inCheck() && unsafeAfter.length < unsafeBefore.length) return false;
@@ -183,7 +186,7 @@ function isBrilliant(ctx: Context): boolean {
   if (trappedAfter.length === unsafeAfter.length || movedWasTrapped || trappedAfter.length < trappedBefore.length) {
     return false;
   }
-  return unsafeAfter.length > 0;
+  return true;
 }
 
 /**

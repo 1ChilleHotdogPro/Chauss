@@ -7,6 +7,7 @@
  * licensed GPL-3.0 — the same licence as Chauss. Rewritten without lodash, with Chauss naming.
  */
 import { Chess, type Color, type Move, type PieceSymbol, type Square } from 'chess.js';
+import { PIECE_VALUES as MATERIAL_VALUES } from '../game/material';
 
 export interface BoardPiece {
   square: Square;
@@ -15,7 +16,7 @@ export interface BoardPiece {
 }
 
 /** A move reduced to what identifies it. */
-export interface RawMove {
+interface RawMove {
   piece: PieceSymbol;
   color: Color;
   from: Square;
@@ -23,9 +24,10 @@ export interface RawMove {
   promotion?: PieceSymbol;
 }
 
-export const PIECE_VALUES: Record<PieceSymbol, number> = { p: 1, n: 3, b: 3, r: 5, q: 9, k: Infinity };
+/** The usual piece values, with the king priceless (it can never be given up). */
+const PIECE_VALUES: Record<PieceSymbol, number> = { ...MATERIAL_VALUES, k: Infinity };
 
-const flip = (color: Color): Color => (color === 'w' ? 'b' : 'w');
+export const flip = (color: Color): Color => (color === 'w' ? 'b' : 'w');
 const moveKey = (move: RawMove): string => `${move.color}${move.piece}${move.from}${move.to}${move.promotion ?? ''}`;
 
 function toRawMove(move: Move): RawMove {
@@ -197,7 +199,7 @@ function anyMateInOne(board: Chess): boolean {
  * Playing `acting` (e.g. capturing the threatened piece) creates a new attack on something worth at
  * least as much, or allows mate in one when the threatened piece is less than a queen.
  */
-export function moveCreatesGreaterThreat(board: Chess, threatened: BoardPiece, acting: RawMove): boolean {
+function moveCreatesGreaterThreat(board: Chess, threatened: BoardPiece, acting: RawMove): boolean {
   const actionBoard = boardFor(board.fen());
   if (!actionBoard) return false;
   const before = new Set(relativeUnsafePieceAttacks(actionBoard, threatened, acting.color).map(moveKey));
@@ -213,7 +215,7 @@ export function moveCreatesGreaterThreat(board: Chess, threatened: BoardPiece, a
 }
 
 /** Like moveCreatesGreaterThreat, but any such threat left after the move counts. */
-export function moveLeavesGreaterThreat(board: Chess, threatened: BoardPiece, acting: RawMove): boolean {
+function moveLeavesGreaterThreat(board: Chess, threatened: BoardPiece, acting: RawMove): boolean {
   const actionBoard = boardFor(board.fen());
   if (!actionBoard) return false;
   try {

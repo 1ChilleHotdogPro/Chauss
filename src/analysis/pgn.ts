@@ -1,4 +1,5 @@
 import { Chess, DEFAULT_POSITION } from 'chess.js';
+import { moveNumber } from './pv';
 
 export type PgnImport =
   | { ok: true; headers: Record<string, string>; startFen: string; sans: string[] }
@@ -35,13 +36,11 @@ function moveTokens(movetext: string): string[] {
     .filter((token) => token !== '' && !/^\$\d+$/.test(token) && !/^(1-0|0-1|1\/2-1\/2|\*)$/.test(token));
 }
 
-/** "move 12" (White) or "move 12…" (Black) for the n-th half-move (0-based) after `startFen`. */
+/** "move 12" (White) or "move 12..." (Black) for the n-th half-move (0-based) after `startFen`. */
 function describePly(index: number, startFen: string): string {
-  const [, turn, , , , fullmove] = startFen.split(' ');
-  const offset = turn === 'b' ? 1 : 0;
-  const ply = index + offset;
-  const number = Number(fullmove ?? '1') + Math.floor(ply / 2);
-  return `move ${number}${ply % 2 === 0 ? '' : '…'}`;
+  const blackFirst = startFen.split(' ')[1] === 'b';
+  const blackMove = (index % 2 === 1) !== blackFirst;
+  return `move ${moveNumber(startFen, index + 1)}${blackMove ? '...' : ''}`;
 }
 
 /**
