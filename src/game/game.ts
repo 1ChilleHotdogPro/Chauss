@@ -28,7 +28,9 @@ export interface MoveRecord {
  * at. All rules come from chess.js; nothing here touches the page.
  */
 export class Game {
-  readonly startFen: string;
+  /** Where the current line starts: the constructor's position, or one given to loadLine. */
+  startFen: string;
+  private readonly initialFen: string;
   private moves: MoveRecord[] = [];
   /** How many moves have been played to reach the position being shown. */
   private cursor = 0;
@@ -36,6 +38,7 @@ export class Game {
 
   constructor(startFen: string = DEFAULT_POSITION) {
     this.startFen = startFen;
+    this.initialFen = startFen;
     this.chess = new Chess(startFen);
   }
 
@@ -151,6 +154,7 @@ export class Game {
   }
 
   reset(): void {
+    this.startFen = this.initialFen;
     this.moves = [];
     this.cursor = 0;
     this.rebuild();
@@ -158,11 +162,16 @@ export class Game {
 
   /**
    * Replace the whole game with a line of moves in normal notation ("e4", "Nf3", ...), played from
-   * the start position, and show its last position. If any move is not legal, nothing changes and
-   * false is returned.
+   * `startFen` (by default the position the game was made with), and show its last position. If any
+   * move is not legal, nothing changes and false is returned.
    */
-  loadLine(sans: readonly string[]): boolean {
-    const chess = new Chess(this.startFen);
+  loadLine(sans: readonly string[], startFen: string = this.initialFen): boolean {
+    let chess: Chess;
+    try {
+      chess = new Chess(startFen);
+    } catch {
+      return false;
+    }
     const records: MoveRecord[] = [];
     for (const san of sans) {
       let move;
@@ -183,6 +192,7 @@ export class Game {
       if (move.captured) record.captured = move.captured;
       records.push(record);
     }
+    this.startFen = startFen;
     this.moves = records;
     this.cursor = records.length;
     this.chess = chess;

@@ -1,3 +1,5 @@
+import { CLASSIFICATION_INFO } from '../analysis/classificationText';
+import type { Classification } from '../analysis/classify';
 import type { Verdict } from '../analysis/eval';
 import { verdictName, verdictSymbol } from '../analysis/verdictText';
 import type { MoveRecord } from '../game/game';
@@ -25,6 +27,30 @@ export function updateMoveMarks(
     if (mark) button.dataset.mark = mark;
     else delete button.dataset.mark;
     button.title = verdictName(verdict);
+  }
+}
+
+/**
+ * Game analysis: put a classification icon (brilliant, best, blunder, ...) on each move button,
+ * drawn by CSS from `data-class` / `data-icon`, with a tooltip naming it.
+ */
+export function updateMoveClasses(
+  list: HTMLOListElement,
+  classFor: (ply: number) => Classification | undefined,
+): void {
+  for (const button of list.querySelectorAll<HTMLButtonElement>('button.move')) {
+    const classification = classFor(Number(button.dataset.ply));
+    if (classification === button.dataset.class) continue;
+    if (!classification) {
+      delete button.dataset.class;
+      delete button.dataset.icon;
+      button.removeAttribute('title');
+      continue;
+    }
+    const info = CLASSIFICATION_INFO[classification];
+    button.dataset.class = classification;
+    button.dataset.icon = info.symbol;
+    button.title = info.name;
   }
 }
 

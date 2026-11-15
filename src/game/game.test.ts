@@ -263,6 +263,21 @@ describe('moving through the game', () => {
     expect(sans(game)).toEqual(['e4', 'e5', 'Nf3', 'Nc6', 'Bc4']);
   });
 
+  it('loadLine can start from another position, and reset goes back to the usual start', () => {
+    const game = new Game();
+    const endgame = '4k3/8/8/8/8/8/4P3/4K3 w - - 0 1';
+    expect(game.loadLine(['e3', 'Kd7'], endgame)).toBe(true);
+    expect(game.startFen).toBe(endgame);
+    game.goTo(0);
+    expect(game.fen()).toBe(endgame);
+    expect(game.loadLine(['e4'], 'not a fen')).toBe(false);
+    expect(game.startFen).toBe(endgame);
+    game.reset();
+    expect(game.startFen).toBe(START);
+    expect(game.loadLine(['e4'])).toBe(true);
+    expect(game.startFen).toBe(START);
+  });
+
   it('loadLine changes nothing when a move is not legal', () => {
     const game = new Game();
     playAll(game, ['d2d4', 'd7d5']);
