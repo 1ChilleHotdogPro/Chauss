@@ -31,10 +31,12 @@ import { explainRefutation } from './explore/refutation';
 import { ExploreSource } from './explore/source';
 import type { Trap } from './explore/traps';
 import { Game, type PromotionPiece } from './game/game';
+import { materialFromFen } from './game/material';
 import { moveSoundFor } from './game/moveSound';
 import { buildRepertoire, type Repertoire } from './repertoire/repertoire';
 import { positionKey, type Snapshot } from './snapshot/format';
 import { describeSnapshot, loadSnapshot } from './snapshot/load';
+import { renderCapturedPieces } from './ui/capturedPieces';
 import { createBoard, type Arrow, type BoardInteraction } from './ui/board';
 import { renderDrillPanel } from './ui/drillPanel';
 import { renderEnginePanel, type EnginePanelModel } from './ui/enginePanel';
@@ -70,6 +72,8 @@ const movesEl = byId<HTMLOListElement>('moves');
 const movesEmptyEl = byId<HTMLParagraphElement>('moves-empty');
 const prevBtn = byId<HTMLButtonElement>('prev');
 const nextBtn = byId<HTMLButtonElement>('next');
+const capturedTopEl = byId('captured-top');
+const capturedBottomEl = byId('captured-bottom');
 const flipBtn = byId<HTMLButtonElement>('flip');
 const undoBtn = byId<HTMLButtonElement>('undo');
 const resetBtn = byId<HTMLButtonElement>('reset');
@@ -774,6 +778,7 @@ function statusText(): string {
 function render(): void {
   board.setInteraction(interaction());
   board.sync();
+  renderCaptured();
 
   // A move was just played (going back, or starting over, makes no sound).
   const justPlayed = game.currentPly() > renderedPly ? game.lastMove() : undefined;
@@ -883,8 +888,13 @@ function goTo(ply: number): void {
   render();
 }
 
+function renderCaptured(): void {
+  renderCapturedPieces(capturedTopEl, capturedBottomEl, materialFromFen(game.fen()), board.orientation());
+}
+
 function flip(): void {
   board.flip();
+  renderCaptured();
   renderEngine(); // the eval bar turns with the board
 }
 

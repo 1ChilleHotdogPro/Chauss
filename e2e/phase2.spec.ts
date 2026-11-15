@@ -77,7 +77,7 @@ test('the eval bar toggles with the button and the E key', async ({ page }) => {
 
   // The bar is as tall as the board and sits beside it.
   const bar = (await evalBar(page).boundingBox())!;
-  const boardBox = (await page.locator('cg-board').boundingBox())!;
+  const boardBox = (await page.locator('.board-wrap').boundingBox())!;
   expect(Math.abs(bar.height - boardBox.height)).toBeLessThan(3);
   expect(bar.x + bar.width).toBeLessThanOrEqual(boardBox.x);
 

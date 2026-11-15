@@ -176,26 +176,75 @@ body {
 .board-row {
   --bar: 30px;
   --gap: 8px;
+  --strip: 28px; /* the captured-pieces line above and below the board */
   display: flex;
   gap: var(--gap);
   align-items: stretch;
-  width: min(100%, calc(100vh - 110px + var(--bar) + var(--gap)));
+  width: min(100%, calc(100vh - 110px - 2 * var(--strip) + var(--bar) + var(--gap)));
   margin: 0 auto;
+}
+
+/* Captured pieces, the board, captured pieces: one column next to the eval bar. */
+.board-col {
+  flex: 1 1 0;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
 }
 
 /* The board is a square. */
 .board-wrap {
   position: relative;
-  flex: 1 1 0;
-  min-width: 0;
-  align-self: flex-start;
+  flex: none;
   aspect-ratio: 1 / 1;
+}
+
+.captured {
+  height: var(--strip);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  overflow: hidden;
+  font-size: 1.4rem;
+  line-height: 1;
+  white-space: nowrap;
+}
+
+.captured-pieces {
+  display: flex;
+  align-items: center;
+}
+
+.captured-piece {
+  margin-right: 1px;
+}
+
+/* Pieces of the same kind sit close together. */
+.captured-piece.same {
+  margin-left: -0.45em;
+}
+
+.captured-piece[data-color="white"] {
+  color: #fff;
+  text-shadow: 0 0 1px #000, 0 0 2px #000, 0 0 2px #000;
+}
+
+.captured-piece[data-color="black"] {
+  color: #1c1a17;
+  text-shadow: 0 0 1px rgba(255, 255, 255, 0.7), 0 0 2px rgba(255, 255, 255, 0.5);
+}
+
+.captured-lead {
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: var(--muted, #6b655a);
 }
 
 /* Eval bar: the dark part is Black's share, the light part (.evalbar-fill) is White's. */
 .evalbar {
   position: relative;
   flex: 0 0 var(--bar);
+  margin: var(--strip) 0; /* lines up with the board, not with the captured-pieces lines */
   background: #3b3834;
   border: 1px solid var(--border);
   border-radius: 4px;
