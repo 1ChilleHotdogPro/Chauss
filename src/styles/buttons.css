@@ -28,8 +28,17 @@ button:disabled {
 }
 
 button:focus-visible {
-  outline: 2px solid var(--accent);
-  outline-offset: 1px;
+  outline: 2px solid var(--focus-ring);
+  outline-offset: 2px;
+}
+
+/* A quick response to hover and press; nothing moves for people who ask for less motion (base.css). */
+button {
+  transition: background-color 120ms ease, border-color 120ms ease, color 120ms ease, transform 80ms ease;
+}
+
+button:active:not(:disabled) {
+  transform: translateY(1px);
 }
 
 button[aria-pressed='true'] {
@@ -105,7 +114,18 @@ button[aria-pressed='true']:hover:not(:disabled) {
 
 .toolbar button {
   padding: 5px 8px;
+  font-size: var(--fs-sm);
   white-space: nowrap;
+}
+
+@media (max-width: 420px) {
+  .toolbar button {
+    padding-inline: 6px;
+  }
+
+  .toolbar .btn-icon {
+    gap: 4px;
+  }
 }
 
 .toolbar .icon-only {

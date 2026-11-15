@@ -110,8 +110,8 @@
   border-radius: 8px 8px 0 0;
 }
 
-/* The score is a small badge in the end of the leading side's colour. It is wider than the bar,
-   so it is centred and allowed to spill over the bar's rounded edge. */
+/* The score is a small badge in the leading side's colour, just past that end of the bar, in the empty
+   strip beside the captured pieces: it is wider than the bar, so it never sits on top of it. */
 .evalbar-score {
   position: absolute;
   left: 50%;
@@ -126,11 +126,11 @@
 }
 
 .evalbar-score.at-bottom {
-  bottom: 4px;
+  top: calc(100% + 5px);
 }
 
 .evalbar-score.at-top {
-  top: 4px;
+  bottom: calc(100% + 5px);
 }
 
 .evalbar-score.on-white {

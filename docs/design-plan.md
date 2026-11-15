@@ -101,6 +101,19 @@ After Wave 2: the orchestrator merges the three branches one at a time and runs 
 - Confirm the cursed set still overrides everything and explodes.
 - Final report: a before/after screenshot grid of each screen. Update CLAUDE.md only if the styling layout (`src/styles/`) needs a line.
 
+**Wave 3 done.**
+- Arrows are forest green (best), amber and terracotta. The gold was faint on light squares.
+- The eval score sits just past the end of the bar, in the empty strip.
+- The Neon board gets cyan highlights.
+- Type scale: `--fs-xl` is 1.6rem and the new `--fs-display` is 1.9rem.
+- The phone header is two rows.
+- Focus: one gold `--focus-ring` everywhere.
+- Buttons fade on hover and press down 1px.
+- A global reduced-motion rule is in `base.css`.
+- Contrast: every text colour in use passes 4.5:1. The script is in the session notes; pairs below 4.5 exist only for colours never used as text on that surface.
+- `e2e/screens.spec.ts` also covers 1440×900 and checks that no screen scrolls sideways and that the board toolbar fits.
+- Left as is: the hub's mini boards use fixed Merida pieces and colours. They are illustrations, not the user's board.
+
 ### How to run it (orchestrator)
 Use one Opus session as orchestrator. It runs Wave 0 and Wave 1 itself, one after the other. It then starts 2a/2b/2c as parallel sub-agents with `isolation: "worktree"` and the briefs above, reviews each report and its screenshots, merges, then runs Wave 3. Model choice: Opus for anything that makes design decisions (0, 1, 2c, 3). Sonnet for 2a and 2b, which are well-specified restyles.
 

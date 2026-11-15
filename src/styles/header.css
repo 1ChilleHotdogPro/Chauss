@@ -108,19 +108,32 @@
   font-size: var(--fs-sm);
 }
 
+/* Phones: two rows. Logo and opening chip on top; the tabs fill the second row, with the gear at its end. */
 @media (max-width: 760px) {
-  .brand {
-    margin-right: auto;
+  .site-header {
+    gap: var(--space-2);
   }
 
-  .settings-button {
-    order: -1;
+  .site-header .brand {
+    font-size: 1.5rem;
+  }
+
+  .crest {
+    width: 28px;
+    height: 28px;
+  }
+
+  .picker-button {
+    order: 1;
     margin-left: auto;
   }
 
-  /* Logo and gear on the first row; tabs and the opening chip below. */
-  .brand {
-    order: -2;
+  .mode-tabs {
+    order: 2;
+  }
+
+  .settings-button {
+    order: 3;
   }
 
   .settings-label {
@@ -139,9 +152,5 @@
   .mode-tabs button {
     flex: 1 1 0;
     padding-inline: var(--space-2);
-  }
-
-  .picker-button {
-    margin-left: 0;
   }
 }

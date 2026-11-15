@@ -22,7 +22,7 @@ body[data-hub='open'] .layout {
 
 .hub-title {
   margin: 0;
-  font-size: var(--fs-xl);
+  font-size: var(--fs-display);
   line-height: 1.2;
   letter-spacing: 0.02em;
   text-shadow: 0 0 18px rgba(230, 194, 122, 0.25);
@@ -88,7 +88,7 @@ body[data-hub='open'] .layout {
 }
 
 .drill-card:focus-visible {
-  outline: 2px solid var(--heading);
+  outline: 2px solid var(--focus-ring);
   outline-offset: 3px;
 }
 
@@ -157,7 +157,7 @@ body[data-hub='open'] .layout {
 }
 
 .drill-card-large .card-title {
-  font-size: 1.6rem;
+  font-size: var(--fs-xl);
   font-variant: small-caps;
   letter-spacing: 0.04em;
 }

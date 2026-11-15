@@ -47,11 +47,11 @@ export interface Arrow {
   opacity?: number;
 }
 
-/** Best move: thick gold. Second: muted green. Third: parchment. Hex copies of --arrow-1..3 in src/theme.css (an SVG attribute cannot read CSS variables). */
+/** Best move: thick forest green. Second: amber. Third: terracotta. Hex copies of --arrow-1..3 in src/theme.css (an SVG attribute cannot read CSS variables). */
 const ARROW_STYLES = [
-  { color: '#e6c27a', lineWidth: 12 },
-  { color: '#93b97a', lineWidth: 8 },
-  { color: '#cbb994', lineWidth: 6 },
+  { color: '#3b8a45', lineWidth: 12 },
+  { color: '#d39b3a', lineWidth: 8 },
+  { color: '#b8664a', lineWidth: 6 },
 ] as const;
 
 /** Chessground insists on its four standard brushes (used for arrows the user draws with the mouse). Arrows the user draws: forest green, brick red, slate blue, candle gold. */

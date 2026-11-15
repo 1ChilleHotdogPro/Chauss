@@ -9,6 +9,7 @@ import { enterDrill, expect, openApp, playMoves, test } from './helpers';
 const label = process.env.SCREENS;
 const sizes = [
   { name: 'desktop', width: 1280, height: 800 },
+  { name: 'wide', width: 1440, height: 900 },
   { name: 'phone', width: 390, height: 844 },
 ];
 
@@ -17,6 +18,11 @@ for (const size of sizes) {
     test.skip(!label, 'set SCREENS=<label> to take design screenshots');
     test.use({ viewport: { width: size.width, height: size.height } });
     const shot = (name: string) => ({ path: `screens/${label}/${size.name}-${name}.png`, fullPage: true });
+    // Every screen: nothing makes the page scroll sideways.
+    test.afterEach(async ({ page }) => {
+      const wide = await page.evaluate(() => document.documentElement.scrollWidth - window.innerWidth);
+      expect(wide, "the page should not scroll sideways").toBeLessThanOrEqual(0);
+    });
 
     test('picker', async ({ page }) => {
       await page.addInitScript(() => {
@@ -39,6 +45,8 @@ for (const size of sizes) {
       await expect(page.locator('#engine-lines li').first()).toBeVisible({ timeout: 30_000 });
       await page.waitForTimeout(1500);
       await page.screenshot(shot('explore'));
+      const toolbar = await page.locator('.toolbar').evaluate((el) => el.scrollWidth - el.clientWidth);
+      expect(toolbar, "the board toolbar should fit").toBeLessThanOrEqual(0);
     });
 
     test('drill hub and drill', async ({ page }) => {

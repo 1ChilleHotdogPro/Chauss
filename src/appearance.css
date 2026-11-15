@@ -30,6 +30,13 @@
 }
 
 /* Neon night: a glowing edge. */
+/* Neon night: highlights in the board's own cyan instead of the walnut gold. */
+#board[data-board='neon'] {
+  --hl-last: rgba(0, 240, 255, 0.2);
+  --hl-select: rgba(0, 240, 255, 0.34);
+  --move-dot: rgba(0, 240, 255, 0.5);
+}
+
 #board[data-board='neon'] cg-board {
   box-shadow: 0 0 14px var(--board-line), inset 0 0 18px rgba(0, 240, 255, 0.25);
 }
