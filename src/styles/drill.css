@@ -1,35 +1,299 @@
-/* Drill: the hub, the opening drill, out-of-book box, endgame drill, statistics table. */
+/* Drill: the hub and its cards (also used by the opening picker), the opening drill, its feedback
+   cards, the out-of-book box, the endgame drill and the statistics table. */
 
 /* ---- Drill hub: a full page; the board layout is hidden while it is open ---- */
 .drill-hub {
-  max-width: 560px;
-  margin: 0 auto;
-}
-
-.hub-list {
-  display: grid;
-  gap: 8px;
-}
-
-.hub-back {
-  margin-bottom: 8px;
+  /* One centred column of at most 880px; the padding keeps the scrollbar at the window's edge. */
+  padding: var(--space-5) max(0px, calc((100% - 880px) / 2)) var(--space-6);
 }
 
 body[data-hub='open'] .layout {
   display: none;
 }
 
+.hub-back {
+  margin: 0 0 var(--space-2) -6px;
+}
+
+.hub-head {
+  margin: 0 0 var(--space-5);
+  text-align: center;
+}
+
+.hub-title {
+  margin: 0;
+  font-size: var(--fs-xl);
+  line-height: 1.2;
+  letter-spacing: 0.02em;
+  text-shadow: 0 0 18px rgba(230, 194, 122, 0.25);
+}
+
+.hub-lead {
+  max-width: 34em;
+  margin: var(--space-2) auto 0;
+  color: var(--muted);
+}
+
+/* A small gold rule under the heading, like a printed chapter title. */
+.hub-head::after {
+  content: '';
+  display: block;
+  width: 96px;
+  height: 1px;
+  margin: var(--space-4) auto 0;
+  background: linear-gradient(90deg, transparent, var(--heading), transparent);
+}
+
+.hub-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: var(--space-4);
+}
+
+.hub-empty {
+  margin-top: var(--space-4);
+  text-align: center;
+}
+
+/* ---- Drill cards: a mini board, then title, side badge, moves and progress ---- */
+.drill-card {
+  --card-board: 112px;
+  --mb-light: var(--text);
+  --mb-dark: color-mix(in srgb, var(--heading) 48%, var(--border));
+  display: flex;
+  align-items: center;
+  gap: var(--space-4);
+  width: 100%;
+  padding: var(--space-4);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  background: var(--panel);
+  background-image: linear-gradient(180deg, rgba(255, 233, 190, 0.05), transparent 70%);
+  box-shadow: var(--shadow-soft), var(--inset-light);
+  color: var(--text);
+  text-align: left;
+  transition: border-color 150ms ease, transform 150ms ease, box-shadow 150ms ease;
+}
+
+.drill-card:hover:not(:disabled) {
+  border-color: var(--heading);
+  background: var(--panel-raised);
+  background-image: linear-gradient(180deg, rgba(255, 233, 190, 0.06), transparent 70%);
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-soft), 0 0 0 1px rgba(230, 194, 122, 0.25), var(--inset-light);
+}
+
+.drill-card:active:not(:disabled) {
+  transform: translateY(0);
+}
+
+.drill-card:focus-visible {
+  outline: 2px solid var(--heading);
+  outline-offset: 3px;
+}
+
+.drill-card[aria-current='true'] {
+  border-color: var(--accent);
+}
+
+.drill-card:disabled {
+  opacity: 0.6;
+}
+
+.drill-card-large {
+  --card-board: 148px;
+  padding: var(--space-5);
+  gap: var(--space-5);
+}
+
+/* The board, in a thin wooden frame. */
+.card-board {
+  flex: none;
+  width: var(--card-board);
+  height: var(--card-board);
+  border-radius: 3px;
+  overflow: hidden;
+  box-shadow: 0 0 0 3px var(--border-soft), 0 0 0 4px var(--border), 0 4px 10px rgba(0, 0, 0, 0.5);
+}
+
+.mini-board {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+.mini-board .mb-light {
+  fill: var(--mb-light);
+}
+
+.mini-board .mb-dark {
+  fill: var(--mb-dark);
+}
+
+.mini-board .mb-mark {
+  fill: var(--hl-last);
+}
+
+.card-text {
+  display: grid;
+  justify-items: start;
+  gap: 6px;
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+.card-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: var(--space-1) var(--space-2);
+}
+
+.card-title {
+  color: var(--heading);
+  font-size: var(--fs-lg);
+  font-weight: 600;
+  line-height: 1.2;
+}
+
+.drill-card-large .card-title {
+  font-size: 1.6rem;
+  font-variant: small-caps;
+  letter-spacing: 0.04em;
+}
+
+.card-tag {
+  padding: 0 var(--space-2);
+  border: 1px solid var(--accent);
+  border-radius: 999px;
+  color: var(--accent);
+  font-size: var(--fs-xs);
+  line-height: 1.5;
+  white-space: nowrap;
+}
+
+.card-desc {
+  color: var(--text);
+}
+
+.card-line {
+  color: var(--muted);
+  font-family: var(--font-data);
+  font-size: var(--fs-sm);
+  font-variant-numeric: tabular-nums;
+  overflow-wrap: anywhere;
+}
+
+/* Progress: a small gold line with a clock-face tick. */
+.card-progress {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--heading);
+  font-size: var(--fs-sm);
+  font-variant-numeric: tabular-nums;
+}
+
+.card-progress::before {
+  content: '';
+  flex: none;
+  width: 14px;
+  height: 14px;
+  background: currentColor;
+  -webkit-mask: var(--icon-progress) center / contain no-repeat;
+  mask: var(--icon-progress) center / contain no-repeat;
+}
+
+.card-facts {
+  color: var(--heading);
+  font-size: var(--fs-sm);
+  font-variant-numeric: tabular-nums;
+}
+
+.card-note {
+  color: var(--muted);
+  font-size: var(--fs-sm);
+  font-style: italic;
+}
+
+.card-chevron {
+  flex: none;
+  margin-left: auto;
+  color: var(--muted);
+  transition: transform 150ms ease, color 150ms ease;
+}
+
+.drill-card:hover:not(:disabled) .card-chevron {
+  color: var(--heading);
+  transform: translateX(3px);
+}
+
+/* "You play White": a pill with a disc in that colour. */
+.side-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 1px var(--space-2) 1px 6px;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  background: rgba(0, 0, 0, 0.2);
+  color: var(--text);
+  font-size: var(--fs-xs);
+  line-height: 1.6;
+  white-space: nowrap;
+}
+
+.side-badge::before {
+  content: '';
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  border: 1px solid var(--muted);
+  background: var(--evalbar-light);
+}
+
+.side-badge[data-side='black']::before {
+  background: var(--evalbar-dark);
+}
+
+/* Icons drawn with masks, so the text of the elements can be set freely from TypeScript. */
+.drill-card,
+.drill-feedback,
+.oob {
+  --icon-progress: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2.2' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='12' cy='12' r='9'/%3E%3Cpath d='M12 7v5l3 2'/%3E%3C/svg%3E");
+  --icon-check: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2.4' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='12' cy='12' r='9.5'/%3E%3Cpath d='M7.5 12.5l3 3 6-6.5'/%3E%3C/svg%3E");
+  --icon-cross: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2.4' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='12' cy='12' r='9.5'/%3E%3Cpath d='M9 9l6 6M15 9l-6 6'/%3E%3C/svg%3E");
+  --icon-trophy: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2.2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M7 4h10v5a5 5 0 01-10 0z'/%3E%3Cpath d='M7 6H4v1.5A3.5 3.5 0 007.3 11M17 6h3v1.5a3.5 3.5 0 01-3.3 3.5M12 14v4M8.5 21h7M9.5 18h5'/%3E%3C/svg%3E");
+  --icon-bulb: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2.2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M9 18h6M10 21h4M12 3a6 6 0 00-3.6 10.8c.7.6 1.1 1.3 1.1 2.2h5c0-.9.4-1.6 1.1-2.2A6 6 0 0012 3z'/%3E%3C/svg%3E");
+  --icon-signpost: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2.2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M12 3v18M8 21h8'/%3E%3Cpath d='M5 5h11l3 3-3 3H5z'/%3E%3C/svg%3E");
+}
+
 /* ---- Out of the opening data (Drill) ---- */
 .oob {
-  margin-bottom: 12px;
-  padding: 8px 10px;
-  border-left: 4px solid var(--accent);
-  border-radius: 4px;
-  background: var(--button);
+  position: relative;
+  margin-bottom: var(--space-3);
+  padding: var(--space-3) var(--space-3) var(--space-3) 42px;
+  border: 1px solid var(--border-soft);
+  border-left: 4px solid var(--heading);
+  border-radius: var(--radius-sm);
+  background: color-mix(in srgb, var(--heading) 7%, var(--panel-raised));
+  animation: feedback-in-a 200ms ease-out;
+}
+
+.oob::before {
+  content: '';
+  position: absolute;
+  left: 12px;
+  top: 13px;
+  width: 20px;
+  height: 20px;
+  background: var(--heading);
+  -webkit-mask: var(--icon-signpost) center / contain no-repeat;
+  mask: var(--icon-signpost) center / contain no-repeat;
 }
 
 .oob-lead {
-  margin: 0 0 8px;
+  margin: 0 0 var(--space-2);
   font-weight: 600;
 }
 
@@ -38,16 +302,19 @@ body[data-hub='open'] .layout {
   flex-wrap: wrap;
   align-items: center;
   gap: 6px;
-  margin-top: 8px;
-  font-size: 0.9rem;
+  margin-top: var(--space-2);
+  color: var(--muted);
+  font-size: var(--fs-sm);
 }
 
 .oob-strength select {
   max-width: 100%;
+  padding: 3px 6px;
+  font: inherit;
 }
 
 .oob-result p {
-  margin: 8px 0 0;
+  margin: var(--space-2) 0 0;
   overflow-wrap: anywhere;
 }
 
@@ -58,36 +325,107 @@ body[data-hub='open'] .layout {
 
 /* ---- Drill ---- */
 .drill {
-  margin-bottom: 12px;
+  margin-bottom: var(--space-3);
 }
 
 .drill-prompt {
-  margin: 0 0 8px;
+  margin: 0 0 var(--space-2);
 }
 
-.drill-prompt[data-state='finished'] {
+.drill-prompt[data-state='finished'],
+.drill-prompt[data-state='solved'],
+.drill-prompt[data-state='failed'],
+.drill-prompt[data-state='summary'] {
   font-weight: 600;
-}
-
-.drill-feedback {
-  margin: 0 0 8px;
-  padding: 6px 8px;
-  border-left: 4px solid var(--border);
-  border-radius: 4px;
-  background: var(--button);
-  font-size: 0.9rem;
-}
-
-.drill-feedback[data-kind='correct'] {
-  border-left-color: var(--accent);
-}
-
-.drill-feedback[data-kind='wrong'] {
-  border-left-color: var(--blunder);
 }
 
 .drill .hint {
   margin-top: 6px;
+}
+
+/* ---- Feedback cards: right / wrong / solved / not solved ----
+   The icon is a ::before, so the TypeScript can keep setting the text with textContent. Each kind has
+   its own (identical) animation name, so switching from wrong to right plays the entrance again. */
+.drill-feedback {
+  --fb-colour: var(--heading);
+  --fb-icon: var(--icon-bulb);
+  position: relative;
+  margin: 0 0 var(--space-3);
+  padding: 10px var(--space-3) 10px 40px;
+  border: 1px solid var(--border-soft);
+  border-left: 4px solid var(--fb-colour);
+  border-radius: var(--radius-sm);
+  background: color-mix(in srgb, var(--fb-colour) 9%, var(--panel-raised));
+  font-size: var(--fs-sm);
+  line-height: 1.45;
+  animation: feedback-in-a 200ms ease-out;
+}
+
+.drill-feedback::before {
+  content: '';
+  position: absolute;
+  left: 11px;
+  top: 10px;
+  width: 19px;
+  height: 19px;
+  background: var(--fb-colour);
+  -webkit-mask: var(--fb-icon) center / contain no-repeat;
+  mask: var(--fb-icon) center / contain no-repeat;
+}
+
+.drill-feedback[data-kind='correct'],
+.drill-feedback[data-kind='good'] {
+  --fb-colour: var(--accent);
+  --fb-icon: var(--icon-check);
+  animation-name: feedback-in-b;
+}
+
+.drill-feedback[data-kind='solved'] {
+  --fb-colour: var(--accent);
+  --fb-icon: var(--icon-trophy);
+  animation-name: feedback-in-c;
+}
+
+.drill-feedback[data-kind='wrong'],
+.drill-feedback[data-kind='failed'] {
+  --fb-colour: var(--blunder);
+  --fb-icon: var(--icon-cross);
+  animation-name: feedback-in-d;
+}
+
+@keyframes feedback-in-a {
+  from {
+    opacity: 0;
+    transform: translateY(-4px);
+  }
+}
+
+@keyframes feedback-in-b {
+  from {
+    opacity: 0;
+    transform: translateY(-4px);
+  }
+}
+
+@keyframes feedback-in-c {
+  from {
+    opacity: 0;
+    transform: translateY(-4px) scale(0.98);
+  }
+}
+
+@keyframes feedback-in-d {
+  0% {
+    opacity: 0;
+    transform: translateX(-4px);
+  }
+  40% {
+    opacity: 1;
+    transform: translateX(3px);
+  }
+  70% {
+    transform: translateX(-2px);
+  }
 }
 
 /* ---- Endgame drill ---- */
@@ -104,20 +442,6 @@ body[data-mode='drill'][data-drill='endgame'] .captured {
   display: none !important;
 }
 
-.drill-prompt[data-state='solved'],
-.drill-prompt[data-state='failed'] {
-  font-weight: 600;
-}
-
-.drill-feedback[data-kind='good'],
-.drill-feedback[data-kind='solved'] {
-  border-left-color: var(--accent);
-}
-
-.drill-feedback[data-kind='failed'] {
-  border-left-color: var(--blunder);
-}
-
 .stars {
   color: var(--inaccuracy);
   letter-spacing: 1px;
@@ -126,82 +450,240 @@ body[data-mode='drill'][data-drill='endgame'] .captured {
 .endgame-summary table {
   width: 100%;
   border-collapse: collapse;
-  margin: 4px 0 8px;
-  font-size: 0.9rem;
+  margin: var(--space-1) 0 var(--space-2);
+  font-size: var(--fs-sm);
+  font-variant-numeric: tabular-nums;
 }
 
 .endgame-summary th,
 .endgame-summary td {
-  padding: 4px 6px;
-  border-bottom: 1px solid var(--border);
+  padding: 5px 6px;
+  border-bottom: 1px solid var(--border-soft);
   text-align: left;
 }
 
+.endgame-summary th {
+  color: var(--muted);
+  font-size: var(--fs-xs);
+  font-weight: 600;
+  font-variant: small-caps;
+  letter-spacing: 0.06em;
+}
+
+/* ---- Statistics table ---- */
+.stats-summary {
+  margin: 0 0 var(--space-1);
+}
+
+.stats-legend {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  margin-bottom: var(--space-3);
+}
+
+.due-swatch {
+  flex: none;
+  width: 14px;
+  height: 14px;
+  border-radius: 3px;
+  border-left: 3px solid var(--heading);
+  background: color-mix(in srgb, var(--heading) 22%, transparent);
+}
+
+.stats-scroll + .settings-section {
+  margin-top: var(--space-5);
+}
+
 .stats-scroll {
-  max-height: 46vh;
+  max-height: 52vh;
   overflow: auto;
+  border: 1px solid var(--border-soft);
+  border-radius: var(--radius-sm);
 }
 
-/* The Statistics table borrows the explorer's table look; these rules must beat .explore-table's
-   (hence the double class): the line wraps and takes the spare width, so every column stays in view. */
-.explore-table.stats-table td {
-  width: auto;
+.stats-table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+  font-size: var(--fs-sm);
+  font-variant-numeric: tabular-nums;
 }
 
-.explore-table.stats-table td.stats-line {
+.stats-table th {
+  position: sticky;
+  top: 0;
+  z-index: 1;
+  padding: 6px var(--space-2);
+  border-bottom: 1px solid var(--border);
+  background: var(--panel-raised);
+  color: var(--muted);
+  font-size: var(--fs-xs);
+  font-weight: 600;
+  font-variant: small-caps;
+  letter-spacing: 0.06em;
+  text-align: left;
+  white-space: nowrap;
+}
+
+.stats-table td {
+  padding: 6px var(--space-2);
+  border-bottom: 1px solid var(--border-soft);
+  vertical-align: top;
+}
+
+.stats-table tbody tr:last-child td {
+  border-bottom: none;
+}
+
+.stats-table tbody tr:nth-child(even) td {
+  background: rgba(255, 233, 190, 0.025);
+}
+
+.stats-table th:nth-child(n + 3):nth-child(-n + 5),
+.stats-table td:nth-child(n + 3):nth-child(-n + 5) {
+  text-align: right;
+}
+
+.stats-table td.stats-line {
   width: 100%;
   min-width: 9em;
-  white-space: normal;
+  color: var(--muted);
 }
 
-.explore-table.stats-table td:last-child {
-  white-space: normal;
+.stats-table .stats-move {
+  color: var(--text);
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.stats-table td:last-child {
+  color: var(--muted);
+  white-space: nowrap;
+}
+
+/* Due now: a gold row with a gold edge. */
+.stats-table tbody tr[data-due='true'] td {
+  background: color-mix(in srgb, var(--heading) 13%, transparent);
+}
+
+.stats-table tbody tr[data-due='true'] td:first-child {
+  box-shadow: inset 3px 0 0 var(--heading);
+}
+
+.stats-table tbody tr[data-due='true'] td:last-child {
+  color: var(--heading);
+  font-weight: 600;
 }
 
 /* Phones: fixed column widths, so the table can never be wider than the screen whatever the font
    (Linux fonts run wider than Windows ones); text wraps inside its column instead. */
 @media (max-width: 480px) {
-  .explore-table.stats-table {
+  .stats-table {
     table-layout: fixed;
+    font-size: var(--fs-xs);
   }
 
-  .explore-table.stats-table th,
-  .explore-table.stats-table td,
-  .explore-table.stats-table td.stats-line {
+  .stats-table th,
+  .stats-table td,
+  .stats-table td.stats-line,
+  .stats-table .stats-move,
+  .stats-table td:last-child {
     min-width: 0;
-    padding: 2px 2px;
+    padding: 4px 3px;
     white-space: normal;
     overflow-wrap: anywhere;
   }
 
-  .explore-table.stats-table th {
-    font-size: 0.6rem;
+  /* Plain capitals here: small caps are wider, and "Wrong" must not break. */
+  .stats-table th {
+    font-size: var(--fs-xs);
+    font-variant: normal;
+    letter-spacing: 0;
   }
 
-  .explore-table.stats-table th:nth-child(1) {
-    width: 33%;
+  .stats-table th:nth-child(1) {
+    width: 30%;
   }
 
-  .explore-table.stats-table th:nth-child(2) {
+  .stats-table th:nth-child(2) {
+    width: 14%;
+  }
+
+  .stats-table th:nth-child(3) {
+    width: 11%;
+  }
+
+  .stats-table th:nth-child(4) {
     width: 15%;
   }
 
-  .explore-table.stats-table th:nth-child(3),
-  .explore-table.stats-table th:nth-child(4),
-  .explore-table.stats-table th:nth-child(5) {
-    width: 12%;
+  .stats-table th:nth-child(5) {
+    width: 13%;
   }
 
-  .explore-table.stats-table th:nth-child(6) {
-    width: 16%;
+  .stats-table th:nth-child(6) {
+    width: 17%;
   }
 }
 
-.stats-table .stats-move {
-  font-weight: 600;
+/* ---- Phones ---- */
+@media (max-width: 560px) {
+  .drill-hub {
+    padding-top: var(--space-3);
+  }
+
+  .hub-list {
+    grid-template-columns: minmax(0, 1fr);
+    gap: var(--space-3);
+  }
+
+  .hub-head {
+    margin-bottom: var(--space-4);
+  }
+
+  .hub-title {
+    font-size: calc(var(--fs-lg) * 1.2);
+  }
+
+  .drill-card {
+    --card-board: 84px;
+    gap: var(--space-3);
+    padding: var(--space-3);
+  }
+
+  .drill-card-large {
+    --card-board: 96px;
+    padding: var(--space-4);
+    gap: var(--space-4);
+  }
+
+  .drill-card-large .card-title {
+    font-size: var(--fs-lg);
+  }
+
+  .card-desc {
+    font-size: var(--fs-sm);
+  }
+
+  .card-chevron {
+    display: none;
+  }
 }
 
-.stats-table tr[data-due='true'] td:last-child {
-  color: var(--mistake);
-  font-weight: 600;
+@media (prefers-reduced-motion: reduce) {
+  .drill-card,
+  .card-chevron {
+    transition: none;
+  }
+
+  .drill-card:hover:not(:disabled),
+  .drill-card:hover:not(:disabled) .card-chevron {
+    transform: none;
+  }
+
+  .drill-feedback,
+  .oob {
+    animation: none !important;
+  }
 }

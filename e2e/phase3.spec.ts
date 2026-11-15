@@ -33,10 +33,28 @@ async function mockExplorer(page: Page, status = 200): Promise<Request[]> {
   return requests;
 }
 
+/** Open Settings and unfold Advanced, where the token and the connection test live. */
 async function openSettings(page: Page): Promise<void> {
   await page.locator('#open-settings').click();
   await expect(page.locator('#settings')).toBeVisible();
+  const advanced = page.locator('#settings .settings-advanced');
+  if (!(await advanced.evaluate((element) => (element as HTMLDetailsElement).open))) {
+    await advanced.locator('summary').click();
+  }
+  await expect(page.locator('#token')).toBeVisible();
 }
+
+test('Settings starts with Board & pieces; the token is folded away under Advanced', async ({ page }) => {
+  await openApp(page);
+  await page.locator('#open-settings').click();
+  await expect(page.locator('#settings h3')).toHaveText(['Board & pieces', 'Your level', 'Game analysis']);
+  await expect(page.locator('#settings .settings-advanced')).not.toHaveAttribute('open', '');
+  await expect(page.locator('#token')).toBeHidden();
+  await page.locator('#settings .settings-advanced summary').click();
+  await expect(page.locator('#token')).toBeVisible();
+  await expect(page.locator('#explorer-test')).toBeVisible();
+  await expect(page.locator('#snapshot-info')).toBeVisible();
+});
 
 const storedSettings = (page: Page) =>
   page.evaluate(() => JSON.parse(localStorage.getItem('chauss.settings.v1') ?? 'null') as Record<string, unknown> | null);
@@ -86,6 +104,8 @@ test('the token is stored in this browser, survives a reload, and can be cleared
   // Let the engine finish loading first: reloading mid-download would cancel that request,
   // which the "no failed requests" guard rightly reports.
   await expect(page.locator('#engine-status')).toHaveAttribute('data-state', 'ready', { timeout: 20_000 });
+  // The same goes for the board and piece previews at the top of Settings.
+  await page.waitForLoadState('networkidle');
   await page.reload();
   await expect(page.locator('cg-board piece')).toHaveCount(32);
   await openSettings(page);

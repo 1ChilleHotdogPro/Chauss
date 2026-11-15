@@ -1,94 +1,363 @@
-/* Dialogs: opening picker, Settings, common-mistakes list. */
+/* Dialogs: opening picker, Settings, Statistics, common-mistakes list.
+   One look for all four: a sticky header (title + ✕), then the body. The dialog itself scrolls, so the
+   header and its close button stay in view. The picker's cards are the Drill hub's (drill.css). */
 
-.opening-list {
-  display: grid;
-  gap: 8px;
-}
-
-.opening-choice,
-.hub-choice {
-  display: grid;
-  gap: 2px;
-  padding: 10px 12px;
-  text-align: left;
-}
-
-.opening-choice[aria-current='true'],
-.hub-choice[aria-current='true'] {
-  border-color: var(--accent);
-}
-
-/* Settings dialog */
+/* ---- The frame ---- */
 .settings {
-  width: min(560px, calc(100vw - 24px));
+  width: min(600px, calc(100vw - 24px));
   max-height: calc(100vh - 24px);
+  max-height: calc(100dvh - 24px);
   padding: 0;
+  overflow-y: auto;
+  overscroll-behavior: contain;
   border: 1px solid var(--border);
-  border-radius: 10px;
+  border-radius: 12px;
   background: var(--panel);
   color: var(--text);
 }
 
+.settings.dialog-wide {
+  width: min(720px, calc(100vw - 24px));
+}
+
 .settings::backdrop {
-  background: rgba(0, 0, 0, 0.5);
+  background: var(--backdrop);
+  backdrop-filter: blur(2px);
 }
 
+.settings[open] {
+  animation: dialog-in 160ms ease-out;
+}
+
+@keyframes dialog-in {
+  from {
+    opacity: 0;
+    transform: translateY(6px) scale(0.99);
+  }
+}
+
+/* ---- Sticky header ---- */
+.dialog-head {
+  position: sticky;
+  top: 0;
+  z-index: 3;
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-3);
+  padding: var(--space-4) var(--space-4) var(--space-3) var(--space-5);
+  border-bottom: 1px solid var(--border-soft);
+  background: var(--panel);
+  background-image: linear-gradient(180deg, rgba(255, 233, 190, 0.05), rgba(255, 233, 190, 0.02));
+  box-shadow: 0 6px 12px -10px rgba(0, 0, 0, 0.7);
+}
+
+.dialog-titles {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+.dialog-head h2 {
+  margin: 0;
+  font-size: var(--fs-lg);
+  line-height: 1.25;
+  letter-spacing: 0.02em;
+}
+
+.dialog-sub {
+  margin: var(--space-1) 0 0;
+  color: var(--muted);
+  font-size: var(--fs-sm);
+}
+
+.dialog-close {
+  flex: none;
+  margin: -2px -4px 0 0;
+  padding: var(--space-2);
+  border-radius: 999px;
+}
+
+/* The first-time picker has no way out but a choice (.btn-icon's display would show it again). */
+.dialog-close[hidden] {
+  display: none;
+}
+
+.dialog-close .icon {
+  width: 20px;
+  height: 20px;
+}
+
+/* ---- Body and sections ---- */
 .settings-body {
-  padding: 16px 18px;
+  padding: var(--space-4) var(--space-5) var(--space-5);
 }
 
-.settings h2 {
-  margin: 0 0 8px;
-  font-size: 1.2rem;
+.settings-section + .settings-section {
+  margin-top: var(--space-5);
+  padding-top: var(--space-5);
+  border-top: 1px solid var(--border-soft);
 }
 
 .settings h3 {
-  margin: 16px 0 6px;
-  font-size: 0.95rem;
+  margin: 0 0 var(--space-1);
+  font-size: var(--fs-md);
+  font-variant: small-caps;
+  letter-spacing: 0.08em;
+}
+
+.settings h4 {
+  margin: var(--space-4) 0 var(--space-2);
+  color: var(--text);
+  font-size: var(--fs-sm);
+  font-weight: 600;
+}
+
+.settings-section > .hint:first-of-type {
+  margin-bottom: var(--space-1);
 }
 
 .settings a {
   color: var(--accent);
 }
 
+/* ---- Text fields and the token row ---- */
 .token-row {
   display: flex;
+  flex-wrap: wrap;
   gap: 6px;
-  margin: 8px 0 4px;
+  margin: var(--space-2) 0 var(--space-1);
 }
 
 .token-row input {
-  flex: 1 1 auto;
+  flex: 1 1 200px;
   min-width: 0;
   font: inherit;
   color: inherit;
   background: var(--bg);
   border: 1px solid var(--border);
-  border-radius: 6px;
+  border-radius: var(--radius-sm);
   padding: 6px 8px;
 }
 
+.token-row input:focus-visible,
+.field-row select:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 1px;
+}
+
+.field-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-2);
+  margin: var(--space-2) 0;
+}
+
+.field-row select {
+  max-width: 100%;
+  padding: 4px 6px;
+  font: inherit;
+  font-size: var(--fs-sm);
+}
+
+/* ---- Check boxes as chips: the whole chip is the click target ---- */
 .checks {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
-  gap: 4px 12px;
-  margin-bottom: 4px;
+  grid-template-columns: repeat(auto-fill, minmax(128px, 1fr));
+  gap: 6px;
+  margin-bottom: var(--space-2);
 }
 
 .check {
   display: flex;
   align-items: center;
-  gap: 2px;
+  gap: 6px;
+  padding: 5px 10px 5px 8px;
+  border: 1px solid var(--border-soft);
+  border-radius: var(--radius-sm);
+  background: rgba(0, 0, 0, 0.14);
+  font-size: var(--fs-sm);
+  font-variant-numeric: tabular-nums;
   cursor: pointer;
+  transition: border-color 120ms ease, background-color 120ms ease;
 }
 
-.test-result {
-  margin: 8px 0 0;
-  padding: 6px 8px;
-  border-left: 4px solid var(--border);
+.check:hover {
+  border-color: var(--border);
+  background: var(--btn-ghost-hover);
+}
+
+.check:has(input:checked) {
+  border-color: var(--accent);
+  background: color-mix(in srgb, var(--accent-deep) 55%, transparent);
+}
+
+.check input {
+  margin: 0;
+}
+
+/* ---- Board & pieces: the preview tiles (beats appearance.css's base tile rules) ---- */
+.settings .style-grid {
+  grid-template-columns: repeat(auto-fill, minmax(92px, 1fr));
+  gap: var(--space-2);
+  margin-bottom: var(--space-2);
+}
+
+.settings .style-tile {
+  position: relative;
+  gap: 6px;
+  padding: var(--space-2) var(--space-1) 6px;
+  border: 1px solid var(--border-soft);
+  border-radius: var(--radius);
+  background: rgba(0, 0, 0, 0.16);
+  box-shadow: none;
+  font-size: var(--fs-xs);
+  line-height: 1.2;
+  text-align: center;
+  transition: border-color 120ms ease, background-color 120ms ease;
+}
+
+.settings .style-tile:hover:not(:disabled) {
+  border-color: var(--heading);
+  background: var(--btn-ghost-hover);
+}
+
+.settings .style-tile[aria-checked='true'] {
+  border-color: var(--accent);
+  background: color-mix(in srgb, var(--accent-deep) 45%, transparent);
+  box-shadow: inset 0 0 0 1px var(--accent);
+}
+
+/* A small tick on the chosen tile. */
+.settings .style-tile[aria-checked='true']::after {
+  content: '';
+  position: absolute;
+  top: 4px;
+  right: 4px;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: var(--accent)
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%2315200f' stroke-width='3.2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M5 12.5l4.5 4.5L19 7.5'/%3E%3C/svg%3E")
+    center / 11px no-repeat;
+}
+
+.settings .style-preview {
+  width: 56px;
+  height: 56px;
   border-radius: 4px;
-  background: var(--button);
-  font-size: 0.9rem;
+  box-shadow: 0 0 0 1px var(--border-soft), 0 2px 5px rgba(0, 0, 0, 0.45);
+}
+
+.settings .style-preview.wide {
+  width: 64px;
+  height: 32px;
+}
+
+.settings .style-name {
+  color: var(--text);
+}
+
+.settings .volume-row {
+  margin-top: var(--space-3);
+  font-size: var(--fs-sm);
+}
+
+/* ---- Advanced: folded away by default ---- */
+.settings-advanced {
+  margin-top: var(--space-5);
+  border: 1px solid var(--border-soft);
+  border-radius: var(--radius);
+  background: rgba(0, 0, 0, 0.12);
+}
+
+.settings-advanced > summary {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: var(--space-1) var(--space-3);
+  padding: var(--space-3) var(--space-4) var(--space-3) 40px;
+  position: relative;
+  list-style: none;
+  cursor: pointer;
+  border-radius: var(--radius);
+}
+
+.settings-advanced > summary::-webkit-details-marker {
+  display: none;
+}
+
+/* The fold arrow. */
+.settings-advanced > summary::before {
+  content: '';
+  position: absolute;
+  left: 14px;
+  top: 50%;
+  width: 16px;
+  height: 16px;
+  margin-top: -8px;
+  background: var(--muted);
+  -webkit-mask: var(--icon-chevron) center / contain no-repeat;
+  mask: var(--icon-chevron) center / contain no-repeat;
+  transition: transform 120ms ease;
+}
+
+.settings-advanced {
+  --icon-chevron: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2.4' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M9 5l7 7-7 7'/%3E%3C/svg%3E");
+}
+
+.settings-advanced[open] > summary::before {
+  transform: rotate(90deg);
+}
+
+.settings-advanced > summary:hover {
+  background: var(--btn-ghost-hover);
+}
+
+.settings-advanced > summary:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 1px;
+}
+
+.advanced-title {
+  color: var(--heading);
+  font-weight: 600;
+  font-variant: small-caps;
+  letter-spacing: 0.08em;
+}
+
+.advanced-sub {
+  color: var(--muted);
+  font-size: var(--fs-sm);
+}
+
+.settings-subsection {
+  padding: 0 var(--space-4) var(--space-4);
+}
+
+.settings-subsection + .settings-subsection {
+  padding-top: var(--space-3);
+  border-top: 1px solid var(--border-soft);
+}
+
+.settings-subsection h4 {
+  margin-top: var(--space-1);
+}
+
+.settings-advanced[open] > summary {
+  margin-bottom: var(--space-1);
+  border-bottom-left-radius: 0;
+  border-bottom-right-radius: 0;
+}
+
+/* ---- Status messages (connection test, backups, warnings) ---- */
+.test-result {
+  margin: var(--space-2) 0 0;
+  padding: var(--space-2) 10px;
+  border: 1px solid var(--border-soft);
+  border-left: 4px solid var(--border);
+  border-radius: var(--radius-sm);
+  background: var(--panel-raised);
+  font-size: var(--fs-sm);
 }
 
 .test-result[data-status='ok'] {
@@ -99,28 +368,98 @@
   border-left-color: var(--blunder);
 }
 
-.settings-footer {
-  display: flex;
-  justify-content: flex-end;
-  margin-top: 18px;
+#settings-save-warning {
+  margin: 0 0 var(--space-4);
 }
 
-/* Traps dialog */
-.traps {
-  width: min(680px, calc(100vw - 24px));
+/* A destructive action: quiet until hovered. */
+.btn-danger {
+  color: var(--blunder);
+  border-color: color-mix(in srgb, var(--blunder) 45%, var(--border));
+  background: transparent;
+}
+
+.btn-danger:hover:not(:disabled) {
+  border-color: var(--blunder);
+  background: color-mix(in srgb, var(--blunder) 12%, transparent);
+}
+
+/* ---- Opening picker: the hub's cards in a grid ---- */
+.card-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(270px, 1fr));
+  gap: var(--space-3);
+}
+
+/* ---- Common mistakes ---- */
+.traps #traps-body > .hint:first-child {
+  margin-bottom: var(--space-2);
+}
+
+.traps h3 {
+  margin-top: var(--space-5);
 }
 
 .trap-list {
-  margin: 0;
-  padding-left: 1.4em;
+  display: grid;
+  gap: var(--space-2);
+  margin: var(--space-2) 0 0;
+  padding: 0;
+  list-style: none;
+  counter-reset: trap;
 }
 
 .trap {
-  margin-bottom: 10px;
+  position: relative;
+  padding: var(--space-3) var(--space-3) var(--space-3) 44px;
+  border: 1px solid var(--border-soft);
+  border-left: 4px solid var(--trap-colour, var(--border));
+  border-radius: var(--radius-sm);
+  background: rgba(0, 0, 0, 0.14);
+  counter-increment: trap;
+}
+
+.trap[data-kind='exploit'] {
+  --trap-colour: var(--accent);
+}
+
+.trap[data-kind='avoid'] {
+  --trap-colour: var(--mistake);
+}
+
+/* The number, in a small disc. */
+.trap::before {
+  content: counter(trap);
+  position: absolute;
+  left: 12px;
+  top: var(--space-3);
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: var(--panel-raised);
+  border: 1px solid var(--trap-colour, var(--border));
+  color: var(--text);
+  font-size: var(--fs-xs);
+  line-height: 20px;
+  text-align: center;
+  font-variant-numeric: tabular-nums;
 }
 
 .trap p {
-  margin: 0 0 2px;
+  margin: 0 0 var(--space-1);
+}
+
+.trap-title {
+  font-size: var(--fs-md);
+}
+
+/* The bad move, in its verdict's colour (the left rule says whose mistake it is). */
+.trap-title strong {
+  color: var(--mistake);
+}
+
+.trap[data-verdict='blunder'] .trap-title strong {
+  color: var(--blunder);
 }
 
 .trap-lead {
@@ -128,10 +467,59 @@
 }
 
 .trap-punish {
-  font-size: 0.9rem;
+  font-size: var(--fs-sm);
 }
 
 .trap-show {
-  padding: 2px 8px;
-  font-size: 0.8rem;
+  margin-top: var(--space-1);
+  padding: 3px 10px;
+  font-size: var(--fs-xs);
+}
+
+@media (max-width: 520px) {
+  .dialog-head {
+    padding: var(--space-3) var(--space-3) var(--space-2) var(--space-4);
+  }
+
+  .settings-body {
+    padding: var(--space-3) var(--space-4) var(--space-4);
+  }
+
+  .settings .style-grid {
+    grid-template-columns: repeat(auto-fill, minmax(76px, 1fr));
+  }
+
+  .settings .style-preview {
+    width: 48px;
+    height: 48px;
+  }
+
+  .settings .style-preview.wide {
+    width: 56px;
+    height: 28px;
+  }
+
+  .checks {
+    grid-template-columns: repeat(auto-fill, minmax(110px, 1fr));
+  }
+
+  .trap {
+    padding-left: 40px;
+  }
+
+  .trap::before {
+    left: 9px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .settings[open] {
+    animation: none;
+  }
+
+  .check,
+  .settings .style-tile,
+  .settings-advanced > summary::before {
+    transition: none;
+  }
 }

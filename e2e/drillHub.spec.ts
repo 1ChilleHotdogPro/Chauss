@@ -55,3 +55,20 @@ test('the Drill tab opens the hub from inside a drill, and Explore leaves it', a
   await expect(page.locator('#drill-hub')).toBeHidden();
   await expect(page.locator('.layout')).toBeVisible();
 });
+
+test('the hub cards show a board, the side you play and honest progress, and fit a phone', async ({ page }) => {
+  await page.setViewportSize({ width: 390, height: 844 });
+  await openApp(page);
+  await page.locator('#mode-drill').click();
+  const hub = page.locator('#drill-hub');
+  await expect(hub.locator('[data-category] .mini-board')).toHaveCount(2);
+  await hub.locator('[data-category="openings"]').click();
+  const ponziani = hub.locator('[data-entry="ponziani"]');
+  await expect(ponziani.locator('.mini-board image')).toHaveCount(32);
+  await expect(ponziani.locator('.side-badge')).toHaveText('You play White');
+  await expect(hub.locator('[data-entry="caro-kann"] .side-badge')).toHaveText('You play Black');
+  // Nothing drilled yet in this fresh browser: no invented numbers.
+  await expect(hub.locator('[data-entry="caro-kann"] .card-progress')).toHaveText('Not started yet');
+  await expect(ponziani.locator('.card-progress')).toContainText('Not started yet');
+  expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBeLessThanOrEqual(390);
+});
