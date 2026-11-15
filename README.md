@@ -115,6 +115,29 @@ Stockfish runs in your browser, in the background. After each move it compares t
 
 Winning chances come from the engine's score using the same formula as Lichess. The eval bar shows White's winning chances as the light part; `+0.5` means White is half a pawn better, `#3` means White can force checkmate in 3.
 
+## Analyse a game
+
+The **Analyse** tab reviews a whole game. Paste a PGN (from Lichess, chess.com, or just `1.e4 e5 2.Nf3 …`), or press **Analyse this game** in the Play tab. Stockfish looks at every position — set how long in **Settings → Game analysis** (depth 10–18, or 0.5–3 seconds per move; default depth 14) — and you can cancel at any time. It runs in its own background worker, so the page stays usable.
+
+Each move gets a label:
+
+| Icon | Label | When |
+| --- | --- | --- |
+| `≡` | Book | a move masters play here (from the bundled opening data), while the game is still in the book |
+| `□` | Only move | the only legal move |
+| `!!` | Brilliant | a best move that leaves a piece to be taken — a real sacrifice |
+| `!` | Great | the only good move: the second-best move was at least 10 points of winning chances worse |
+| `★` | Best | Stockfish's first choice, or within 1 point of it |
+| `✓` | Excellent / Good | lost less than 4.5 / 10 points |
+| `?!` `?` `??` | Inaccuracy / Mistake / Blunder | lost 10 / 20 / 30 points or more (as everywhere in the app) |
+| `×` | Miss | the opponent had just made a mistake, and this move gave the chance straight back |
+
+Accuracy per move is `103.16 · e^(−4 · loss) − 3.17` (loss = winning chances lost, as a fraction); a player's accuracy is the average over their moves. The graph shows White's winning chances over the game, with dots on the notable moves; click it, a move, or use the arrow keys to step through the game.
+
+## Credits
+
+The move labels (the order of checks, the mate rules, the "great" and "brilliant" tests with their piece-safety rules) and the accuracy formula are adapted from [WintrChess](https://github.com/WintrCat/wintrchess) by WintrCat, licensed GPL-3.0. The thresholds for inaccuracies, mistakes and blunders, and the "miss" rule, are Chauss's own.
+
 ## Publishing on GitHub Pages
 
 `.github/workflows/deploy.yml` builds the site, runs the unit and browser tests, and publishes it at <https://1chillehotdogpro.github.io/Chauss/> on every push to `main`.
