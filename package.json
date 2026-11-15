@@ -2,7 +2,7 @@
   "name": "chauss",
   "private": true,
   "version": "0.1.0",
-  "description": "Ponziani Opening trainer: learn the theory, spot bad opponent moves, and punish them.",
+  "description": "Opening trainer: learn the theory, spot bad opponent moves, and punish them (Ponziani as White, Caro-Kann as Black).",
   "license": "GPL-3.0-or-later",
   "type": "module",
   "scripts": {

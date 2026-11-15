@@ -1,6 +1,6 @@
-# Chauss — Ponziani Opening Trainer
+# Chauss — Opening Trainer
 
-Browser app that teaches the **Ponziani Opening as White** (1.e4 e5 2.Nf3 Nc6 3.c3): which moves are theory, which opponent moves are bad, and how to punish them, with Stockfish available for evaluation.
+Browser app that teaches chess openings, one at a time, from the side the user plays: which moves are theory, which opponent moves are bad, and how to punish them, with Stockfish available for evaluation. Openings so far: the **Ponziani as White** (1.e4 e5 2.Nf3 Nc6 3.c3) and the **Caro-Kann as Black** (1.e4 c6).
 
 ## User
 - Beginner (<1200). Explanations short, concrete, no jargon without a one-line gloss. UI in English.
@@ -18,8 +18,11 @@ Browser app that teaches the **Ponziani Opening as White** (1.e4 e5 2.Nf3 Nc6 3.
 - GitHub Pages via GitHub Actions (`actions/deploy-pages`) on push to `main`. Repo: `1ChilleHotdogPro/Chauss`, so Vite `base: '/Chauss/'`.
 
 ## Opening scope
-- Root: 1.e4 e5 2.Nf3 Nc6 3.c3. Black deviations at moves 1–2 (Sicilian, French, Petrov, 2...d6, etc.): cover lightly — one recommended sensible White reply each, no deep tree.
-- Ponziani tree depth: as deep as the data supports — stop when a move's frequency falls below a configurable threshold (start ~3% of games at that node and a minimum game count).
+- **Registry**: `src/openings/registry.ts` (pure data, also read by the Node scripts) lists every opening: `id`, `name`, `side` (the colour the user plays), `rootLine`, optional `family` (the explorer's name for the root position) and the `crawl` settings. `src/openings/assets.ts` (browser only) gives each opening's data-file URLs with literal paths, so Vite emits each file on its own and only the chosen opening is fetched. To add an opening: a registry entry, an assets entry, then `npm run snapshot -- --opening=<id>`, `npm run traps -- --opening=<id>` and a hand-checked `src/explore/ideas/<id>.ts`.
+- **Files per opening**: `src/data/openings/<id>.json` (snapshot), `<id>.traps.json`, `src/explore/ideas/<id>.ts`. The snapshot meta records `openingId` and `side` (missing = Ponziani, White).
+- **Sides**: everything is written for "the user's side" and "the opponent". A **sideline** is where the *opponent* leaves the root line early (Black's Sicilian, Petrov, ... against the Ponziani; White's 1.d4, 1.Nf3, ... against the Caro-Kann): cover lightly, one recommended reply for the user's side, no deep tree. As White the drill starts after the opening's last move; as Black one move earlier, so 1.e4 is played by the app and 1...c6 is the first card. Trap kind: *exploit* = the opponent errs, *avoid* = the user's side errs.
+- **Choosing**: first visit shows a picker (nothing loads before a choice); the choice is stored (`chauss.opening.v1`) and switched from the header button, which reloads the page. Progress is stored per opening (`chauss.progress.v2`, with a one-time migration of v1 into the Ponziani); settings and the explorer cache are global.
+- Ponziani tree depth: as deep as the data supports — stop when a move's frequency falls below a configurable threshold (~3% of games at that node and a minimum game count). The Caro-Kann tree is cut by a position limit instead (most played and book lines first).
 - Short "idea" text (1–2 sentences) on key positions only. **Every idea, trap and refutation must be verified with Stockfish and the explorer data — never written from memory.**
 
 ## Theory data (Lichess opening explorer)
@@ -28,12 +31,12 @@ Two move sources, always shown **separately**:
 2. **Popular at your level** — Lichess database filtered by a rating band selectable in settings (default band near 1000–1400; allow multiple bands) and speeds.
 
 Data access:
-- **Bundled snapshot**: `scripts/build-snapshot.ts` crawls the Ponziani tree from the explorer, attaches Stockfish evals (fixed depth) to each move, and writes `src/data/ponziani.json`. Committed to the repo, so the app works offline with no token. Respect Lichess rate limits (sequential requests; on HTTP 429 wait ≥60 s). Record snapshot date and parameters in the file.
+- **Bundled snapshot**: `scripts/build-snapshot.ts` (`--opening=<id>`, or ad hoc `--root="e4 c6" --side=black --out=<file>`) crawls an opening's tree from the explorer, attaches Stockfish evals (fixed depth) to each move, and writes `src/data/openings/<id>.json`. Committed to the repo, so the app works offline with no token. Respect Lichess rate limits (sequential requests; on HTTP 429 wait ≥60 s). Record snapshot date and parameters in the file.
 - **Live API**: for exploring beyond the snapshot or other rating bands. The user pastes a Lichess personal token in settings (stored in localStorage only, sent as `Authorization: Bearer`). **First check the current Lichess API docs to see whether the explorer requires auth**, and handle 401/429 errors properly. Cache responses.
 
 ## Bad / out-of-book opponent moves ("mix of all")
 - **Popular mistakes**: moves often played in the selected rating band whose eval drop is at least a "mistake" (see thresholds).
-- **Classic traps**: a curated, engine-verified list for the Ponziani and its sidelines (traps for White to exploit and traps White must avoid).
+- **Classic traps**: an engine-verified list per opening, built by `npm run traps` (traps for the user to exploit and mistakes the user must avoid).
 - **Any move**: an option to list every legal Black move at a position, ranked by how badly Stockfish punishes it.
 - For each one, show the refutation: the best White reply, the line, the eval, and one sentence on why it works.
 

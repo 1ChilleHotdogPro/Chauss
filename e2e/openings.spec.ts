@@ -83,6 +83,8 @@ test('progress saved by the old version shows up under the Ponziani', async ({ p
     if (!localStorage.getItem('chauss.progress.v2')) localStorage.setItem('chauss.progress.v1', JSON.stringify(value));
   }, old);
   await openApp(page);
+  // The repertoire is built when the data has loaded; the Statistics table is drawn from it.
+  await expect(page.locator('#snapshot-info')).toHaveAttribute('data-state', 'ready');
   await page.locator('#mode-drill').click(); // the Statistics button lives in the Drill panel
   await page.locator('#open-stats').click();
   const row = page.locator(`#stats-table tbody tr[data-key="${card.key}"]`);
@@ -184,6 +186,7 @@ test.describe('Caro-Kann (playing Black)', () => {
     await expect(header(page)).toHaveText('Ponziani · White ▾');
     await expect(page.locator('.cg-wrap')).toHaveClass(/orientation-white/);
     expect(await storedOpening(page)).toBe('ponziani');
+    await expect(page.locator('#snapshot-info')).toHaveAttribute('data-state', 'ready');
     await page.locator('#mode-drill').click();
     await page.locator('#open-stats').click();
     await expect(page.locator('#stats-table tbody tr')).toHaveCount(ponzianiRepertoire.cards.size);
