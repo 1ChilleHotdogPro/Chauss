@@ -27,7 +27,9 @@ test('board and piece styles can be picked, are remembered, and the cursed set m
   expect(image).toContain('/pieces/merida/wK.svg');
   await page.locator('#settings-close').click();
 
-  // Remembered after a reload.
+  // Remembered after a reload. Let the piece previews and the engine finish loading first: a reload
+  // aborts requests still in flight, and the no-errors guard would count those as failures.
+  await page.waitForLoadState('networkidle');
   await page.reload();
   await expect(board).toHaveAttribute('data-board', 'blue');
 

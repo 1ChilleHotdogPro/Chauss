@@ -36,7 +36,7 @@ describe('appearance', () => {
 
   it('repairs unknown values field by field and clamps the volume', () => {
     expect(parseAppearance({ board: 'nope', pieces: 'merida', explosionVolume: 99 })).toEqual({
-      board: 'brown',
+      board: 'walnut',
       pieces: 'merida',
       explosionVolume: MAX_EXPLOSION_VOLUME,
     });
