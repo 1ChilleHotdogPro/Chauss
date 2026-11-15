@@ -1,3 +1,4 @@
+import { ENDGAME_DRILLS, userSide } from '../endgames/drills';
 import { hasOpeningData } from '../openings/assets';
 import { OPENINGS, type OpeningDef } from '../openings/registry';
 
@@ -56,7 +57,16 @@ export const ENDGAMES_CATEGORY: DrillCategory = {
   id: 'endgames',
   title: 'Endgames',
   description: 'Practise the basic winning and drawing positions.',
-  entries: () => [],
+  entries: () =>
+    ENDGAME_DRILLS.map((drill) => {
+      const side = drill.positions[0] ? userSide(drill.positions[0].fen) : 'white';
+      return {
+        id: drill.id,
+        title: drill.title,
+        detail: `${drill.skill} · you play ${side === 'white' ? 'White' : 'Black'}`,
+        note: `${drill.positions.length} positions`,
+      };
+    }),
   emptyText: 'Endgame drills are coming soon.',
 };
 

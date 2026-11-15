@@ -1,4 +1,5 @@
 import { describe, expect, it } from 'vitest';
+import { ENDGAME_DRILLS } from '../endgames/drills';
 import { OPENINGS } from '../openings/registry';
 import { DRILL_CATEGORIES, ENDGAMES_CATEGORY, OPENINGS_CATEGORY, rootMoves } from './hub';
 
@@ -12,9 +13,10 @@ describe('drill hub data', () => {
     expect(entries.filter((entry) => entry.current).map((entry) => entry.id)).toEqual(['caro-kann']);
     expect(OPENINGS_CATEGORY.entries(null).some((entry) => entry.current)).toBe(false);
   });
-  it('keeps Endgames as a placeholder with no entries', () => {
-    expect(ENDGAMES_CATEGORY.entries(null)).toEqual([]);
-    expect(ENDGAMES_CATEGORY.emptyText).toBeTruthy();
+  it('lists every endgame drill from the data', () => {
+    const entries = ENDGAMES_CATEGORY.entries(null);
+    expect(entries.map((entry) => entry.id)).toEqual(ENDGAME_DRILLS.map((drill) => drill.id));
+    expect(entries[0]?.detail).toContain('you play White');
   });
   it('writes root moves with move numbers', () => {
     expect(rootMoves({ rootLine: ['e4', 'c6'] })).toBe('1.e4 c6');

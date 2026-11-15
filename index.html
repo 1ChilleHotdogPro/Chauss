@@ -47,7 +47,7 @@
           <p id="verdict" class="verdict not-drill" aria-live="polite" hidden></p>
 
           <!-- Drill mode: the app plays Black, you find the repertoire move as White. -->
-          <section id="drill" class="drill drill-only" aria-label="Drill">
+          <section id="drill" class="drill drill-only opening-drill-only" aria-label="Drill">
             <p id="drill-prompt" class="drill-prompt" role="status" aria-live="polite"></p>
             <p id="drill-feedback" class="drill-feedback" data-kind="none" role="status" aria-live="polite" hidden></p>
             <div class="controls">
@@ -57,6 +57,22 @@
             </div>
             <p id="drill-counts" class="hint"></p>
             <p id="drill-score" class="hint"></p>
+          </section>
+
+          <!-- Drill mode, endgames: play one side of a position, Stockfish judges every move and defends. -->
+          <section id="endgame" class="drill endgame drill-only endgame-only" aria-label="Endgame drill">
+            <h2 id="endgame-title"></h2>
+            <p id="endgame-lead" class="hint"></p>
+            <p id="endgame-prompt" class="drill-prompt" role="status" aria-live="polite"></p>
+            <p id="endgame-feedback" class="drill-feedback" data-kind="none" role="status" aria-live="polite" hidden></p>
+            <p id="endgame-counts" class="hint"></p>
+            <div id="endgame-summary" class="endgame-summary" hidden></div>
+            <div class="controls">
+              <button id="endgame-next" type="button" title="The next position (Enter)">Next position</button>
+              <button id="endgame-retry" type="button" title="Start this position again">Retry</button>
+              <button id="endgame-again" type="button" hidden>Start the drill again</button>
+              <button id="endgame-menu" type="button" title="Back to the drill menu to pick another drill">← Drill menu</button>
+            </div>
           </section>
 
           <!-- Analyse mode: a whole game reviewed by Stockfish, move by move. -->

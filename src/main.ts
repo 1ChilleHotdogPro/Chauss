@@ -27,6 +27,10 @@ import { loadStrength, saveStrength } from './drill/strengthSetting';
 import { DrillController } from './drill/controller';
 import { loadProgress, loadStore, progressOf, saveProgress, saveStore, withProgress, type Progress } from './drill/progress';
 import { statsRows } from './drill/stats';
+import { EndgameController } from './endgames/controller';
+import { getEndgameDrill } from './endgames/drills';
+import { loadEndgameProgress, recordResult, saveEndgameProgress } from './endgames/progress';
+import { engineSearch } from './endgames/search';
 import { Engine } from './engine/engine';
 import { createWorkerTransport, engineUrl } from './engine/workerTransport';
 import { createMemoryCache, createStorageCache, layerCaches, type KeyValueStorage } from './explorer/cache';
@@ -55,6 +59,7 @@ import { renderCapturedPieces } from './ui/capturedPieces';
 import type { Side } from './game/game';
 import { createBoard, type Arrow, type BoardInteraction } from './ui/board';
 import { renderDrillPanel } from './ui/drillPanel';
+import { renderEndgamePanel } from './ui/endgamePanel';
 import { renderEnginePanel, type EnginePanelModel } from './ui/enginePanel';
 import { createEvalBar } from './ui/evalBar';
 import {
@@ -221,7 +226,7 @@ const snapshotInfo = byId<HTMLElement>('snapshot-info');
         statsDialog.refresh();
       },
     });
-    if (mode === 'drill' && !hubOpen) startDrillLine();
+    if (mode === 'drill' && !hubOpen && !endgame) startDrillLine();
     else if (mode === 'explore') renderExplore();
     renderDrill();
   },
@@ -269,6 +274,7 @@ const drillHub = createDrillHub({
 /** What choosing an entry of each hub category does. A new kind of drill adds its handler here. */
 const drillStarters: Record<string, (entryId: string) => void> = {
   openings: (id) => {
+    stopEndgame();
     if (id !== chosenOpening) {
       // All state is rebuilt from the chosen opening's data, so start the page afresh, straight into the drill.
       saveChosenOpening(storage, id);
@@ -280,6 +286,7 @@ const drillStarters: Record<string, (entryId: string) => void> = {
     if (drill) startDrillLine();
     else render();
   },
+  endgames: (id) => startEndgame(id),
 };
 /** The page address that reopens straight into a drill (used after switching opening, which reloads). */
 const DRILL_HASH = '#drill';
@@ -292,11 +299,96 @@ function setHubOpen(open: boolean): void {
     drillShowing = false;
     promotion.cancel();
     stopOpponent();
+    stopEndgame();
     drillHub.open();
   } else {
     drillHub.close();
   }
 }
+
+// ---- Endgame drills: the user plays one side of a position, Stockfish judges every move and defends ----
+
+/** The endgame drill running now; null while an opening drill (or nothing) is shown. */
+let endgame: EndgameController | null = null;
+let endgameProgress = loadEndgameProgress(storage);
+/** A Stockfish of its own for judging and defending, so the drill never waits behind other searches. */
+let endgameEngine: Engine | null = null;
+
+const endgamePanel = {
+  title: byId<HTMLElement>('endgame-title'),
+  lead: byId<HTMLElement>('endgame-lead'),
+  prompt: byId<HTMLElement>('endgame-prompt'),
+  feedback: byId<HTMLElement>('endgame-feedback'),
+  counts: byId<HTMLElement>('endgame-counts'),
+  summary: byId<HTMLElement>('endgame-summary'),
+  next: byId<HTMLButtonElement>('endgame-next'),
+  retry: byId<HTMLButtonElement>('endgame-retry'),
+  again: byId<HTMLButtonElement>('endgame-again'),
+};
+
+function ensureEndgameEngine(): Engine {
+  endgameEngine ??= new Engine(createWorkerTransport(engineUrl(import.meta.env.BASE_URL)), {
+    multiPv: 1,
+    onStateChange: () => scheduleEngineRender(),
+  });
+  return endgameEngine;
+}
+
+function startEndgame(drillId: string): void {
+  const chosen = getEndgameDrill(drillId);
+  if (!chosen) return;
+  stopEndgame();
+  setHubOpen(false);
+  clearTimeout(drillTimer);
+  drillShowing = false;
+  drillAfter = null;
+  stopOpponent();
+  promotion.cancel();
+  endgame = new EndgameController({
+    drill: chosen,
+    search: engineSearch(ensureEndgameEngine()),
+    onChange: syncEndgame,
+    onResult: (position, result) => {
+      endgameProgress = recordResult(endgameProgress, chosen.id, position.id, result, Date.now());
+      saveEndgameProgress(storage, endgameProgress);
+    },
+  });
+  document.body.dataset.drill = 'endgame';
+  endgame.start(0);
+}
+
+/** Leave the endgame drill (back to the opening drill's side of the board). */
+function stopEndgame(): void {
+  if (!endgame) return;
+  endgame.dispose();
+  endgame = null;
+  document.body.dataset.drill = 'opening';
+  board.setPlayerSide(SIDE);
+  board.setOrientation(SIDE);
+}
+
+/** Put the endgame drill's position on the board and redraw. */
+function syncEndgame(): void {
+  if (!endgame) return;
+  const view = endgame.view();
+  board.setPlayerSide(view.side);
+  // A new position starts with the user's side at the bottom (Flip still works during it).
+  if (view.sans.length === 0 && game.startFen !== view.startFen) board.setOrientation(view.side);
+  if (game.fen() !== view.fen || game.startFen !== view.startFen) game.loadLine([...view.sans], view.startFen);
+  render();
+}
+
+function renderEndgame(): void {
+  if (!endgame) return;
+  const view = endgame.view();
+  renderEndgamePanel(endgamePanel, view, endgameProgress.drills[view.drill.id] ?? {});
+}
+
+endgamePanel.next.addEventListener('click', () => endgame?.next());
+endgamePanel.retry.addEventListener('click', () => endgame?.retry());
+endgamePanel.again.addEventListener('click', () => endgame?.restartRun());
+byId<HTMLButtonElement>('endgame-menu').addEventListener('click', () => setHubOpen(true));
+document.body.dataset.drill = 'opening';
 
 const statsDialog = createStatsDialog({
   dialog: byId<HTMLDialogElement>('stats'),
@@ -372,7 +464,10 @@ function drillMove(from: string, to: string, piece?: PromotionPiece): void {
 }
 
 function setMode(next: Mode): void {
-  if (next !== 'drill') setHubOpen(false);
+  if (next !== 'drill') {
+    setHubOpen(false);
+    stopEndgame();
+  }
   if (next === mode) return;
   if (mode === 'analysis') cancelAnalysis();
   stopOpponent();
@@ -388,7 +483,7 @@ function setMode(next: Mode): void {
     arrowsShown = false;
   }
   if (next === 'drill') {
-    if (drill && !hubOpen) startDrillLine();
+    if (drill && !hubOpen && !endgame) startDrillLine();
     else render();
   } else if (next === 'analysis') {
     showAnalysedGame();
@@ -401,6 +496,7 @@ function setMode(next: Mode): void {
 function interaction(): BoardInteraction {
   if (mode === 'explore') return 'side-to-move';
   if (mode === 'analysis') return 'none'; // a finished game, to step through
+  if (endgame) return endgame.view().state === 'your-move' ? 'player-only' : 'none';
   const after = currentAfter();
   if (after?.kind === 'engine') {
     // Playing on against Stockfish: the user's turn, once it has moved.
@@ -984,6 +1080,11 @@ function dispatchMove(from: string, to: string, piece?: PromotionPiece): void {
   if (mode === 'explore') {
     game.play(from, to, piece);
     render();
+  } else if (endgame) {
+    // The controller shows the move at once (and takes it back if Stockfish says it is wrong).
+    void endgame.play(`${from}${to}${piece ?? ''}`).then((accepted) => {
+      if (!accepted) render(); // puts the piece back
+    });
   } else if (drillAfter?.kind !== 'engine') {
     drillMove(from, to, piece);
   } else {
@@ -1039,7 +1140,8 @@ function render(): void {
 
   // Tell the engine what is on screen; results arrive later through scheduleEngineRender.
   // In Analyse the stored results of the game are shown instead, and the live engine rests.
-  if (mode === 'analysis') analysis.setLine([], [], 0);
+  // The endgame drill has its own Stockfish; the live one rests there (its eval is never shown in Drill).
+  if (mode === 'analysis' || endgame) analysis.setLine([], [], 0);
   else analysis.setLine([game.startFen, ...moves.map((move) => move.fenAfter)], moves.map((move) => toUci(move)), ply);
   renderEngine();
 }
@@ -1074,7 +1176,12 @@ function renderEngine(): void {
   });
 
   const arrows: Arrow[] = [];
-  if (mode === 'drill') {
+  if (mode === 'drill' && endgame) {
+    // The only arrow is Stockfish's move, shown after a wrong try.
+    const view = endgame.view();
+    const hint = view.feedback.kind === 'wrong' && view.feedback.hint ? parseUciMove(view.feedback.hint) : null;
+    if (hint && view.state === 'your-move') arrows.push({ from: hint.from, to: hint.to });
+  } else if (mode === 'drill') {
     // In a drill the only arrow is the answer, shown after a wrong try.
     const feedback = drill?.view().feedback;
     const hint = feedback?.kind === 'wrong' ? parseUciMove(feedback.hint) : null;
@@ -1103,7 +1210,10 @@ function renderEngine(): void {
 
   // The Explore panel shows engine results too (refutations, the ranking, the eval column).
   if (mode === 'explore') renderExplore();
-  else if (mode === 'drill') renderDrill();
+  else if (mode === 'drill') {
+    renderDrill();
+    renderEndgame();
+  }
   renderGamePanels();
 }
 
@@ -1171,6 +1281,17 @@ document.addEventListener('keydown', (event) => {
   if (settingsPanel.isOpen() || trapsDialog.isOpen() || statsDialog.isOpen() || openingPicker.isOpen()) return; // no board hotkeys while a dialog is open
 
   if (mode === 'drill' && hubOpen) return;
+
+  if (mode === 'drill' && endgame && event.key === 'Enter' && !promotion.isOpen()) {
+    // Enter moves on to the next position once this one is over.
+    const onOtherButton = target instanceof HTMLButtonElement && target !== modeButtons.drill;
+    const state = endgame.view().state;
+    if (!onOtherButton && (state === 'solved' || state === 'failed')) {
+      event.preventDefault();
+      endgame.next();
+    }
+    return;
+  }
 
   if (mode === 'drill' && event.key === 'Enter' && !promotion.isOpen()) {
     // Enter starts the next line once this one is over (and does nothing in the middle of one).

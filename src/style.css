@@ -537,7 +537,10 @@ body[data-mode='analysis'] .explore-only,
 body[data-mode='analysis'] .drill-only,
 body[data-mode='analysis'] .game-only,
 body:not([data-mode='analysis']) .analysis-only,
-body[data-mode='drill'] .nav-only {
+body[data-mode='drill'] .nav-only,
+/* Inside Drill: the opening drill's panel or the endgame drill's, never both. */
+body[data-drill='endgame'] .opening-drill-only,
+body:not([data-drill='endgame']) .endgame-only {
   display: none !important;
 }
 
@@ -629,6 +632,53 @@ body[data-hub='open'] .layout {
 
 .drill .hint {
   margin-top: 6px;
+}
+
+/* ---- Endgame drill ---- */
+/* Counting pieces missing from a full set means nothing in an endgame (the space is kept). */
+body[data-mode='drill'][data-drill='endgame'] .captured {
+  visibility: hidden;
+}
+
+.endgame h2 {
+  margin-top: 0;
+}
+
+.endgame [hidden] {
+  display: none !important;
+}
+
+.drill-prompt[data-state='solved'],
+.drill-prompt[data-state='failed'] {
+  font-weight: 600;
+}
+
+.drill-feedback[data-kind='good'],
+.drill-feedback[data-kind='solved'] {
+  border-left-color: var(--accent);
+}
+
+.drill-feedback[data-kind='failed'] {
+  border-left-color: var(--blunder);
+}
+
+.stars {
+  color: var(--inaccuracy);
+  letter-spacing: 1px;
+}
+
+.endgame-summary table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 4px 0 8px;
+  font-size: 0.9rem;
+}
+
+.endgame-summary th,
+.endgame-summary td {
+  padding: 4px 6px;
+  border-bottom: 1px solid var(--border);
+  text-align: left;
 }
 
 .stats-scroll {

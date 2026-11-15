@@ -18,9 +18,9 @@ test('Drill opens a full-page choice: Openings or Endgames', async ({ page }) =>
   await expect(page.locator('.layout')).toBeHidden();
   await expect(hub.locator('[data-category]')).toHaveText([/Openings/, /Endgames/]);
 
-  // Endgames is a placeholder for now.
+  // Endgames lists the endgame drills from the data.
   await hub.locator('[data-category="endgames"]').click();
-  await expect(hub).toContainText('Endgame drills are coming soon');
+  await expect(hub.locator('[data-entry="kq-vs-k"]')).toContainText('King and Queen vs King');
   await hub.getByRole('button', { name: /All drills/ }).click();
 
   // Openings lists every opening; the current one is marked.
