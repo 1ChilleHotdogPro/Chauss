@@ -77,7 +77,6 @@ import { fillStrengthOptions, renderOutOfBook, type OutOfBookModel } from './ui/
 import { createDrillHub } from './ui/drillHub';
 import { createOpeningPicker } from './ui/openingPicker';
 import { createPromotionPicker } from './ui/promotion';
-import type { Classification } from './analysis/classify';
 import { createMoveSounds } from './ui/sound';
 import { isCursed, loadAppearance, saveAppearance } from './appearance/appearance';
 import { createAppearancePanel } from './ui/appearancePanel';
@@ -694,15 +693,12 @@ function analysisVerdict(): EnginePanelModel['verdict'] {
   };
 }
 
-/** Classifications that get an icon on the board (like chess.com): the good ones. */
-const BADGED = new Set<Classification>(['brilliant', 'great', 'best', 'excellent', 'good']);
-
 /** In Analyse: the icon of the move that led to this position, on the square the piece moved to. */
 function updateMoveBadge(): void {
   const ply = game.currentPly();
   const move = mode === 'analysis' && ply > 0 ? analysisReport?.moves[ply - 1] : undefined;
   const last = game.lastMove();
-  if (!move || !last || !BADGED.has(move.classification)) {
+  if (!move || !last) {
     board.setBadge(null);
     return;
   }

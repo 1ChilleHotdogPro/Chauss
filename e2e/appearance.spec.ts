@@ -51,7 +51,7 @@ test('board and piece styles can be picked, are remembered, and the cursed set m
   expect(await page.evaluate(() => document.body.dataset.lastSound)).toBe('capture');
 });
 
-test('Analyse shows the icon of a good move at the top right of its square', async ({ page }) => {
+test('Analyse shows the icon of every move at the top right of its square', async ({ page }) => {
   await page.addInitScript(() => {
     localStorage.setItem('chauss.analysis.v1', JSON.stringify({ version: 1, limit: 'd10' }));
   });
@@ -61,7 +61,7 @@ test('Analyse shows the icon of a good move at the top right of its square', asy
   await page.locator('#analysis-start').click();
   await expect(page.locator('#analysis-run')).toBeHidden({ timeout: 60_000 });
 
-  // 4.Qxf7# is "best": the icon sits on f7. A blunder (3...Nf6) gets none.
+  // 4.Qxf7# is "best": the icon sits on f7. A blunder gets one too.
   await page.locator('#moves .move', { hasText: 'Qxf7#' }).click();
   await expect(page.locator('#board')).toHaveAttribute('data-badge', 'f7:best');
   const badge = page.locator('#board .move-badge .class-icon');
@@ -80,7 +80,7 @@ test('Analyse shows the icon of a good move at the top right of its square', asy
   await page.screenshot({ path: 'test-results/analyse-badge.png' });
 
   await page.locator('#moves .move', { hasText: 'Nf6' }).click();
-  await expect(page.locator('#board .move-badge')).toHaveCount(0);
+  await expect(page.locator('#board')).toHaveAttribute('data-badge', 'f6:blunder');
 
   // Flipping the board keeps it on the right square.
   await page.locator('#moves .move', { hasText: 'Qxf7#' }).click();

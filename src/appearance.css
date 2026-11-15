@@ -307,12 +307,11 @@
 /* ---- Analyse: the classification badge on the moved piece's square ---- */
 .move-badge {
   position: absolute;
-  z-index: 5;
+  z-index: 20; /* above the pieces, also a piece being dragged */
   width: 12.5%;
   height: 12.5%;
   pointer-events: none;
   container-type: size;
-  animation: badge-in 0.2s ease-out 0.15s backwards;
 }
 
 .move-badge .class-icon {
@@ -328,9 +327,6 @@
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.5);
 }
 
-@keyframes badge-in {
-  from { opacity: 0; scale: 0.4; }
-}
 
 /* The Settings previews are not inside chessground's board, so they bring the classic pieces along. */
 .style-preview piece.knight.white { background-image: url('/pieces/classic/wN.svg'); }
