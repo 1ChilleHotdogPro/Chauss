@@ -100,14 +100,6 @@
           <ol id="moves" class="moves"></ol>
           <p id="moves-empty" class="hint">No moves yet. Click or drag a white piece to start.</p>
 
-          <div class="explore-only">
-            <h2>Opening explorer</h2>
-            <div id="explore" class="explore" data-status="loading"></div>
-            <div class="controls explore-actions">
-              <button id="open-traps" type="button">Common mistakes in this opening</button>
-            </div>
-          </div>
-
           <div class="not-drill">
             <h2>Engine</h2>
             <div class="controls">
@@ -120,6 +112,14 @@
             </div>
             <p id="engine-status" class="hint engine-status" data-state="loading">Engine: loading Stockfish…</p>
             <ol id="engine-lines" class="engine-lines" hidden></ol>
+          </div>
+
+          <div class="explore-only">
+            <h2>Opening explorer</h2>
+            <div id="explore" class="explore" data-status="loading"></div>
+            <div class="controls explore-actions">
+              <button id="open-traps" type="button">Common mistakes in this opening</button>
+            </div>
           </div>
 
           <p class="fen">
