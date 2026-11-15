@@ -13,6 +13,8 @@ export type EngineState = 'loading' | 'ready' | 'failed';
 export interface AnalyseRequest {
   fen: string;
   depth: number;
+  /** Search for this many milliseconds instead of to `depth` ("go movetime"). */
+  movetime?: number;
   /**
    * How many of its best moves the engine should report for this search (MultiPV).
    * Left out: the engine's default from EngineOptions. A large number ranks every legal move.
@@ -131,7 +133,9 @@ export class Engine {
       this.transport.post(`setoption name ${name} value ${value}`);
     }
     this.transport.post(`position fen ${request.fen}`);
-    this.transport.post(`go depth ${request.depth}`);
+    this.transport.post(
+      request.movetime !== undefined ? `go movetime ${request.movetime}` : `go depth ${request.depth}`,
+    );
   }
 
   private handleLine(line: string): void {

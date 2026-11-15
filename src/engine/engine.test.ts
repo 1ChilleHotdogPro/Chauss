@@ -258,6 +258,12 @@ describe('searching', () => {
     expect(transport.takeSent()).toEqual(['setoption name Skill Level value 10', `position fen ${FEN_A}`, 'go depth 12']);
   });
 
+  it('searches for a fixed time when the request gives movetime', () => {
+    const { transport, engine } = readyEngine();
+    engine.analyse({ ...record(FEN_A).request, movetime: 1500 });
+    expect(transport.takeSent()).toEqual([`position fen ${FEN_A}`, 'go movetime 1500']);
+  });
+
   it('ignores stray output when nothing is being searched', () => {
     const { transport, engine } = readyEngine();
     transport.emit('info depth 3 multipv 1 score cp 10 pv e2e4', 'bestmove e2e4');
