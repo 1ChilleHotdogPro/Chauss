@@ -24,14 +24,37 @@ export type BoardInteraction = 'side-to-move' | 'white-only' | 'none';
 export interface Arrow {
   from: string;
   to: string;
+  /** 0.1 to 1: how solid to draw it. Default: solid. */
+  opacity?: number;
 }
 
-/** Best move: thick green. Second and third: thinner blue and yellow. */
+/** Best move: thick cyan. Second: lime. Third: grapefruit. */
 const ARROW_STYLES = [
-  { brush: 'green', lineWidth: 12 },
-  { brush: 'blue', lineWidth: 8 },
-  { brush: 'yellow', lineWidth: 6 },
+  { color: '#00c8e0', lineWidth: 12 },
+  { color: '#8fd91f', lineWidth: 8 },
+  { color: '#ff6b5a', lineWidth: 6 },
 ] as const;
+
+/** Chessground insists on its four standard brushes (used for arrows the user draws with the mouse). */
+const DEFAULT_BRUSHES = {
+  green: { key: 'g', color: '#15781B', opacity: 1, lineWidth: 10 },
+  red: { key: 'r', color: '#882020', opacity: 1, lineWidth: 10 },
+  blue: { key: 'b', color: '#003088', opacity: 1, lineWidth: 10 },
+  yellow: { key: 'y', color: '#e68f00', opacity: 1, lineWidth: 10 },
+};
+
+/** The board draws opacity in steps of a tenth, so each colour gets one brush per step. */
+const ARROW_BRUSHES: Record<string, { key: string; color: string; opacity: number; lineWidth: number }> = {};
+ARROW_STYLES.forEach((style, index) => {
+  for (let tenth = 1; tenth <= 10; tenth++) {
+    const key = arrowBrushKey(index, tenth / 10);
+    ARROW_BRUSHES[key] = { key, color: style.color, opacity: tenth / 10, lineWidth: style.lineWidth };
+  }
+});
+
+function arrowBrushKey(index: number, opacity: number): string {
+  return `arrow${index}-${Math.round(opacity * 10)}`;
+}
 
 /**
  * Draws the board with chessground. Chessground knows no chess rules, so the
@@ -56,6 +79,7 @@ export function createBoard(
     draggable: { showGhost: true },
     highlight: { lastMove: true, check: true },
     animation: { enabled: true, duration: 150 },
+    drawable: { brushes: { ...DEFAULT_BRUSHES, ...ARROW_BRUSHES } },
   });
 
   let interaction: BoardInteraction = 'side-to-move';
@@ -82,7 +106,7 @@ export function createBoard(
   let drawnArrows = '';
   function setArrows(arrows: readonly Arrow[]): void {
     const shown = arrows.slice(0, ARROW_STYLES.length);
-    const signature = shown.map((arrow) => arrow.from + arrow.to).join(',');
+    const signature = shown.map((arrow) => `${arrow.from}${arrow.to}${arrow.opacity ?? 1}`).join(',');
     element.dataset.arrows = String(shown.length);
     if (signature === drawnArrows) return; // nothing changed: do not redraw
     drawnArrows = signature;
@@ -92,7 +116,7 @@ export function createBoard(
         return {
           orig: arrow.from as Key,
           dest: arrow.to as Key,
-          brush: style.brush,
+          brush: arrowBrushKey(index, Math.min(1, Math.max(0.1, arrow.opacity ?? 1))),
           modifiers: { lineWidth: style.lineWidth },
         };
       }),

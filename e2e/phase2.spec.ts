@@ -268,3 +268,22 @@ unguardedTest('if the engine cannot be loaded, the board still works and says so
   await playMoves(page, ['g1f3']);
   expect(pageErrors).toEqual([]);
 });
+
+test('arrows are cyan, lime and grapefruit, and a weaker move is drawn fainter', async ({ page }) => {
+  await openApp(page);
+  await engineReady(page);
+  await page.locator('#toggle-arrows').click();
+  await expect(drawnArrows(page)).toHaveCount(3);
+
+  const arrows = await drawnArrows(page).evaluateAll((groups) =>
+    groups.map((group) => ({
+      opacity: Number(group.querySelector('line')?.getAttribute('opacity')),
+      stroke: group.querySelector('line')?.getAttribute('stroke') ?? '',
+    })),
+  );
+  expect(arrows.map((arrow) => arrow.stroke)).toEqual(['#00c8e0', '#8fd91f', '#ff6b5a']);
+  expect(arrows[0]!.opacity).toBe(0.9);
+  expect(arrows[1]!.opacity).toBeLessThanOrEqual(arrows[0]!.opacity);
+  expect(arrows[2]!.opacity).toBeLessThanOrEqual(arrows[1]!.opacity);
+  expect(arrows[2]!.opacity).toBeGreaterThanOrEqual(0.2);
+});

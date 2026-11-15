@@ -5,6 +5,7 @@ import '@lichess-org/chessground/assets/chessground.cburnett.css';
 import './style.css';
 import { Chess } from 'chess.js';
 import { Analysis } from './analysis/analysis';
+import { arrowOpacities } from './analysis/arrowFade';
 import { formatScore } from './analysis/eval';
 import { numberedLine, parseUciMove, pvToSan, toUci } from './analysis/pv';
 import { verdictSentence } from './analysis/verdictText';
@@ -826,10 +827,11 @@ function renderEngine(): void {
     const hint = feedback?.kind === 'wrong' ? parseUciMove(feedback.hint) : null;
     if (hint) arrows.push({ from: hint.from, to: hint.to });
   } else if (arrowsShown && evaluation) {
-    for (const line of evaluation.lines) {
+    const opacities = arrowOpacities(evaluation);
+    evaluation.lines.forEach((line, index) => {
       const move = line.pv[0] ? parseUciMove(line.pv[0]) : null;
-      if (move) arrows.push({ from: move.from, to: move.to });
-    }
+      if (move) arrows.push({ from: move.from, to: move.to, opacity: opacities[index] });
+    });
   }
   board.setArrows(arrows);
 
