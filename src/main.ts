@@ -3,6 +3,7 @@ import '@lichess-org/chessground/assets/chessground.base.css';
 import '@lichess-org/chessground/assets/chessground.brown.css';
 import '@lichess-org/chessground/assets/chessground.cburnett.css';
 import './style.css';
+import './appearance.css';
 import { Chess } from 'chess.js';
 import { Analysis } from './analysis/analysis';
 import {
@@ -70,7 +71,10 @@ import { fillStrengthOptions, renderOutOfBook, type OutOfBookModel } from './ui/
 import { createDrillHub } from './ui/drillHub';
 import { createOpeningPicker } from './ui/openingPicker';
 import { createPromotionPicker } from './ui/promotion';
+import type { Classification } from './analysis/classify';
 import { createMoveSounds } from './ui/sound';
+import { isCursed, loadAppearance, saveAppearance } from './appearance/appearance';
+import { createAppearancePanel } from './ui/appearancePanel';
 import { createSettingsPanel } from './ui/settingsPanel';
 import { createStatsDialog } from './ui/statsDialog';
 import { createTrapsDialog } from './ui/trapsDialog';
@@ -121,6 +125,25 @@ const board = createBoard(byId('board'), game, handleUserMove);
 board.setPlayerSide(SIDE);
 board.setOrientation(SIDE);
 const evalBar = createEvalBar(byId('evalbar'));
+
+/** Board and piece looks (Settings). The cursed ones also turn captures into explosions. */
+let appearance = loadAppearance(storage);
+function applyAppearance(next: typeof appearance): void {
+  appearance = next;
+  board.setLook(next);
+  moveSounds.setCursed(isCursed(next));
+  moveSounds.setExplosionVolume(next.explosionVolume);
+}
+applyAppearance(appearance);
+createAppearancePanel({
+  dialog: byId<HTMLDialogElement>('settings'),
+  initial: appearance,
+  onChange: (next) => {
+    applyAppearance(next);
+    return saveAppearance(storage, next);
+  },
+  onPreviewExplosion: () => moveSounds.previewExplosion(),
+});
 
 // Hidden until asked for, so you think first.
 let evalShown = false;
@@ -574,6 +597,22 @@ function analysisVerdict(): EnginePanelModel['verdict'] {
   };
 }
 
+/** Classifications that get an icon on the board (like chess.com): the good ones. */
+const BADGED = new Set<Classification>(['brilliant', 'great', 'best', 'excellent', 'good']);
+
+/** In Analyse: the icon of the move that led to this position, on the square the piece moved to. */
+function updateMoveBadge(): void {
+  const ply = game.currentPly();
+  const move = mode === 'analysis' && ply > 0 ? analysisReport?.moves[ply - 1] : undefined;
+  const last = game.lastMove();
+  if (!move || !last || !BADGED.has(move.classification)) {
+    board.setBadge(null);
+    return;
+  }
+  const info = CLASSIFICATION_INFO[move.classification];
+  board.setBadge({ square: last.to, classification: move.classification, symbol: info.symbol, name: info.name });
+}
+
 /** Redraw the Analyse panel, the graph and the icons in the move list. */
 function renderAnalysis(): void {
   const report = analysisReport;
@@ -977,9 +1016,12 @@ function render(): void {
   const justPlayed = game.currentPly() > renderedPly ? game.lastMove() : undefined;
   renderedPly = game.currentPly();
   if (justPlayed) {
+    const status = game.status();
     const sound = moveSoundFor(justPlayed);
-    document.body.dataset.lastSound = sound; // lets the browser tests check which sound it was
-    moveSounds.play(sound);
+    const heard = status === 'stalemate' || status === 'draw' ? 'draw' : sound;
+    // lets the browser tests check which sound it was
+    document.body.dataset.lastSound = heard === 'capture' && isCursed(appearance) ? 'explosion' : heard;
+    moveSounds.play(heard);
   }
 
   const moves = game.history();
@@ -1045,6 +1087,7 @@ function renderEngine(): void {
     });
   }
   board.setArrows(arrows);
+  updateMoveBadge();
 
   if (analysing) renderAnalysis();
   else updateMoveMarks(movesEl, (ply) => analysis.judgement(ply)?.verdict);

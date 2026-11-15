@@ -1,18 +1,51 @@
 import type { MoveSound } from '../game/moveSound';
 
 /**
- * Move sounds, made with the browser's Web Audio (no sound files). Browsers keep audio switched off
- * until the page has been clicked or a key pressed, so the audio context is only created then.
+ * Move sounds: short recorded files (public/sounds, see CREDITS.md) played with the browser's Web Audio.
+ * Browsers keep audio switched off until the page has been clicked or a key pressed, so the audio
+ * context is only created then, and the files are fetched at that moment.
  */
 export interface MoveSounds {
-  play(sound: MoveSound): void;
+  play(sound: MoveSound | 'draw'): void;
+  /** While cursed, every capture is a very loud explosion instead. */
+  setCursed(cursed: boolean): void;
+  /** 0 (silent) to about 3 (very loud). Only the explosions use it. */
+  setExplosionVolume(volume: number): void;
+  /** Play the explosion once, so the volume slider can be tried out. */
+  previewExplosion(): void;
 }
 
 type AudioContextType = typeof AudioContext;
+type SampleName = 'Move' | 'Capture' | 'Check' | 'Victory' | 'Draw' | 'Explosion';
+
+/** Which file each sound uses. There is no castling recording: it is the move click, twice. */
+const FILE_FOR: Record<MoveSound | 'draw', SampleName> = {
+  move: 'Move',
+  castle: 'Move',
+  capture: 'Capture',
+  check: 'Check',
+  checkmate: 'Victory',
+  draw: 'Draw',
+};
+
+const SAMPLES: readonly SampleName[] = ['Move', 'Capture', 'Check', 'Victory', 'Draw', 'Explosion'];
 
 export function createMoveSounds(): MoveSounds {
   let context: AudioContext | null = null;
-  let noiseBuffer: AudioBuffer | null = null;
+  let explosionBus: GainNode | null = null;
+  const buffers = new Map<SampleName, AudioBuffer>();
+  let cursed = false;
+  let explosionVolume = 1.5;
+
+  async function load(ctx: AudioContext, name: SampleName): Promise<void> {
+    try {
+      const response = await fetch(`${import.meta.env.BASE_URL}sounds/${name}.mp3`);
+      if (!response.ok) return;
+      buffers.set(name, await ctx.decodeAudioData(await response.arrayBuffer()));
+    } catch {
+      // A missing or undecodable file just means that sound stays silent.
+    }
+  }
 
   function unlock(): void {
     if (context) {
@@ -23,7 +56,16 @@ export function createMoveSounds(): MoveSounds {
       window.AudioContext ?? (window as unknown as { webkitAudioContext?: AudioContextType }).webkitAudioContext;
     if (!Ctor) return;
     try {
-      context = new Ctor();
+      const ctx = new Ctor();
+      context = ctx;
+      // The explosions go through a limiter so a high volume is loud, not just distorted.
+      explosionBus = ctx.createGain();
+      explosionBus.gain.value = explosionVolume;
+      const limiter = ctx.createDynamicsCompressor();
+      limiter.threshold.value = -6;
+      limiter.ratio.value = 20;
+      explosionBus.connect(limiter).connect(ctx.destination);
+      for (const name of SAMPLES) void load(ctx, name);
     } catch {
       context = null;
     }
@@ -33,57 +75,45 @@ export function createMoveSounds(): MoveSounds {
     window.addEventListener(type, unlock, { capture: true, passive: true });
   }
 
-  /** A very short burst of filtered noise: the "tock" of a piece on the board. */
-  function tock(ctx: AudioContext, start: number, gain: number, frequency: number, length: number): void {
-    if (!noiseBuffer) {
-      noiseBuffer = ctx.createBuffer(1, Math.floor(ctx.sampleRate * 0.2), ctx.sampleRate);
-      const data = noiseBuffer.getChannelData(0);
-      for (let i = 0; i < data.length; i++) data[i] = Math.random() * 2 - 1;
-    }
+  function start(ctx: AudioContext, name: SampleName, delay: number, destination: AudioNode, gain = 1): void {
+    const buffer = buffers.get(name);
+    if (!buffer) return;
     const source = ctx.createBufferSource();
-    source.buffer = noiseBuffer;
-    const filter = ctx.createBiquadFilter();
-    filter.type = 'bandpass';
-    filter.frequency.value = frequency;
-    filter.Q.value = 1.2;
-    const envelope = ctx.createGain();
-    envelope.gain.setValueAtTime(gain, start);
-    envelope.gain.exponentialRampToValueAtTime(0.001, start + length);
-    source.connect(filter).connect(envelope).connect(ctx.destination);
-    source.start(start, 0, length + 0.02);
+    source.buffer = buffer;
+    const level = ctx.createGain();
+    level.gain.value = gain;
+    source.connect(level).connect(destination);
+    source.start(ctx.currentTime + delay);
   }
 
-  function tone(ctx: AudioContext, start: number, frequency: number, length: number, gain: number): void {
-    const oscillator = ctx.createOscillator();
-    oscillator.type = 'triangle';
-    oscillator.frequency.setValueAtTime(frequency, start);
-    const envelope = ctx.createGain();
-    envelope.gain.setValueAtTime(0.0001, start);
-    envelope.gain.exponentialRampToValueAtTime(gain, start + 0.01);
-    envelope.gain.exponentialRampToValueAtTime(0.0001, start + length);
-    oscillator.connect(envelope).connect(ctx.destination);
-    oscillator.start(start);
-    oscillator.stop(start + length + 0.02);
+  function explode(ctx: AudioContext): void {
+    if (explosionBus && explosionVolume > 0) start(ctx, 'Explosion', 0, explosionBus);
   }
 
-  function play(sound: MoveSound): void {
+  function play(sound: MoveSound | 'draw'): void {
     const ctx = context;
     if (!ctx || ctx.state !== 'running') return;
-    const now = ctx.currentTime;
-    if (sound === 'move') {
-      tock(ctx, now, 0.9, 900, 0.07);
-    } else if (sound === 'capture') {
-      // Sharper and louder than a plain move, with a second knock right behind it.
-      tock(ctx, now, 1.6, 1800, 0.09);
-      tock(ctx, now + 0.045, 1.1, 700, 0.12);
-    } else {
-      // Checkmate: the knock, then a falling three-note figure.
-      tock(ctx, now, 1.4, 1200, 0.09);
-      tone(ctx, now + 0.12, 659.25, 0.28, 0.25);
-      tone(ctx, now + 0.3, 523.25, 0.28, 0.25);
-      tone(ctx, now + 0.48, 392, 0.6, 0.3);
+    if (cursed && sound === 'capture') {
+      explode(ctx);
+      return;
     }
+    start(ctx, FILE_FOR[sound], 0, ctx.destination);
+    if (sound === 'castle') start(ctx, 'Move', 0.11, ctx.destination, 0.8); // king, then rook
+    if (sound === 'checkmate') start(ctx, 'Check', 0, ctx.destination);
   }
 
-  return { play };
+  return {
+    play,
+    setCursed: (value) => {
+      cursed = value;
+    },
+    setExplosionVolume: (volume) => {
+      explosionVolume = volume;
+      if (explosionBus) explosionBus.gain.value = volume;
+    },
+    previewExplosion: () => {
+      unlock();
+      if (context && context.state === 'running') explode(context);
+    },
+  };
 }

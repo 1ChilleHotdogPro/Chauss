@@ -1,0 +1,337 @@
+/*
+ * Board and piece looks, chosen in Settings. Every colour is a CSS variable, so a later theme pass
+ * can restyle them. Rules are scoped to `:is(#board, .style-preview)[data-board|data-pieces=...]`,
+ * so the Settings previews use exactly the same rules as the real board.
+ */
+
+/* ---- Boards: two square colours each ---- */
+:is(#board, .style-preview)[data-board='brown'] { --board-light: #f0d9b5; --board-dark: #b58863; }
+:is(#board, .style-preview)[data-board='green'] { --board-light: #eeeed2; --board-dark: #769656; }
+:is(#board, .style-preview)[data-board='blue'] { --board-light: #dee3e6; --board-dark: #8ca2ad; }
+:is(#board, .style-preview)[data-board='slate'] { --board-light: #c8c8c8; --board-dark: #6f7378; }
+:is(#board, .style-preview)[data-board='purple'] { --board-light: #e4d9ef; --board-dark: #8b6bb0; }
+:is(#board, .style-preview)[data-board='rose'] { --board-light: #f1d4d0; --board-dark: #a85a54; }
+:is(#board, .style-preview)[data-board='ice'] { --board-light: #f2fbff; --board-dark: #8fc3e0; }
+:is(#board, .style-preview)[data-board='newspaper'] { --board-light: #f4f1ea; --board-dark: #3a3a3a; }
+:is(#board, .style-preview)[data-board='neon'] { --board-light: #2c2f5a; --board-dark: #14152e; --board-line: #00f0ff; }
+
+:is(#board, .style-preview)[data-board] cg-board,
+.style-preview[data-board] .board-swatch {
+  background-color: var(--board-dark);
+  background-image: conic-gradient(
+    var(--board-dark) 0 25%,
+    var(--board-light) 0 50%,
+    var(--board-dark) 0 75%,
+    var(--board-light) 0
+  );
+  background-size: 25% 25%;
+}
+
+/* Neon night: a glowing edge. */
+#board[data-board='neon'] cg-board {
+  box-shadow: 0 0 14px var(--board-line), inset 0 0 18px rgba(0, 240, 255, 0.25);
+}
+
+/* Coordinates follow the square colours instead of the brown theme's fixed ones. */
+#board[data-board] coords.ranks coord:nth-child(even),
+#board[data-board] coords.files coord:nth-child(even) { color: var(--board-dark); }
+#board[data-board] coords.ranks coord:nth-child(odd),
+#board[data-board] coords.files coord:nth-child(odd) { color: var(--board-light); }
+#board.orientation-black[data-board] coords.ranks coord:nth-child(odd),
+#board.orientation-black[data-board] coords.files coord:nth-child(odd) { color: var(--board-dark); }
+#board.orientation-black[data-board] coords.ranks coord:nth-child(even),
+#board.orientation-black[data-board] coords.files coord:nth-child(even) { color: var(--board-light); }
+
+/* ---- The cursed board ---- */
+@property --cursed-hue {
+  syntax: '<angle>';
+  inherits: true;
+  initial-value: 0deg;
+}
+
+@keyframes cursed-hue {
+  to { --cursed-hue: 360deg; }
+}
+
+@keyframes cursed-shake {
+  0%, 100% { translate: 0 0; rotate: 0deg; }
+  20% { translate: 2px -1px; rotate: 0.25deg; }
+  40% { translate: -2px 1px; rotate: -0.25deg; }
+  60% { translate: 1px 2px; rotate: 0.2deg; }
+  80% { translate: -1px -2px; rotate: -0.2deg; }
+}
+
+@keyframes cursed-stripes {
+  to { background-position: 0 0, 200px 0; }
+}
+
+:is(#board, .style-preview)[data-board='cursed'] {
+  --cursed-hue: 0deg;
+  --board-light: hsl(var(--cursed-hue) 100% 70%);
+  --board-dark: hsl(calc(var(--cursed-hue) + 180deg) 100% 35%);
+  --board-glow: hsl(calc(var(--cursed-hue) + 90deg) 100% 60%);
+  animation: cursed-hue 3s linear infinite;
+}
+
+#board[data-board='cursed'] {
+  animation: cursed-hue 3s linear infinite, cursed-shake 0.45s linear infinite;
+  box-shadow: 0 0 0 4px var(--board-glow), 0 0 40px 10px var(--board-glow);
+}
+
+#board[data-board='cursed'] cg-board {
+  background-image:
+    repeating-linear-gradient(45deg, transparent 0 12px, rgba(255, 255, 255, 0.28) 12px 24px),
+    conic-gradient(var(--board-dark) 0 25%, var(--board-light) 0 50%, var(--board-dark) 0 75%, var(--board-light) 0);
+  background-size: 200px 200px, 25% 25%;
+  animation: cursed-stripes 2s linear infinite;
+}
+
+/* ---- Pieces ---- */
+.style-preview piece {
+  display: block;
+  width: 100%;
+  height: 100%;
+  background-size: cover;
+}
+
+/* CSS-only sets re-colour the classic pieces; the colours are variables. */
+:is(#board, .style-preview)[data-pieces='neon'] {
+  --piece-glow-white: #00f0ff;
+  --piece-glow-black: #ff3df0;
+}
+:is(#board, .style-preview)[data-pieces='neon'] piece.white { filter: drop-shadow(0 0 3px var(--piece-glow-white)) drop-shadow(0 0 6px var(--piece-glow-white)); }
+:is(#board, .style-preview)[data-pieces='neon'] piece.black { filter: drop-shadow(0 0 3px var(--piece-glow-black)) drop-shadow(0 0 6px var(--piece-glow-black)); }
+
+:is(#board, .style-preview)[data-pieces='ember'] {
+  --ember-white: sepia(1) saturate(5) hue-rotate(-12deg) brightness(1.15);
+  --ember-black: sepia(1) saturate(4) hue-rotate(-35deg) brightness(0.6);
+}
+:is(#board, .style-preview)[data-pieces='ember'] piece.white { filter: var(--ember-white); }
+:is(#board, .style-preview)[data-pieces='ember'] piece.black { filter: var(--ember-black); }
+
+:is(#board, .style-preview)[data-pieces='frost'] {
+  --frost-white: sepia(1) saturate(3) hue-rotate(170deg) brightness(1.25);
+  --frost-black: sepia(1) saturate(3) hue-rotate(185deg) brightness(0.7);
+}
+:is(#board, .style-preview)[data-pieces='frost'] piece.white { filter: var(--frost-white); }
+:is(#board, .style-preview)[data-pieces='frost'] piece.black { filter: var(--frost-black); }
+
+/* ---- The cursed pieces: the classic set, glowing, wobbling and wearing emoji ---- */
+@keyframes cursed-piece-hue {
+  to { filter: hue-rotate(360deg) saturate(3) drop-shadow(0 0 6px var(--cursed-aura)) drop-shadow(0 0 14px var(--cursed-aura)); }
+}
+
+@keyframes cursed-piece-wobble {
+  0%, 100% { scale: 1; rotate: -6deg; }
+  50% { scale: 1.18; rotate: 6deg; }
+}
+
+@keyframes cursed-emoji-bob {
+  0%, 100% { translate: 0 0; }
+  50% { translate: 0 -14%; }
+}
+
+:is(#board, .style-preview)[data-pieces='cursed'] { --cursed-aura: #ffe600; }
+:is(#board, .style-preview)[data-pieces='cursed'] piece {
+  filter: hue-rotate(0deg) saturate(3) drop-shadow(0 0 6px var(--cursed-aura)) drop-shadow(0 0 14px var(--cursed-aura));
+  animation: cursed-piece-hue 1.2s linear infinite, cursed-piece-wobble 0.6s ease-in-out infinite;
+}
+:is(#board, .style-preview)[data-pieces='cursed'] piece.black { --cursed-aura: #ff00c8; }
+:is(#board, .style-preview)[data-pieces='cursed'] piece::after {
+  position: absolute;
+  top: -8%;
+  right: -4%;
+  font-size: var(--emoji-size, 5cqw);
+  line-height: 1;
+  animation: cursed-emoji-bob 0.5s ease-in-out infinite;
+  pointer-events: none;
+}
+:is(#board, .style-preview)[data-pieces='cursed'] piece.king::after { content: '👑'; }
+:is(#board, .style-preview)[data-pieces='cursed'] piece.queen::after { content: '💅'; }
+:is(#board, .style-preview)[data-pieces='cursed'] piece.rook::after { content: '🔥'; }
+:is(#board, .style-preview)[data-pieces='cursed'] piece.bishop::after { content: '🌈'; }
+:is(#board, .style-preview)[data-pieces='cursed'] piece.knight::after { content: '🦄'; }
+:is(#board, .style-preview)[data-pieces='cursed'] piece.pawn::after { content: '⭐'; }
+
+@media (prefers-reduced-motion: reduce) {
+  :is(#board, .style-preview)[data-board='cursed'],
+  #board[data-board='cursed'] cg-board,
+  :is(#board, .style-preview)[data-pieces='cursed'] piece,
+  :is(#board, .style-preview)[data-pieces='cursed'] piece::after {
+    animation: none;
+  }
+}
+
+/* ---- Image sets (public/pieces/<set>/<colour><Piece>.svg) ---- */
+:is(#board, .style-preview)[data-pieces='pixel'] piece { image-rendering: pixelated; }
+:is(#board, .style-preview)[data-pieces='merida'] piece.king.white { background-image: url('/pieces/merida/wK.svg'); }
+:is(#board, .style-preview)[data-pieces='merida'] piece.king.black { background-image: url('/pieces/merida/bK.svg'); }
+:is(#board, .style-preview)[data-pieces='merida'] piece.queen.white { background-image: url('/pieces/merida/wQ.svg'); }
+:is(#board, .style-preview)[data-pieces='merida'] piece.queen.black { background-image: url('/pieces/merida/bQ.svg'); }
+:is(#board, .style-preview)[data-pieces='merida'] piece.rook.white { background-image: url('/pieces/merida/wR.svg'); }
+:is(#board, .style-preview)[data-pieces='merida'] piece.rook.black { background-image: url('/pieces/merida/bR.svg'); }
+:is(#board, .style-preview)[data-pieces='merida'] piece.bishop.white { background-image: url('/pieces/merida/wB.svg'); }
+:is(#board, .style-preview)[data-pieces='merida'] piece.bishop.black { background-image: url('/pieces/merida/bB.svg'); }
+:is(#board, .style-preview)[data-pieces='merida'] piece.knight.white { background-image: url('/pieces/merida/wN.svg'); }
+:is(#board, .style-preview)[data-pieces='merida'] piece.knight.black { background-image: url('/pieces/merida/bN.svg'); }
+:is(#board, .style-preview)[data-pieces='merida'] piece.pawn.white { background-image: url('/pieces/merida/wP.svg'); }
+:is(#board, .style-preview)[data-pieces='merida'] piece.pawn.black { background-image: url('/pieces/merida/bP.svg'); }
+:is(#board, .style-preview)[data-pieces='chessnut'] piece.king.white { background-image: url('/pieces/chessnut/wK.svg'); }
+:is(#board, .style-preview)[data-pieces='chessnut'] piece.king.black { background-image: url('/pieces/chessnut/bK.svg'); }
+:is(#board, .style-preview)[data-pieces='chessnut'] piece.queen.white { background-image: url('/pieces/chessnut/wQ.svg'); }
+:is(#board, .style-preview)[data-pieces='chessnut'] piece.queen.black { background-image: url('/pieces/chessnut/bQ.svg'); }
+:is(#board, .style-preview)[data-pieces='chessnut'] piece.rook.white { background-image: url('/pieces/chessnut/wR.svg'); }
+:is(#board, .style-preview)[data-pieces='chessnut'] piece.rook.black { background-image: url('/pieces/chessnut/bR.svg'); }
+:is(#board, .style-preview)[data-pieces='chessnut'] piece.bishop.white { background-image: url('/pieces/chessnut/wB.svg'); }
+:is(#board, .style-preview)[data-pieces='chessnut'] piece.bishop.black { background-image: url('/pieces/chessnut/bB.svg'); }
+:is(#board, .style-preview)[data-pieces='chessnut'] piece.knight.white { background-image: url('/pieces/chessnut/wN.svg'); }
+:is(#board, .style-preview)[data-pieces='chessnut'] piece.knight.black { background-image: url('/pieces/chessnut/bN.svg'); }
+:is(#board, .style-preview)[data-pieces='chessnut'] piece.pawn.white { background-image: url('/pieces/chessnut/wP.svg'); }
+:is(#board, .style-preview)[data-pieces='chessnut'] piece.pawn.black { background-image: url('/pieces/chessnut/bP.svg'); }
+:is(#board, .style-preview)[data-pieces='fantasy'] piece.king.white { background-image: url('/pieces/fantasy/wK.svg'); }
+:is(#board, .style-preview)[data-pieces='fantasy'] piece.king.black { background-image: url('/pieces/fantasy/bK.svg'); }
+:is(#board, .style-preview)[data-pieces='fantasy'] piece.queen.white { background-image: url('/pieces/fantasy/wQ.svg'); }
+:is(#board, .style-preview)[data-pieces='fantasy'] piece.queen.black { background-image: url('/pieces/fantasy/bQ.svg'); }
+:is(#board, .style-preview)[data-pieces='fantasy'] piece.rook.white { background-image: url('/pieces/fantasy/wR.svg'); }
+:is(#board, .style-preview)[data-pieces='fantasy'] piece.rook.black { background-image: url('/pieces/fantasy/bR.svg'); }
+:is(#board, .style-preview)[data-pieces='fantasy'] piece.bishop.white { background-image: url('/pieces/fantasy/wB.svg'); }
+:is(#board, .style-preview)[data-pieces='fantasy'] piece.bishop.black { background-image: url('/pieces/fantasy/bB.svg'); }
+:is(#board, .style-preview)[data-pieces='fantasy'] piece.knight.white { background-image: url('/pieces/fantasy/wN.svg'); }
+:is(#board, .style-preview)[data-pieces='fantasy'] piece.knight.black { background-image: url('/pieces/fantasy/bN.svg'); }
+:is(#board, .style-preview)[data-pieces='fantasy'] piece.pawn.white { background-image: url('/pieces/fantasy/wP.svg'); }
+:is(#board, .style-preview)[data-pieces='fantasy'] piece.pawn.black { background-image: url('/pieces/fantasy/bP.svg'); }
+:is(#board, .style-preview)[data-pieces='rhosgfx'] piece.king.white { background-image: url('/pieces/rhosgfx/wK.svg'); }
+:is(#board, .style-preview)[data-pieces='rhosgfx'] piece.king.black { background-image: url('/pieces/rhosgfx/bK.svg'); }
+:is(#board, .style-preview)[data-pieces='rhosgfx'] piece.queen.white { background-image: url('/pieces/rhosgfx/wQ.svg'); }
+:is(#board, .style-preview)[data-pieces='rhosgfx'] piece.queen.black { background-image: url('/pieces/rhosgfx/bQ.svg'); }
+:is(#board, .style-preview)[data-pieces='rhosgfx'] piece.rook.white { background-image: url('/pieces/rhosgfx/wR.svg'); }
+:is(#board, .style-preview)[data-pieces='rhosgfx'] piece.rook.black { background-image: url('/pieces/rhosgfx/bR.svg'); }
+:is(#board, .style-preview)[data-pieces='rhosgfx'] piece.bishop.white { background-image: url('/pieces/rhosgfx/wB.svg'); }
+:is(#board, .style-preview)[data-pieces='rhosgfx'] piece.bishop.black { background-image: url('/pieces/rhosgfx/bB.svg'); }
+:is(#board, .style-preview)[data-pieces='rhosgfx'] piece.knight.white { background-image: url('/pieces/rhosgfx/wN.svg'); }
+:is(#board, .style-preview)[data-pieces='rhosgfx'] piece.knight.black { background-image: url('/pieces/rhosgfx/bN.svg'); }
+:is(#board, .style-preview)[data-pieces='rhosgfx'] piece.pawn.white { background-image: url('/pieces/rhosgfx/wP.svg'); }
+:is(#board, .style-preview)[data-pieces='rhosgfx'] piece.pawn.black { background-image: url('/pieces/rhosgfx/bP.svg'); }
+:is(#board, .style-preview)[data-pieces='pixel'] piece.king.white { background-image: url('/pieces/pixel/wK.svg'); }
+:is(#board, .style-preview)[data-pieces='pixel'] piece.king.black { background-image: url('/pieces/pixel/bK.svg'); }
+:is(#board, .style-preview)[data-pieces='pixel'] piece.queen.white { background-image: url('/pieces/pixel/wQ.svg'); }
+:is(#board, .style-preview)[data-pieces='pixel'] piece.queen.black { background-image: url('/pieces/pixel/bQ.svg'); }
+:is(#board, .style-preview)[data-pieces='pixel'] piece.rook.white { background-image: url('/pieces/pixel/wR.svg'); }
+:is(#board, .style-preview)[data-pieces='pixel'] piece.rook.black { background-image: url('/pieces/pixel/bR.svg'); }
+:is(#board, .style-preview)[data-pieces='pixel'] piece.bishop.white { background-image: url('/pieces/pixel/wB.svg'); }
+:is(#board, .style-preview)[data-pieces='pixel'] piece.bishop.black { background-image: url('/pieces/pixel/bB.svg'); }
+:is(#board, .style-preview)[data-pieces='pixel'] piece.knight.white { background-image: url('/pieces/pixel/wN.svg'); }
+:is(#board, .style-preview)[data-pieces='pixel'] piece.knight.black { background-image: url('/pieces/pixel/bN.svg'); }
+:is(#board, .style-preview)[data-pieces='pixel'] piece.pawn.white { background-image: url('/pieces/pixel/wP.svg'); }
+:is(#board, .style-preview)[data-pieces='pixel'] piece.pawn.black { background-image: url('/pieces/pixel/bP.svg'); }
+
+/* The emoji of the cursed pieces are sized from the board's width. */
+#board cg-board,
+.style-preview {
+  container-type: size;
+}
+.style-preview {
+  --emoji-size: 42cqw;
+}
+
+/* ---- Settings tiles ---- */
+.style-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(104px, 1fr));
+  gap: 8px;
+  margin-bottom: 8px;
+}
+
+.style-tile {
+  display: grid;
+  justify-items: center;
+  gap: 4px;
+  padding: 6px;
+  border: 2px solid var(--border);
+  border-radius: 6px;
+  background: var(--button);
+  color: var(--text);
+  font: inherit;
+  font-size: 0.8rem;
+  cursor: pointer;
+}
+
+.style-tile[aria-checked='true'] {
+  border-color: var(--accent);
+  background: var(--button-hover);
+}
+
+.style-preview {
+  display: block;
+  width: 64px;
+  height: 64px;
+  overflow: hidden;
+  border-radius: 3px;
+}
+
+.style-preview.wide {
+  height: 32px;
+}
+
+.style-preview .board-swatch {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+.style-preview .board-swatch.squares {
+  background-size: 50% 50%;
+}
+
+.style-preview .board-swatch.pair {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  background-size: 100% 200%;
+}
+
+.style-preview piece {
+  position: relative;
+}
+
+.volume-row {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.volume-row input[type='range'] {
+  flex: 1 1 140px;
+}
+
+/* ---- Analyse: the classification badge on the moved piece's square ---- */
+.move-badge {
+  position: absolute;
+  z-index: 5;
+  width: 12.5%;
+  height: 12.5%;
+  pointer-events: none;
+  container-type: size;
+  animation: badge-in 0.2s ease-out 0.15s backwards;
+}
+
+.move-badge .class-icon {
+  position: absolute;
+  top: -12%;
+  right: -12%;
+  width: 46%;
+  height: 46%;
+  min-width: 0;
+  padding: 0;
+  font-size: 20cqw;
+  border: 2px solid var(--badge-ring, #fff);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.5);
+}
+
+@keyframes badge-in {
+  from { opacity: 0; scale: 0.4; }
+}
+
+/* The Settings previews are not inside chessground's board, so they bring the classic pieces along. */
+.style-preview piece.knight.white { background-image: url('/pieces/classic/wN.svg'); }
+.style-preview piece.queen.black { background-image: url('/pieces/classic/bQ.svg'); }

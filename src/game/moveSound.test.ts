@@ -9,11 +9,12 @@ function soundsOf(sans: string[]) {
 }
 
 describe('moveSoundFor', () => {
-  it('uses the plain sound for a quiet move, a check and castling, and the capture sound over check', () => {
+  it('uses the check sound for a check and the castle sound for castling, and capture wins over check', () => {
     expect(soundsOf(['e4', 'd5', 'Bb5+', 'c6', 'Bxc6+'])[4]).toBe('capture'); // capture wins over check
-    expect(soundsOf(['e4', 'e5', 'Nf3', 'Nc6', 'Bb5', 'a6', 'Bxc6', 'dxc6', 'O-O'])[8]).toBe('move');
-    expect(soundsOf(['e4', 'f5', 'Qh5+'])[2]).toBe('move');
-    expect(soundsOf(['e4', 'd5', 'Bb5+'])[2]).toBe('move');
+    expect(soundsOf(['e4', 'e5', 'Nf3', 'Nc6', 'Bb5', 'a6', 'Bxc6', 'dxc6', 'O-O'])[8]).toBe('castle');
+    expect(soundsOf(['e4', 'f5', 'Qh5+'])[2]).toBe('check');
+    expect(soundsOf(['e4', 'd5', 'Bb5+'])[2]).toBe('check');
+    expect(soundsOf(['e4', 'e5', 'Nf3'])[2]).toBe('move');
   });
 
   it('uses the capture sound for captures, en passant included', () => {

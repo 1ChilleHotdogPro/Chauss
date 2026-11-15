@@ -22,6 +22,20 @@ export interface BoardView {
   setOrientation(side: Side): void;
   /** Draw arrows for the engine's suggestions, best first (at most three). An empty list clears them. */
   setArrows(arrows: readonly Arrow[]): void;
+  /** Put the classification icon (brilliant, best, ...) at the top right of a square; null removes it. */
+  setBadge(badge: MoveBadge | null): void;
+  /** Look of the board and pieces (see appearance.css). */
+  setLook(look: { board: string; pieces: string }): void;
+}
+
+export interface MoveBadge {
+  square: string;
+  /** Used for the CSS colour (`data-class`). */
+  classification: string;
+  /** The mark drawn in the round icon, e.g. "!!". */
+  symbol: string;
+  /** Spoken name, e.g. "Brilliant". */
+  name: string;
 }
 
 export type BoardInteraction = 'side-to-move' | 'player-only' | 'none';
@@ -129,9 +143,48 @@ export function createBoard(
     );
   }
 
+  let badge: MoveBadge | null = null;
+  let badgeElement: HTMLElement | null = null;
+  function placeBadge(): void {
+    badgeElement?.remove();
+    badgeElement = null;
+    if (!badge) return;
+    const file = badge.square.charCodeAt(0) - 97;
+    const rank = Number(badge.square[1]);
+    const white = ground.state.orientation === 'white';
+    const wrapper = document.createElement('div');
+    wrapper.className = 'move-badge';
+    wrapper.style.left = `${(white ? file : 7 - file) * 12.5}%`;
+    wrapper.style.top = `${(white ? 8 - rank : rank - 1) * 12.5}%`;
+    const icon = document.createElement('span');
+    icon.className = 'class-icon';
+    icon.dataset.class = badge.classification;
+    icon.textContent = badge.symbol;
+    icon.setAttribute('role', 'img');
+    icon.setAttribute('aria-label', badge.name);
+    wrapper.append(icon);
+    element.append(wrapper);
+    badgeElement = wrapper;
+    element.dataset.badge = `${badge.square}:${badge.classification}`;
+  }
+  function setBadge(next: MoveBadge | null): void {
+    if (next?.square === badge?.square && next?.classification === badge?.classification) return;
+    badge = next;
+    if (!next) delete element.dataset.badge;
+    placeBadge();
+  }
+
   return {
     sync,
-    flip: () => ground.toggleOrientation(),
+    setBadge,
+    setLook: (look) => {
+      element.dataset.board = look.board;
+      element.dataset.pieces = look.pieces;
+    },
+    flip: () => {
+      ground.toggleOrientation();
+      placeBadge();
+    },
     orientation: () => ground.state.orientation,
     setInteraction: (who) => {
       interaction = who;
@@ -139,7 +192,10 @@ export function createBoard(
     setPlayerSide: (side) => {
       playerSide = side;
     },
-    setOrientation: (side) => ground.set({ orientation: side }),
+    setOrientation: (side) => {
+      ground.set({ orientation: side });
+      placeBadge();
+    },
     setArrows,
   };
 }
