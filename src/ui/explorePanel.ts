@@ -258,7 +258,7 @@ function collapsible(id: SectionId, title: string, ...content: HTMLElement[]): H
   details.dataset.source = id;
   details.open = isSectionOpen(id);
   details.addEventListener('toggle', () => setSectionOpen(id, details.open));
-  // The quiet source tag ("Masters" / "Lichess") is drawn by CSS, so the summary text stays the title.
+  // The quiet source tag ("Masters" / "Players") is drawn by CSS, so the summary text stays the title.
   const summary = el('summary');
   summary.append(sourceIcon(id), el('span', 'explore-title', title));
   details.append(summary, ...content);
