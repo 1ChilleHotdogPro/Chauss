@@ -22,6 +22,8 @@ export interface DrillView {
   finished: FinishReason | null;
   /** Why this line was chosen. */
   targetReason: TargetReason | null;
+  /** The card this line is aimed at (null when there is nothing to drill). */
+  target: Card | null;
   counts: DrillCounts;
   /** Cards of this line: right at the first try / asked. */
   lineScore: { right: number; asked: number };
@@ -46,6 +48,7 @@ export interface DrillControllerOptions {
 export class DrillController {
   private session: DrillSession | null = null;
   private targetReason: TargetReason | null = null;
+  private target: Card | null = null;
   private feedback: DrillFeedback = { kind: 'none' };
   /** Cards drilled in this sitting, so the next line aims at something else. */
   private readonly drilled = new Set<string>();
@@ -74,8 +77,20 @@ export class DrillController {
   /** Start the next line. */
   next(): void {
     const cards = this.options.repertoire.cards;
+    // Every card has had its turn in this sitting: start a new round. Without this, the choice
+    // fell back to "the card due soonest", and a card answered ahead of schedule keeps its due
+    // time, so that same card (and line) came back every time. The cards of the line just played
+    // stay skipped, so the new round does not start with a repeat.
+    if (![...cards.keys()].some((key) => !this.drilled.has(key))) {
+      this.drilled.clear();
+      for (const step of this.session?.steps() ?? []) this.drilled.add(step.card.key);
+      if (this.target) this.drilled.add(this.target.key);
+    }
     const picked = pickTarget(cards.values(), this.progress, this.now(), this.drilled);
     this.targetReason = picked?.reason ?? null;
+    this.target = picked?.card ?? null;
+    // Aimed at counts as drilled, even if the line is left before the card is reached.
+    if (this.target) this.drilled.add(this.target.key);
     this.session = new DrillSession(this.options.snapshot, this.options.repertoire, picked?.card ?? null, this.random);
     this.feedback = { kind: 'none' };
     this.missed.clear();
@@ -124,6 +139,7 @@ export class DrillController {
       feedback: this.feedback,
       finished: session?.finished() ?? null,
       targetReason: this.targetReason,
+      target: this.target,
       counts: countCards(this.options.repertoire.cards.values(), this.progress, this.now()),
       lineScore: { right: steps.filter((step) => step.firstTry).length, asked: steps.length },
       sittingScore: { ...this.sitting },
