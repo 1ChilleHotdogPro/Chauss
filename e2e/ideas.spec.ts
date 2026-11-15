@@ -4,7 +4,7 @@ import { Chess } from 'chess.js';
 import { IDEAS } from '../src/explore/ideas/ponziani';
 import { buildRepertoire } from '../src/repertoire/repertoire';
 import { positionKey, type Snapshot } from '../src/snapshot/format';
-import { expect, openApp, playMoves, test, tryMove } from './helpers';
+import { enterDrill, expect, openApp, playMoves, test, tryMove } from './helpers';
 
 const snapshot = JSON.parse(
   readFileSync(fileURLToPath(new URL('../src/data/openings/ponziani.json', import.meta.url)), 'utf8'),
@@ -40,7 +40,7 @@ test('Explore shows the written idea at its position, and none elsewhere', async
 
 test("Stop at the end of a drill line shows the line's key idea", async ({ page }) => {
   await openApp(page);
-  await page.locator('#mode-drill').click();
+  await enterDrill(page);
   const prompt = page.locator('#drill-prompt');
   for (let guard = 0; guard < 30; guard++) {
     await expect

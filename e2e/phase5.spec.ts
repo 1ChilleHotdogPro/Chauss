@@ -6,7 +6,7 @@ import { importProgress, PROGRESS_STORAGE_KEY, type Progress } from '../src/dril
 import { pickTarget } from '../src/drill/select';
 import { buildRepertoire, type Card } from '../src/repertoire/repertoire';
 import { positionKey, type Snapshot } from '../src/snapshot/format';
-import { expect, moveTexts, openApp, test, tryMove } from './helpers';
+import { enterDrill, expect, moveTexts, openApp, test, tryMove } from './helpers';
 
 // The tests work out the repertoire from the bundled data the same way the app does, so they
 // keep working after the data is rebuilt.
@@ -24,7 +24,7 @@ const counts = (page: Page) => page.locator('#drill-counts');
 
 async function startDrill(page: Page): Promise<void> {
   await openApp(page);
-  await page.locator('#mode-drill').click();
+  await enterDrill(page);
   await expect(page.locator('#mode-drill')).toHaveAttribute('aria-selected', 'true');
   await ready(page);
 }
@@ -202,7 +202,7 @@ test('progress survives a reload', async ({ page }) => {
   await expect(page.locator('#engine-status')).toHaveAttribute('data-state', 'ready', { timeout: 20_000 });
   await page.reload();
   await expect(page.locator('cg-board piece')).toHaveCount(32);
-  await page.locator('#mode-drill').click();
+  await enterDrill(page);
   await ready(page);
   await expect(counts(page)).toHaveAttribute('data-new', String(totalCards - 1));
   await expect(counts(page)).toHaveAttribute('data-due', '0');

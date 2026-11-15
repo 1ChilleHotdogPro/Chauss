@@ -7,7 +7,7 @@ A browser app for learning chess openings from the side you play: which moves ar
 
 Progress is kept separately for each opening.
 
-**Status:** all three modes work — **Explore** (look up any position), **Drill** (learn your moves with spaced repetition) and **Play** (a game against a bot that plays like people at your level, or one that makes the common mistakes on purpose). A GitHub Pages workflow is ready; the site is not published yet.
+**Status:** all three modes work — **Explore** (look up any position), **Drill** (learn your moves with spaced repetition) and **Analyse** (a whole game reviewed by Stockfish). A GitHub Pages workflow is ready; the site is not published yet.
 
 ## Run it locally
 
@@ -84,7 +84,7 @@ crawls (add `--opening=caro-kann` to either command for the Caro-Kann; the openi
 
 ## Drill
 
-The app plays the other colour and you play yours (White in the Ponziani, Black in the Caro-Kann, where the app plays 1.e4 and you must find 1...c6). In every position you must find **your repertoire move**: the move masters play most there, unless Stockfish rates another move clearly better (more than 5 points of winning chances). The opponent's replies are chosen the way players at your level choose them, weighted by how often they are played.
+The Drill tab first opens a full-page menu: **Openings** (pick which opening to drill; **Endgames** is a placeholder for now). Inside a drill, **← Drill menu** takes you back to switch. The app plays the other colour and you play yours (White in the Ponziani, Black in the Caro-Kann, where the app plays 1.e4 and you must find 1...c6). In every position you must find **your repertoire move**: the move masters play most there, unless Stockfish rates another move clearly better (more than 5 points of winning chances). The opponent's replies are chosen the way players at your level choose them, weighted by how often they are played.
 
 - A wrong move is taken back. You see the right move (an arrow) and why it is the one; play it to go on.
 - Each position is a card with its own review date (spaced repetition, SM-2). Positions you miss come back soon; ones you know well come back later. The next line aims at a card that is due, then at a new one.
@@ -92,18 +92,9 @@ The app plays the other colour and you play yours (White in the Ponziani, Black 
 
 The evaluation and the arrows are switched off in a drill, so you think for yourself.
 
-## Play
-
-A game against a bot that plays the other colour, starting from move 1. Choose the bot:
-
-- **Realistic** — plays the moves people at your level play, each as often as they play it.
-- **Punish me** — prefers the moves Stockfish calls mistakes (among those people really play), then moves that head for a known common mistake. Use it to practise punishing them.
-
-The eval bar and arrows start hidden here too; switch them on with `E` and `A` if you want them.
-
 ## Leaving the opening data
 
-When a drill line or a game reaches a position the opening data does not cover, the app asks what to do, every time:
+When a drill line reaches a position the opening data does not cover, the app asks what to do, every time:
 
 - **Stop: show Stockfish's verdict** — who stands better and by how much, the best move, Stockfish's main line, the verdict on the last move and, where one is written, the key idea of the line.
 - **Play on against Stockfish** — a weakened Stockfish takes over the opponent's side. Pick how strong: Easy (Skill Level 0, looks 4 half-moves ahead), Medium (Skill Level 5, depth 8) or Hard (Skill Level 10, depth 12).
@@ -122,7 +113,7 @@ Winning chances come from the engine's score using the same formula as Lichess. 
 
 ## Analyse a game
 
-The **Analyse** tab reviews a whole game. Paste a PGN (from Lichess, chess.com, or just `1.e4 e5 2.Nf3 …`), or press **Analyse this game** in the Play tab. Stockfish looks at every position — set how long in **Settings → Game analysis** (depth 10–18, or 0.5–3 seconds per move; default depth 14) — and you can cancel at any time. It runs in its own background worker, so the page stays usable.
+The **Analyse** tab reviews a whole game. Paste a PGN (from Lichess, chess.com, or just `1.e4 e5 2.Nf3 …`). Stockfish looks at every position — set how long in **Settings → Game analysis** (depth 10–18, or 0.5–3 seconds per move; default depth 14) — and you can cancel at any time. It runs in its own background worker, so the page stays usable.
 
 Each move gets a label:
 

@@ -3,7 +3,7 @@ import { fileURLToPath } from 'node:url';
 import type { Page } from '@playwright/test';
 import { buildRepertoire } from '../src/repertoire/repertoire';
 import type { Snapshot } from '../src/snapshot/format';
-import { expect, moveTexts, openApp, test, tryMove } from './helpers';
+import { enterDrill, expect, moveTexts, openApp, test, tryMove } from './helpers';
 
 const dataFile = (name: string): string => fileURLToPath(new URL(`../src/data/openings/${name}`, import.meta.url));
 const readSnapshot = (name: string): Snapshot => JSON.parse(readFileSync(dataFile(name), 'utf8')) as Snapshot;
@@ -91,7 +91,7 @@ test('progress saved by the old version shows up under the Ponziani', async ({ p
   await openApp(page);
   // The repertoire is built when the data has loaded; the Statistics table is drawn from it.
   await expect(page.locator('#snapshot-info')).toHaveAttribute('data-state', 'ready');
-  await page.locator('#mode-drill').click(); // the Statistics button lives in the Drill panel
+  await enterDrill(page);
   await page.locator('#open-stats').click();
   const row = page.locator(`#stats-table tbody tr[data-key="${card.key}"]`);
   await expect(row.locator('td').nth(2)).toHaveText('4');
@@ -146,7 +146,7 @@ test.describe('Caro-Kann (playing Black)', () => {
     await expect(page.locator('#snapshot-info')).toHaveAttribute('data-state', 'ready');
     await page.screenshot({ path: 'test-results/openings-caro-kann-explore.png', fullPage: true });
 
-    await page.locator('#mode-drill').click();
+    await enterDrill(page);
     await expect(page.locator('.cg-wrap')).toHaveClass(/orientation-black/);
     await expect(page.locator('#drill-prompt')).toHaveAttribute('data-state', 'asking');
     await expect(page.locator('#drill-prompt')).toContainText('Your move as Black');
@@ -159,7 +159,7 @@ test.describe('Caro-Kann (playing Black)', () => {
 
   test('1...c6 is accepted; another move shows the correct one', async ({ page }) => {
     await openApp(page);
-    await page.locator('#mode-drill').click();
+    await enterDrill(page);
     await expect(page.locator('#drill-prompt')).toHaveAttribute('data-state', 'asking');
     // The drill may aim at a deeper line; the first move is always 1.e4 and then 1...c6 is asked.
     await expect(page.locator('#moves .move')).toHaveCount(1);
@@ -174,16 +174,6 @@ test.describe('Caro-Kann (playing Black)', () => {
     await expect(page.locator('#moves .move').nth(1)).toHaveText('c6');
   });
 
-  test('in Play the bot has White and moves first', async ({ page }) => {
-    await openApp(page);
-    await page.locator('#mode-play').click();
-    await expect(page.locator('#play-prompt')).toHaveAttribute('data-state', 'your-move', { timeout: 10_000 });
-    await expect(page.locator('#play-prompt')).toContainText('Your move as Black');
-    await expect(page.locator('#moves .move')).toHaveCount(1);
-    await expect(page.locator('#board')).toHaveAttribute('data-interaction', 'player-only');
-    await expect(page.locator('#play-last')).toContainText('White played');
-  });
-
   test('switching back to the Ponziani turns the board and keeps each opening separate', async ({ page }) => {
     await openApp(page);
     await header(page).click();
@@ -193,7 +183,7 @@ test.describe('Caro-Kann (playing Black)', () => {
     await expect(page.locator('.cg-wrap')).toHaveClass(/orientation-white/);
     expect(await storedOpening(page)).toBe('ponziani');
     await expect(page.locator('#snapshot-info')).toHaveAttribute('data-state', 'ready');
-    await page.locator('#mode-drill').click();
+    await enterDrill(page);
     await page.locator('#open-stats').click();
     await expect(page.locator('#stats-table tbody tr')).toHaveCount(ponzianiRepertoire.cards.size);
   });

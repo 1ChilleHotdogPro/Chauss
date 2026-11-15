@@ -1,11 +1,7 @@
 // The repertoire, the drill and the bot when the user plays Black (a small made-up Caro-Kann tree).
-import { Chess } from 'chess.js';
 import { describe, expect, it } from 'vitest';
 import type { Score } from '../analysis/eval';
-import { pickOpponentMove, trapRoutes } from '../bot/choose';
 import { DrillSession } from '../drill/session';
-import { buildExplorePosition } from '../explore/position';
-import type { Trap } from '../explore/traps';
 import { assembleSnapshot, positionsToEvaluate } from '../snapshot/assemble';
 import { crawl, type CrawlThresholds } from '../snapshot/crawl';
 import { positionKey, type Counts, type Snapshot, type SnapshotMove } from '../snapshot/format';
@@ -124,53 +120,5 @@ describe('DrillSession as Black', () => {
     const session = new DrillSession(data, repertoire, target, () => 0);
     session.answer('c7c6');
     expect(session.line()).toEqual(['e4', 'c6', 'Nc3']); // not d4, which the dice would pick
-  });
-});
-
-describe('the bot as White (the opponent of a Black user)', () => {
-  const position = (line: string) => {
-    const fen = fenAfter(line);
-    const node = BOOK[line]!;
-    const total = (record: Record<string, number> | undefined): number =>
-      Object.values(record ?? {}).reduce((a, b) => a + b, 0);
-    const moves = Object.entries(node.lichess ?? {}).map(([san, games]) => {
-      const played = new Chess(fen).move(san);
-      return {
-        uci: `${played.from}${played.to}`,
-        san,
-        masters: [node.masters?.[san] ?? 0, 0, 0] as Counts,
-        lichess: [games, 0, 0] as Counts,
-        eval: cp(20),
-      };
-    });
-    return buildExplorePosition({ fen, masters: [total(node.masters), 0, 0], lichess: [total(node.lichess), 0, 0], moves });
-  };
-
-  it("plays White moves and leaves Black's turn to the user", () => {
-    expect(pickOpponentMove(position('e4 c6'), 'black', 'realistic', new Map(), () => 0)?.move.san).toBe('d4');
-    expect(pickOpponentMove(position('e4 c6'), 'black', 'realistic', new Map(), () => 0.999)?.move.san).toBe('Nc3');
-    expect(pickOpponentMove(position('e4 c6 d4 d5 e5'), 'black', 'realistic', new Map())).toBeNull();
-  });
-
-  it("collects White's moves along an exploit trap", () => {
-    const trap: Trap = {
-      id: 'x',
-      line: ['e4', 'c6', 'd4', 'd5', 'e5', 'Bf5'],
-      fen: fenAfter('e4 c6 d4 d5 e5 Bf5'),
-      victim: 'white',
-      kind: 'exploit',
-      move: { uci: 'g2g4', san: 'g4' },
-      popular: { games: 10, share: 0.1 },
-      book: { games: 0, share: 0 },
-      scoreBefore: cp(20),
-      scoreAfter: cp(-300),
-      drop: 25,
-      verdict: 'mistake',
-      refutation: { uci: ['f5g4'], san: ['Bxg4'], why: 'test' },
-    };
-    const routes = trapRoutes([trap], 'black');
-    const found = new Set([...routes.values()].flatMap((set) => [...set]));
-    expect(found).toEqual(new Set(['e2e4', 'd2d4', 'e4e5', 'g2g4']));
-    expect(trapRoutes([{ ...trap, kind: 'avoid', victim: 'black' }], 'black').size).toBe(0);
   });
 });

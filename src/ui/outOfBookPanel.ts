@@ -1,4 +1,4 @@
-import { STRENGTHS, type StopSummary, type StrengthId } from '../bot/outOfBook';
+import { STRENGTHS, type StopSummary, type StrengthId } from '../drill/outOfBook';
 
 export interface OutOfBookElements {
   section: HTMLElement;

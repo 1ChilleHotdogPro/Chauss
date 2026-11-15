@@ -1,5 +1,5 @@
 import type { Page } from '@playwright/test';
-import { expect, openApp, playMoves, test } from './helpers';
+import { expect, openApp, test } from './helpers';
 
 // A short game with an obvious blunder: 3...Nf6?? allows 4.Qxf7 mate.
 const SCHOLAR = `[Event "Test"]
@@ -83,26 +83,6 @@ test('a game that is not valid PGN gets a clear message', async ({ page }) => {
   await analyse(page, '1. e4 e5 2. Ke3');
   await expect(page.locator('#analysis-error')).toHaveText('"Ke3" is not a legal move (move 2).');
   await expect(page.locator('#analysis-run')).toBeHidden();
-});
-
-test('the game from the Play tab can be analysed', async ({ page }) => {
-  await useLimit(page, 'd10');
-  await openApp(page);
-  await page.locator('#mode-play').click();
-  await expect(page.locator('#play-analyse')).toBeHidden();
-  await playMoves(page, ['e2e4']);
-  await expect(page.locator('#moves .move')).toHaveCount(2, { timeout: 10_000 }); // the bot replied
-  const moves = await page.locator('#moves .move').allTextContents();
-
-  await page.locator('#play-analyse').click();
-  await expect(page.locator('#mode-analysis')).toHaveAttribute('aria-selected', 'true');
-  await expect(page.locator('#moves .move')).toHaveText(moves);
-  await expect(page.locator('#analysis-run')).toBeHidden({ timeout: 60_000 });
-  await expect(page.locator('.analysis-table thead')).toContainText('You');
-
-  // Back in Play, the game is still there.
-  await page.locator('#mode-play').click();
-  await expect(page.locator('#moves .move')).toHaveText(moves);
 });
 
 test('the Analyse tab fits a phone-sized screen', async ({ page }) => {

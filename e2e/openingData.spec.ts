@@ -1,7 +1,7 @@
 import { existsSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import { OPENINGS } from '../src/openings/registry';
-import { expect, openApp, test } from './helpers';
+import { enterDrill, expect, openApp, test } from './helpers';
 
 // An opening the registry lists before its data file has been built (none, once every crawl is done).
 const unbuilt = OPENINGS.find(
@@ -25,7 +25,7 @@ test.describe('an opening whose data is not built yet', () => {
     await expect(page.locator('#engine-status')).toHaveAttribute('data-state', 'ready', { timeout: 20_000 });
     await picker.locator('.opening-choice[data-opening="ponziani"]').click();
     await expect(page.locator('cg-board piece')).toHaveCount(32);
-    await page.locator('#mode-drill').click();
+    await enterDrill(page);
     await expect(page.locator('#mode-drill')).toHaveAttribute('aria-selected', 'true');
   });
 

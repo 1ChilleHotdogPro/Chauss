@@ -135,3 +135,16 @@ export async function drawnPieces(page: Page): Promise<Record<string, string>> {
     return result;
   });
 }
+
+/**
+ * Open a drill from the Drill hub: the Drill tab, then Openings, then the opening (the one stored for the
+ * page unless `openingId` is given). Choosing another opening reloads the page straight into its drill.
+ */
+export async function enterDrill(page: Page, openingId?: string): Promise<void> {
+  const id = openingId ?? (await page.evaluate(() => localStorage.getItem('chauss.opening.v1')));
+  await page.locator('#mode-drill').click();
+  await page.locator('#drill-hub [data-category="openings"]').click();
+  await page.locator(`#drill-hub [data-entry="${id}"]`).click();
+  await expect(page.locator('#drill-hub')).toBeHidden();
+  await expect(page.locator('#mode-drill')).toHaveAttribute('aria-selected', 'true');
+}

@@ -1,33 +1,7 @@
 import { describe, expect, it } from 'vitest';
-import { buildExplorePosition } from '../explore/position';
-import { describeBalance, stopSummary, strengthById, STRENGTHS, treeStatus } from './outOfBook';
+import { describeBalance, stopSummary, strengthById, STRENGTHS } from './outOfBook';
 
 const AFTER_C3 = 'r1bqkbnr/pppp1ppp/2n5/4p3/4P3/2P2N2/PP1P1PPP/RNBQKB1R b KQkq - 0 3';
-const AFTER_NF6 = 'r1bqkb1r/pppp1ppp/2n2n2/4p3/4P3/2P2N2/PP1P1PPP/RNBQKB1R w KQkq - 1 4';
-
-const ready = (fen: string, moves: { uci: string; san: string; masters: [number, number, number]; lichess: [number, number, number] }[]) =>
-  ({
-    status: 'ready',
-    origin: 'snapshot',
-    position: buildExplorePosition({ fen, masters: [0, 0, 0], lichess: [0, 0, 0], moves }),
-  }) as const;
-
-describe('treeStatus', () => {
-  it('waits while the data is loading, and is out where there is none', () => {
-    expect(treeStatus({ status: 'loading' })).toBe('loading');
-    expect(treeStatus({ status: 'unavailable', reason: 'x' })).toBe('out');
-  });
-
-  it("for Black, needs moves people at the level play; for White, any listed move", () => {
-    const played = { uci: 'g8f6', san: 'Nf6', masters: [0, 0, 0] as [number, number, number], lichess: [3, 1, 2] as [number, number, number] };
-    const mastersOnly = { ...played, masters: [3, 1, 2] as [number, number, number], lichess: [0, 0, 0] as [number, number, number] };
-    expect(treeStatus(ready(AFTER_C3, [played]))).toBe('in');
-    expect(treeStatus(ready(AFTER_C3, [mastersOnly]))).toBe('out');
-    expect(treeStatus(ready(AFTER_C3, []))).toBe('out');
-    expect(treeStatus(ready(AFTER_NF6, [{ ...mastersOnly, uci: 'd2d4', san: 'd4' }]))).toBe('in');
-    expect(treeStatus(ready(AFTER_NF6, []))).toBe('out');
-  });
-});
 
 describe('describeBalance', () => {
   it('puts the score into words, by winning chances', () => {

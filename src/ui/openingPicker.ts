@@ -1,3 +1,4 @@
+import { rootMoves } from '../drill/hub';
 import type { OpeningDef } from '../openings/registry';
 
 export interface OpeningPickerOptions {
@@ -20,11 +21,6 @@ export interface OpeningPicker {
 }
 
 const sideName = (opening: OpeningDef): string => (opening.side === 'white' ? 'White' : 'Black');
-
-/** "1.e4 e5 2.Nf3 Nc6 3.c3": the root moves with move numbers. */
-export function rootMoves(opening: OpeningDef): string {
-  return opening.rootLine.map((san, index) => (index % 2 === 0 ? `${index / 2 + 1}.${san}` : san)).join(' ');
-}
 
 /** The header button's text: "Ponziani · White ▾". */
 export function pickerButtonText(opening: OpeningDef | undefined): string {

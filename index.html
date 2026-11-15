@@ -13,9 +13,16 @@
     <div id="app">
       <header class="site-header">
         <h1>Chauss</h1>
+        <nav class="mode-tabs" role="tablist" aria-label="Mode">
+          <button id="mode-explore" type="button" role="tab" aria-selected="true">Explore</button>
+          <button id="mode-drill" type="button" role="tab" aria-selected="false">Drill</button>
+          <button id="mode-analysis" type="button" role="tab" aria-selected="false">Analyse</button>
+        </nav>
         <button id="open-picker" class="picker-button" type="button" title="Choose which opening to learn">Choose an opening ▾</button>
         <button id="open-settings" class="settings-button" type="button">Settings</button>
       </header>
+
+      <section id="drill-hub" class="drill-hub" aria-label="Choose a drill" hidden></section>
 
       <main class="layout">
         <section class="board-area" aria-label="Chess board">
@@ -36,13 +43,6 @@
         </section>
 
         <aside class="panel">
-          <div class="mode-tabs" role="tablist" aria-label="Mode">
-            <button id="mode-explore" type="button" role="tab" aria-selected="true">Explore</button>
-            <button id="mode-drill" type="button" role="tab" aria-selected="false">Drill</button>
-            <button id="mode-play" type="button" role="tab" aria-selected="false">Play</button>
-            <button id="mode-analysis" type="button" role="tab" aria-selected="false">Analyse</button>
-          </div>
-
           <p id="status" class="status" role="status" aria-live="polite"></p>
           <p id="verdict" class="verdict not-drill" aria-live="polite" hidden></p>
 
@@ -52,31 +52,11 @@
             <p id="drill-feedback" class="drill-feedback" data-kind="none" role="status" aria-live="polite" hidden></p>
             <div class="controls">
               <button id="drill-next" type="button" title="Start the next line (Enter)">Next line</button>
+              <button id="drill-menu" type="button" title="Back to the drill menu to pick another drill">← Drill menu</button>
               <button id="open-stats" type="button">Statistics</button>
             </div>
             <p id="drill-counts" class="hint"></p>
             <p id="drill-score" class="hint"></p>
-          </section>
-
-          <!-- Play mode: a game against a bot that plays Black from the opening data. -->
-          <section id="play" class="play play-only" aria-label="Play against the bot">
-            <fieldset class="play-style">
-              <legend>Bot</legend>
-              <label
-                ><input type="radio" name="play-style" id="play-style-realistic" value="realistic" checked />
-                Realistic <span class="hint">— plays the moves people at your level play, as often as they play them</span></label
-              >
-              <label
-                ><input type="radio" name="play-style" id="play-style-punish" value="punish" /> Punish me
-                <span class="hint">— prefers the mistakes people make here, so you practise punishing them</span></label
-              >
-            </fieldset>
-            <p id="play-prompt" class="drill-prompt" role="status" aria-live="polite"></p>
-            <p id="play-last" class="drill-feedback" data-kind="none" role="status" aria-live="polite" hidden></p>
-            <div class="controls">
-              <button id="play-new" type="button">New game</button>
-              <button id="play-analyse" type="button" hidden>Analyse this game</button>
-            </div>
           </section>
 
           <!-- Analyse mode: a whole game reviewed by Stockfish, move by move. -->
@@ -87,8 +67,7 @@
               <div class="controls">
                 <button id="analysis-start" type="button">Analyse</button>
               </div>
-              <p class="hint">Or play a game in the Play tab and press <b>Analyse this game</b>.</p>
-            </div>
+                          </div>
             <p id="analysis-error" class="test-result" data-status="error" role="alert" hidden></p>
             <div id="analysis-run" class="analysis-run" hidden>
               <progress id="analysis-progress" max="1" value="0"></progress>
@@ -104,7 +83,7 @@
             </div>
           </section>
 
-          <!-- Drill and Play: the game has left the opening data. -->
+          <!-- Drill: the game has left the opening data. -->
           <section id="oob" class="oob game-only" aria-label="Out of the opening data" hidden>
             <p id="oob-lead" class="oob-lead"></p>
             <div id="oob-choices" class="controls">
