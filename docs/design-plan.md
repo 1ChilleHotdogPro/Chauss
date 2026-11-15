@@ -84,6 +84,15 @@ Owns `index.html` (header and the `.controls` markup), `layout.css`, `header.css
 
 After Wave 2: the orchestrator merges the three branches one at a time and runs the full check after each merge.
 
+**Wave 2 done** (2a board skin, 2b study panel, 2c front-door screens; merged in the order 2b, 2a, 2c). Found while reviewing, for Wave 3:
+- The gold best-move arrow (`--arrow-1`, also hard-coded in `src/ui/board.ts`) is faint on light squares; it needs a deeper amber or a dark outline.
+- The eval score badge is wider than the 18px bar and pokes past its left edge.
+- Neon night board: the last-move highlight looks muddy on navy.
+- The hub's mini boards always use Merida pieces and a fixed board, not the user's choice (fine, but say so or follow the choice).
+- The large hub card title is 1.6rem, off the type scale.
+- The phone header takes three rows (logo + gear, tabs, opening chip).
+- Wave 2c added `src/ui/miniBoard.ts` and `src/ui/drillCard.ts` (with tests); the stats table no longer uses `.explore-table`.
+
 ### Wave 3 — Polish and QA (1 agent, **Opus**)
 - Pass over every screen at 1280×800, 1440×900 and 390×844. Check spacing rhythm, alignment and that there's no horizontal scroll on phones.
 - Focus-visible rings (gold, 2px offset) on everything you can interact with. Hover/active states for each button tier.
