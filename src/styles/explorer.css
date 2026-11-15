@@ -2,19 +2,8 @@
 
 /* ---- Opening explorer ---- */
 .explore h3 {
-  margin: 10px 0 4px;
-  font-size: 0.85rem;
-}
-
-.explore-section {
-  margin: 10px 0 4px;
-}
-
-.explore-section > summary {
-  cursor: pointer;
-  margin-bottom: 4px;
-  font-size: 0.85rem;
-  font-weight: 600;
+  margin: var(--space-3) 0 var(--space-1);
+  font-size: var(--fs-sm);
 }
 
 .opening-name {
@@ -25,53 +14,114 @@
 .opening-eco {
   display: inline-block;
   padding: 0 5px;
-  border-radius: 4px;
+  border-radius: var(--radius-sm);
   background: var(--button);
-  font-size: 0.8rem;
+  font-family: var(--font-data);
+  font-size: var(--fs-xs);
   font-weight: 700;
 }
 
 .explore-idea,
 .explore-note {
-  margin: 6px 0 0;
-  padding: 6px 8px;
-  border-radius: 4px;
+  margin: var(--space-2) 0 0;
+  padding: var(--space-2);
+  border-radius: var(--radius-sm);
   background: var(--button);
-  font-size: 0.85rem;
+  font-size: var(--fs-sm);
 }
 
 .explore-note {
-  border-left: 4px solid var(--inaccuracy);
+  border-left: 3px solid var(--inaccuracy);
 }
 
 .explore-idea {
-  border-left: 4px solid var(--accent);
+  border-left: 3px solid var(--heading);
 }
 
+/* ---- The two sources, each with its own icon and quiet tag ---- */
+.explore-section {
+  margin: var(--space-3) 0 var(--space-1);
+}
+
+.explore-section > summary {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  margin-bottom: var(--space-1);
+  padding: var(--space-1) 0;
+  border-bottom: 1px solid var(--border-soft);
+  cursor: pointer;
+  font-size: var(--fs-sm);
+  font-weight: 600;
+}
+
+.explore-section > summary .source-icon {
+  width: 16px;
+  height: 16px;
+  color: var(--heading);
+}
+
+.explore-section[data-source='popular'] > summary .source-icon {
+  color: var(--accent);
+}
+
+.explore-section > summary .explore-title {
+  min-width: 0;
+}
+
+/* The source tag is generated text, so the summary's own text stays the plain title. */
+.explore-section > summary::after {
+  margin-left: auto;
+  padding: 0 var(--space-2);
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  color: var(--muted);
+  font-size: var(--fs-xs);
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.explore-section[data-source='book'] > summary::after {
+  content: 'Masters';
+}
+
+.explore-section[data-source='popular'] > summary::after {
+  content: 'Players';
+}
+
+/* ---- Tables ---- */
 .explore-table {
   width: 100%;
   border-collapse: collapse;
-  font-size: 0.85rem;
+  font-family: var(--font-data);
+  font-size: var(--fs-sm);
 }
 
 .explore-table th {
-  padding: 2px 4px;
+  padding: 2px var(--space-1);
   color: var(--muted);
-  font-size: 0.7rem;
+  font-size: var(--fs-xs);
   font-weight: 600;
   text-align: left;
   text-transform: uppercase;
 }
 
 .explore-table td {
-  padding: 2px 4px;
+  padding: 3px var(--space-1);
   white-space: nowrap;
+}
+
+/* Light zebra striping on the move rows. */
+#book-moves tbody tr:nth-child(even),
+#popular-moves tbody tr:nth-child(even) {
+  background: rgba(255, 233, 190, 0.04);
 }
 
 .explore-table tr.selected td {
   background: var(--button);
 }
 
+/* Numbers are right-aligned with tabular figures, headers included. */
 .explore-share,
 .explore-games,
 .explore-eval {
@@ -79,60 +129,91 @@
   font-variant-numeric: tabular-nums;
 }
 
+#book-moves th:nth-child(2),
+#book-moves th:nth-child(3),
+#popular-moves th:nth-child(2),
+#popular-moves th:nth-child(3) {
+  text-align: right;
+}
+
 .explore-games {
   color: var(--muted);
+}
+
+.explore-eval {
+  font-weight: 600;
 }
 
 .explore-table td:nth-child(4) {
   width: 100%;
 }
 
+/* A move is a bold SAN link, not a chip. */
 .explore-move {
-  min-width: 3.4em;
-  padding: 2px 6px;
-  font-weight: 600;
+  min-width: 3.2em;
+  padding: 0 var(--space-1);
+  border: 0;
+  border-bottom: 1px solid transparent;
+  border-radius: 0;
+  background: transparent;
+  box-shadow: none;
+  color: var(--accent);
+  font-family: var(--font-data);
+  font-weight: 700;
   text-align: left;
+  text-decoration: none;
+}
+
+.explore-move:hover:not(:disabled) {
+  background: transparent;
+  border-bottom-color: currentColor;
+  color: var(--heading);
 }
 
 .explore-recommended {
   margin-left: 3px;
-  color: var(--accent);
+  color: var(--heading);
 }
 
-/* Results bar: White wins | draws | Black wins. */
+/* Results bar: White wins | draws | Black wins. Tall enough to carry readable numbers. */
 .results-bar {
   display: flex;
-  min-width: 70px;
-  height: 14px;
+  min-width: 96px;
+  height: 16px;
   border: 1px solid var(--border);
-  border-radius: 3px;
+  border-radius: var(--radius-sm);
   overflow: hidden;
-  font-size: 9px;
-  line-height: 12px;
+  font-size: 11px;
+  font-variant-numeric: tabular-nums;
+  font-weight: 600;
+  line-height: 14px;
   text-align: center;
 }
 
 .results-white {
-  background: #f4f1ea;
-  color: #2b2823;
+  background: var(--evalbar-light);
+  color: #211912;
 }
 
 .results-draw {
-  background: #9a948a;
-  color: #1d150f;
+  background: #8f8470;
+  color: #1a1511;
 }
 
 .results-black {
-  background: #3b3834;
-  color: #f4f1ea;
+  background: var(--evalbar-dark);
+  color: var(--text);
 }
 
+/* ---- Mistake flags: small coloured glyphs, not buttons ---- */
 .flag {
   min-width: 2em;
-  padding: 1px 5px;
-  border-color: transparent;
+  padding: 0 var(--space-1);
+  border: 1px solid transparent;
+  border-radius: 999px;
   color: var(--on-flag);
   font-weight: 700;
+  line-height: 1.4;
 }
 
 .flag[data-flag='inaccuracy'] {
@@ -172,13 +253,15 @@
   background: var(--blunder);
 }
 
+/* ---- Refutation ---- */
 .refutation {
-  margin-top: 8px;
-  padding: 8px;
-  border-left: 4px solid var(--mistake);
-  border-radius: 4px;
-  background: var(--button);
-  font-size: 0.9rem;
+  margin-top: var(--space-3);
+  padding: var(--space-2) var(--space-3);
+  border: 1px solid var(--border-soft);
+  border-left: 3px solid var(--mistake);
+  border-radius: var(--radius-sm);
+  background: var(--panel-raised);
+  font-size: var(--fs-sm);
 }
 
 .refutation[data-flag='blunder'] {
@@ -190,36 +273,74 @@
 }
 
 .refutation p {
-  margin: 0 0 4px;
+  margin: 0 0 var(--space-1);
+}
+
+.refutation-reply {
+  color: var(--accent);
 }
 
 .refutation-line {
-  font-size: 0.85rem;
+  font-family: var(--font-data);
 }
 
 .refutation-close {
-  padding: 2px 8px;
-  font-size: 0.8rem;
+  padding: 2px var(--space-2);
+  font-size: var(--fs-xs);
 }
 
+/* ---- Ranking and the secondary actions: quiet ghost buttons ---- */
 .ranking {
-  margin-top: 8px;
+  margin-top: var(--space-2);
+}
+
+#toggle-ranking,
+#open-traps {
+  background: var(--btn-ghost-bg);
+  border-color: var(--btn-ghost-border);
+  box-shadow: none;
+  color: var(--btn-ghost-text);
+  font-size: var(--fs-sm);
+  text-decoration: underline;
+  text-decoration-color: var(--border);
+  text-underline-offset: 3px;
+}
+
+#toggle-ranking:hover:not(:disabled),
+#open-traps:hover:not(:disabled) {
+  background: var(--btn-ghost-hover);
+  color: var(--text);
+}
+
+#toggle-ranking[aria-pressed='true'] {
+  background: var(--btn-ghost-hover);
+  border-color: var(--btn-ghost-border);
+  color: var(--heading);
 }
 
 .ranking-list {
   list-style: none;
   max-height: 220px;
-  margin: 4px 0 0;
+  margin: var(--space-1) 0 0;
   padding: 0;
   overflow-y: auto;
-  font-size: 0.85rem;
+  font-family: var(--font-data);
+  font-size: var(--fs-sm);
 }
 
 .ranking-list li {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 1px 0;
+  padding: 1px var(--space-1);
+}
+
+.ranking-list li:nth-child(even) {
+  background: rgba(255, 233, 190, 0.04);
+}
+
+.ranking-list .line-score {
+  justify-self: auto;
 }
 
 .ranking-list li[data-flag='inaccuracy'] .explore-move {
@@ -235,5 +356,5 @@
 }
 
 .explore-actions {
-  margin-top: 8px;
+  margin-top: var(--space-1);
 }

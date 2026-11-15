@@ -90,7 +90,7 @@ function resultsBar(stats: MoveStats): HTMLElement {
     const part = el('span', `results-${cls}`);
     part.style.width = `${percent}%`;
     // Only label a part when there is room for the number.
-    if (percent >= 18) part.textContent = `${percent}`;
+    if (percent >= 14) part.textContent = `${percent}`;
     bar.append(part);
   }
   return bar;
@@ -187,7 +187,7 @@ function refutationBox(refutation: RefutationModel, handlers: ExplorePanelHandle
     box.append(reply, lineP);
   }
 
-  const close = el('button', 'refutation-close', 'Close');
+  const close = el('button', 'refutation-close btn-ghost', 'Close');
   close.type = 'button';
   close.addEventListener('click', () => handlers.onExplain(null));
   box.append(close);
@@ -196,7 +196,7 @@ function refutationBox(refutation: RefutationModel, handlers: ExplorePanelHandle
 
 function rankingSection(model: ExplorePanelModel, handlers: ExplorePanelHandlers): HTMLElement {
   const section = el('div', 'ranking');
-  const toggle = el('button', undefined, model.ranking.state === 'off' ? 'Rank every legal move' : 'Hide the ranking');
+  const toggle = el('button', 'btn-ghost', model.ranking.state === 'off' ? 'Rank every legal move' : 'Hide the ranking');
   toggle.id = 'toggle-ranking';
   toggle.type = 'button';
   toggle.setAttribute('aria-pressed', String(model.ranking.state !== 'off'));
@@ -225,13 +225,43 @@ function rankingSection(model: ExplorePanelModel, handlers: ExplorePanelHandlers
   return section;
 }
 
+const SVG_NS = 'http://www.w3.org/2000/svg';
+
+/** Small line icons that tell the two sources apart: an open book (masters) vs a group of people. */
+const SOURCE_ICONS: Record<SectionId, string[]> = {
+  book: ['M2 4h7a3 3 0 0 1 3 3v13a2 2 0 0 0-2-2H2z', 'M22 4h-7a3 3 0 0 0-3 3v13a2 2 0 0 1 2-2h8z'],
+  popular: [
+    'M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2',
+    'M9 11a4 4 0 1 0 0-8 4 4 0 0 0 0 8z',
+    'M23 21v-2a4 4 0 0 0-3-3.87',
+    'M16 3.13a4 4 0 0 1 0 7.75',
+  ],
+};
+
+function sourceIcon(id: SectionId): SVGSVGElement {
+  const svg = document.createElementNS(SVG_NS, 'svg');
+  svg.setAttribute('class', 'icon source-icon');
+  svg.setAttribute('viewBox', '0 0 24 24');
+  svg.setAttribute('aria-hidden', 'true');
+  for (const d of SOURCE_ICONS[id]) {
+    const path = document.createElementNS(SVG_NS, 'path');
+    path.setAttribute('d', d);
+    svg.append(path);
+  }
+  return svg;
+}
+
 /** A section the user can fold away; the choice is remembered in the browser. */
 function collapsible(id: SectionId, title: string, ...content: HTMLElement[]): HTMLDetailsElement {
   const details = el('details', 'explore-section');
   details.id = `section-${id}`;
+  details.dataset.source = id;
   details.open = isSectionOpen(id);
   details.addEventListener('toggle', () => setSectionOpen(id, details.open));
-  details.append(el('summary', undefined, title), ...content);
+  // The quiet source tag ("Masters" / "Lichess") is drawn by CSS, so the summary text stays the title.
+  const summary = el('summary');
+  summary.append(sourceIcon(id), el('span', 'explore-title', title));
+  details.append(summary, ...content);
   return details;
 }
 

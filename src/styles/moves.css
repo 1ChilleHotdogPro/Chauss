@@ -1,4 +1,4 @@
-/* Move list. */
+/* Move list: a paired grid (n. | White | Black) at every width, light text cells. */
 
 .moves {
   list-style: none;
@@ -6,59 +6,73 @@
   padding: 0;
   max-height: 124px;
   overflow-y: auto;
+  font-family: var(--font-data);
+  font-variant-numeric: tabular-nums;
 }
 
 .moves li {
   display: grid;
-  grid-template-columns: 2.4em 1fr 1fr;
+  grid-template-columns: 2.4em minmax(0, 1fr) minmax(0, 1fr);
   align-items: center;
-  gap: 4px;
+  gap: var(--space-1);
   padding: 1px 0;
 }
 
 .move-number {
   color: var(--muted);
+  font-size: var(--fs-sm);
   text-align: right;
-  padding-right: 4px;
+  padding-right: var(--space-1);
 }
 
 .move-gap {
   color: var(--muted);
-  padding-left: 8px;
+  padding-left: var(--space-2);
 }
 
+/* A move is plain text with a faint hover; no chip. */
 .moves .move {
+  min-width: 0;
   text-align: left;
   background: transparent;
-  border-color: transparent;
-  padding: 3px 8px;
+  border: 0;
+  border-bottom: 2px solid transparent;
+  border-radius: var(--radius-sm);
+  box-shadow: none;
+  color: var(--text);
+  padding: 2px var(--space-2);
 }
 
-.moves .move.current {
-  background: var(--accent);
-  color: var(--accent-text);
+.moves .move:hover:not(:disabled) {
+  background: var(--btn-ghost-hover);
+}
+
+/* The current move: a soft gold fill with a gold underline. */
+.moves li .move.current,
+.moves li .move.current:hover:not(:disabled) {
+  background: rgba(230, 194, 122, 0.14);
+  border-bottom-color: var(--heading);
+  color: var(--heading);
   font-weight: 600;
 }
 
-/* Verdict marks (?!, ?, ??) come from data-mark, so the button text stays the plain move. */
+/* Verdict marks (?!, ?, ??) come from data-mark: a small coloured glyph after the plain move. */
 .moves .move[data-mark]::after {
   content: attr(data-mark);
-  margin-left: 1px;
+  margin-left: 3px;
+  font-size: 0.8em;
   font-weight: 700;
+  vertical-align: 0.1em;
 }
 
-.moves .move[data-verdict='inaccuracy'] {
+.moves .move[data-verdict='inaccuracy']::after {
   color: var(--inaccuracy);
 }
 
-.moves .move[data-verdict='mistake'] {
+.moves .move[data-verdict='mistake']::after {
   color: var(--mistake);
 }
 
-.moves .move[data-verdict='blunder'] {
+.moves .move[data-verdict='blunder']::after {
   color: var(--blunder);
-}
-
-.moves .move.current[data-verdict] {
-  color: var(--accent-text);
 }
