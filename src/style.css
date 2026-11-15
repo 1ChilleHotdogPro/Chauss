@@ -638,6 +638,17 @@ body[data-mode='explore'] .game-only {
   font-size: 0.85rem;
 }
 
+.explore-section {
+  margin: 10px 0 4px;
+}
+
+.explore-section > summary {
+  cursor: pointer;
+  margin-bottom: 4px;
+  font-size: 0.85rem;
+  font-weight: 600;
+}
+
 .opening-name {
   margin: 0;
   font-weight: 600;

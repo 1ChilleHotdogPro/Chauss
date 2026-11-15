@@ -67,8 +67,8 @@ test('the Ponziani position shows its name and both move lists with the bundled 
   await expect(bookRow.locator('.explore-games')).toHaveText(compactNumber(topBook.book!.games));
 
   // Headings say which is which, with the totals.
-  await expect(explore(page).locator('h3').nth(0)).toHaveText(`Book — master games (${compactNumber(expected.bookGames)})`);
-  await expect(explore(page).locator('h3').nth(1)).toContainText('Popular at your level — Lichess 1000-1399');
+  await expect(explore(page).locator('summary').nth(0)).toHaveText(`Book — master games (${compactNumber(expected.bookGames)})`);
+  await expect(explore(page).locator('summary').nth(1)).toContainText('Popular at your level — Lichess 1000-1399');
 
   // A move no master has played is in the popular list only.
   const amateurOnly = expected.popularMoves.find((m) => m.book === null);
@@ -326,4 +326,26 @@ test('the Explore panel fits a phone-sized screen', async ({ page }) => {
   expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBeLessThanOrEqual(390);
   await page.locator('#popular-moves').scrollIntoViewIfNeeded();
   await page.screenshot({ path: 'test-results/phase4-narrow.png', fullPage: true });
+});
+
+test('the Book and Popular sections fold away, and stay folded after a reload', async ({ page }) => {
+  await openApp(page);
+  await playMoves(page, PONZIANI_MOVES);
+  await exploreReady(page);
+
+  await expect(page.locator('#section-book')).toHaveJSProperty('open', true);
+  await page.locator('#section-book > summary').click();
+  await expect(page.locator('#section-book')).toHaveJSProperty('open', false);
+  await expect(page.locator('#book-moves')).toBeHidden();
+  await expect(page.locator('#popular-moves')).toBeVisible();
+
+  // Moving on keeps the choice.
+  await page.keyboard.press('ArrowLeft');
+  await expect(page.locator('#section-book')).toHaveJSProperty('open', false);
+
+  await page.reload();
+  await playMoves(page, PONZIANI_MOVES);
+  await exploreReady(page);
+  await expect(page.locator('#section-book')).toHaveJSProperty('open', false);
+  await expect(page.locator('#section-popular')).toHaveJSProperty('open', true);
 });

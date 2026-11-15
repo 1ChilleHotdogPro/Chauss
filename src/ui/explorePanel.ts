@@ -2,6 +2,7 @@ import { formatScore } from '../analysis/eval';
 import { verdictSymbol } from '../analysis/verdictText';
 import type { ExploreMove, MoveFlag, MoveStats } from '../explore/position';
 import type { RankedMove } from '../explore/ranking';
+import { isSectionOpen, setSectionOpen, type SectionId } from '../explore/sectionState';
 import type { ExploreView } from '../explore/source';
 
 /** Everything the panel shows about the refutation of one bad move. */
@@ -222,6 +223,16 @@ function rankingSection(model: ExplorePanelModel, handlers: ExplorePanelHandlers
   return section;
 }
 
+/** A section the user can fold away; the choice is remembered in the browser. */
+function collapsible(id: SectionId, title: string, ...content: HTMLElement[]): HTMLDetailsElement {
+  const details = el('details', 'explore-section');
+  details.id = `section-${id}`;
+  details.open = isSectionOpen(id);
+  details.addEventListener('toggle', () => setSectionOpen(id, details.open));
+  details.append(el('summary', undefined, title), ...content);
+  return details;
+}
+
 /**
  * Draw the Explore panel. Redrawing is skipped when nothing it shows has changed, so the engine's
  * frequent updates do not disturb the mouse or the keyboard focus.
@@ -265,27 +276,23 @@ export function renderExplorePanel(root: HTMLElement, model: ExplorePanelModel, 
     }
 
     // Book and Popular are two separate lists, never mixed.
-    const bookTitle = el('h3', undefined, `Book — master games (${compactNumber(position.bookGames)})`);
-    parts.push(bookTitle);
-    if (position.bookMoves.length > 0) {
-      parts.push(moveTable('book-moves', position.bookMoves, (move) => move.book, model, position.recommended, handlers));
-    } else {
-      parts.push(el('p', 'hint', 'No master games reach this position.'));
-    }
+    const bookBody =
+      position.bookMoves.length > 0
+        ? moveTable('book-moves', position.bookMoves, (move) => move.book, model, position.recommended, handlers)
+        : el('p', 'hint', 'No master games reach this position.');
+    parts.push(collapsible('book', `Book — master games (${compactNumber(position.bookGames)})`, bookBody));
 
-    const popularTitle = el(
-      'h3',
-      undefined,
-      `Popular at your level — Lichess ${model.ratingsLabel} (${compactNumber(position.popularGames)})`,
+    const popularBody =
+      position.popularMoves.length > 0
+        ? moveTable('popular-moves', position.popularMoves, (move) => move.popular, model, position.recommended, handlers)
+        : el('p', 'hint', 'No games at this level reach this position.');
+    parts.push(
+      collapsible(
+        'popular',
+        `Popular at your level — Lichess ${model.ratingsLabel} (${compactNumber(position.popularGames)})`,
+        popularBody,
+      ),
     );
-    parts.push(popularTitle);
-    if (position.popularMoves.length > 0) {
-      parts.push(
-        moveTable('popular-moves', position.popularMoves, (move) => move.popular, model, position.recommended, handlers),
-      );
-    } else {
-      parts.push(el('p', 'hint', 'No games at this level reach this position.'));
-    }
 
     if (origin === 'live') parts.push(el('p', 'hint explore-origin', 'Live data from Lichess.'));
   }
