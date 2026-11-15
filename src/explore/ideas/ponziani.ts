@@ -1,4 +1,4 @@
-import type { Idea, IdeaCheck } from './ideas';
+import type { Idea, IdeaCheck } from '../ideas';
 
 /**
  * The short remarks shown at key positions. Each one is backed by checks against the bundled data

@@ -1,25 +1,28 @@
 import { describeRatings } from '../explorer/settings';
 import type { RatingBand } from '../explorer/types';
+import { assetsFor } from '../openings/assets';
+import { DEFAULT_OPENING_ID } from '../openings/registry';
 import { validateSnapshot, type Snapshot, type SnapshotMeta } from './format';
 
+const loading = new Map<string, Promise<Snapshot>>();
+
 /**
- * Address of the bundled opening data. Vite turns this into a separate file of the built site, so
- * it is downloaded on its own instead of bloating the main script.
+ * The bundled data of one opening (downloaded once per opening, then reused). Vite turns each data
+ * file into a separate file of the built site, so only the chosen opening is downloaded.
+ * Rejects if it is missing or damaged.
  */
-const SNAPSHOT_URL = new URL('../data/ponziani.json', import.meta.url).href;
-
-let loading: Promise<Snapshot> | null = null;
-
-/** The bundled opening data (downloaded once, then reused). Rejects if it is missing or damaged. */
-export function loadSnapshot(): Promise<Snapshot> {
-  loading ??= fetch(SNAPSHOT_URL).then(async (response) => {
+export function loadSnapshot(openingId: string = DEFAULT_OPENING_ID): Promise<Snapshot> {
+  const cached = loading.get(openingId);
+  if (cached) return cached;
+  const request = fetch(assetsFor(openingId).snapshotUrl).then(async (response) => {
     if (!response.ok) throw new Error(`HTTP ${response.status}`);
     const data: unknown = await response.json();
     const problems = validateSnapshot(data);
     if (problems.length > 0) throw new Error(`the data file is damaged (${problems[0]})`);
     return data as Snapshot;
   });
-  return loading;
+  loading.set(openingId, request);
+  return request;
 }
 
 /** One plain sentence about where the bundled data comes from. */

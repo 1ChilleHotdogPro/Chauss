@@ -11,7 +11,7 @@ import { expect, moveTexts, openApp, test, tryMove } from './helpers';
 // The tests work out the repertoire from the bundled data the same way the app does, so they
 // keep working after the data is rebuilt.
 const snapshot = JSON.parse(
-  readFileSync(fileURLToPath(new URL('../src/data/ponziani.json', import.meta.url)), 'utf8'),
+  readFileSync(fileURLToPath(new URL('../src/data/openings/ponziani.json', import.meta.url)), 'utf8'),
 ) as Snapshot;
 const repertoire = buildRepertoire(snapshot);
 const totalCards = repertoire.cards.size;

@@ -1,4 +1,4 @@
-// A long drill sitting on the real bundled data (src/data/ponziani.json): the next line must keep
+// A long drill sitting on the real bundled data (src/data/openings/ponziani.json): the next line must keep
 // changing instead of getting stuck on one card (bug: the same line came back over and over).
 import { readFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
@@ -9,7 +9,7 @@ import { DrillController } from './controller';
 import { emptyProgress } from './progress';
 import { isDue } from './srs';
 
-const file = fileURLToPath(new URL('../data/ponziani.json', import.meta.url));
+const file = fileURLToPath(new URL('../data/openings/ponziani.json', import.meta.url));
 const snapshot = JSON.parse(readFileSync(file, 'utf8')) as Snapshot;
 const repertoire = buildRepertoire(snapshot);
 const NOW = Date.UTC(2026, 10, 15, 12, 0, 0);

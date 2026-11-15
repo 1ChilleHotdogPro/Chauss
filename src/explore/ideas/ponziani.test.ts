@@ -1,14 +1,14 @@
-// Every written idea is checked against the real bundled data (src/data/ponziani.json): a remark
+// Every written idea is checked against the real bundled data (src/data/openings/ponziani.json): a remark
 // whose facts the data does not back fails here, instead of being silently hidden in the app.
 import { readFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import { describe, expect, it } from 'vitest';
-import { positionKey, type Snapshot } from '../snapshot/format';
-import { IDEAS } from './ideaList';
-import { failedChecks, ideaFor, nodeAfter } from './ideas';
+import { positionKey, type Snapshot } from '../../snapshot/format';
+import { IDEAS } from './ponziani';
+import { failedChecks, ideaFor, nodeAfter } from '../ideas';
 
 const snapshot = JSON.parse(
-  readFileSync(fileURLToPath(new URL('../data/ponziani.json', import.meta.url)), 'utf8'),
+  readFileSync(fileURLToPath(new URL('../../data/openings/ponziani.json', import.meta.url)), 'utf8'),
 ) as Snapshot;
 
 describe('the written ideas', () => {

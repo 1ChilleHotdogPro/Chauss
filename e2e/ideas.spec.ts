@@ -1,13 +1,13 @@
 import { readFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import { Chess } from 'chess.js';
-import { IDEAS } from '../src/explore/ideaList';
+import { IDEAS } from '../src/explore/ideas/ponziani';
 import { buildRepertoire } from '../src/repertoire/repertoire';
 import { positionKey, type Snapshot } from '../src/snapshot/format';
 import { expect, openApp, playMoves, test, tryMove } from './helpers';
 
 const snapshot = JSON.parse(
-  readFileSync(fileURLToPath(new URL('../src/data/ponziani.json', import.meta.url)), 'utf8'),
+  readFileSync(fileURLToPath(new URL('../src/data/openings/ponziani.json', import.meta.url)), 'utf8'),
 ) as Snapshot;
 const repertoire = buildRepertoire(snapshot);
 

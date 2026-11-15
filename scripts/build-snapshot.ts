@@ -1,5 +1,5 @@
 /**
- * Builds src/data/ponziani.json: crawls the Ponziani tree from the Lichess opening explorer and
+ * Builds src/data/openings/ponziani.json: crawls the Ponziani tree from the Lichess opening explorer and
  * attaches a Stockfish score to every position and listed move.
  *
  *   npm run snapshot -- --survey          look only: how big would the tree be for various settings?
@@ -256,7 +256,7 @@ export async function main(argv: readonly string[]): Promise<number> {
     const text = stringifySnapshot(snapshot);
     if (text.includes(token)) throw new CrawlAbort('Refusing to write: the token appeared in the output.');
 
-    const outDir = join(root, 'src', 'data');
+    const outDir = join(root, 'src', 'data', 'openings');
     mkdirSync(outDir, { recursive: true });
     const outFile = join(outDir, 'ponziani.json');
     writeFileSync(outFile, text);

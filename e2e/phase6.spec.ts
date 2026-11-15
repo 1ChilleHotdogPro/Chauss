@@ -12,8 +12,8 @@ import { expect, moveTexts, openApp, test, tryMove } from './helpers';
 // The tests read the bundled data and work out what the bot may play the same way the app does,
 // so they keep working after the data is rebuilt.
 const read = <T>(path: string): T => JSON.parse(readFileSync(fileURLToPath(new URL(path, import.meta.url)), 'utf8')) as T;
-const snapshot = read<Snapshot>('../src/data/ponziani.json');
-const traps = read<TrapFile>('../src/data/traps.json');
+const snapshot = read<Snapshot>('../src/data/openings/ponziani.json');
+const traps = read<TrapFile>('../src/data/openings/ponziani.traps.json');
 const routes = trapRoutes(traps.traps);
 const repertoire = buildRepertoire(snapshot);
 

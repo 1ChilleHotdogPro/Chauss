@@ -1,5 +1,5 @@
 /**
- * Builds src/data/traps.json from the snapshot (src/data/ponziani.json):
+ * Builds src/data/openings/ponziani.traps.json from the snapshot (src/data/openings/ponziani.json):
  *   1. picks the moves that are popular at the snapshot's level and lose a lot by its scores;
  *   2. re-checks each with a deeper Stockfish search (the position before and after the move);
  *   3. keeps those that are still at least a mistake, with the engine's punishing line.
@@ -38,7 +38,7 @@ const log = (message: string): void => console.log(message);
 
 export async function main(): Promise<number> {
   const root = process.cwd();
-  const snapshot = JSON.parse(readFileSync(join(root, 'src', 'data', 'ponziani.json'), 'utf8')) as Snapshot;
+  const snapshot = JSON.parse(readFileSync(join(root, 'src', 'data', 'openings', 'ponziani.json'), 'utf8')) as Snapshot;
   const snapshotProblems = validateSnapshot(snapshot);
   if (snapshotProblems.length > 0) {
     log(`The snapshot is not sound: ${snapshotProblems[0]}`);
@@ -123,7 +123,7 @@ export async function main(): Promise<number> {
     return 1;
   }
 
-  const outFile = join(root, 'src', 'data', 'traps.json');
+  const outFile = join(root, 'src', 'data', 'openings', 'ponziani.traps.json');
   writeFileSync(outFile, `${JSON.stringify(file, null, 1)}\n`);
   log(`Wrote ${outFile}: ${file.traps.length} traps (${dropped} candidates did not survive the deeper check).`);
   return 0;

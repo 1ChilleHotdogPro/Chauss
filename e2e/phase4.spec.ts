@@ -11,9 +11,9 @@ import { expect, moveTexts, openApp, playMoves, test } from './helpers';
 // The tests read the bundled data themselves, so they check that the screen shows what the files
 // say — whatever the numbers are after the next re-crawl.
 const read = <T>(file: string): T =>
-  JSON.parse(readFileSync(fileURLToPath(new URL(`../src/data/${file}`, import.meta.url)), 'utf8')) as T;
+  JSON.parse(readFileSync(fileURLToPath(new URL(`../src/data/openings/${file}`, import.meta.url)), 'utf8')) as T;
 const snapshot = read<Snapshot>('ponziani.json');
-const trapFile = read<TrapFile>('traps.json');
+const trapFile = read<TrapFile>('ponziani.traps.json');
 
 const PONZIANI_MOVES = ['e2e4', 'e7e5', 'g1f3', 'b8c6', 'c2c3'];
 const FAKE_TOKEN = 'lip_testTokenNotReal123';
@@ -297,7 +297,7 @@ test('choosing other rating groups without a token keeps the bundled data and sa
 test('Settings describes the bundled data', async ({ page }) => {
   const assets: { url: string; status: number }[] = [];
   page.on('response', (response) => {
-    if (/ponziani|traps/.test(response.url())) assets.push({ url: response.url(), status: response.status() });
+    if (/ponziani.*\.json/.test(response.url())) assets.push({ url: response.url(), status: response.status() });
   });
   await openApp(page);
   await page.locator('#open-settings').click();
@@ -312,7 +312,7 @@ test('Settings describes the bundled data', async ({ page }) => {
   expect(assets.length).toBeGreaterThanOrEqual(2);
   for (const asset of assets) {
     expect(asset.status).toBe(200);
-    expect(new URL(asset.url).pathname).toMatch(/^\/Chauss\/assets\/(ponziani|traps)-.+\.json$/);
+    expect(new URL(asset.url).pathname).toMatch(/^\/Chauss\/assets\/ponziani(\.traps)?-.+\.json$/);
   }
 });
 

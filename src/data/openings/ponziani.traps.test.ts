@@ -1,15 +1,15 @@
-// Checks on the generated trap list itself (src/data/traps.json).
+// Checks on the generated trap list itself (src/data/openings/ponziani.traps.json).
 import { readFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import { Chess } from 'chess.js';
 import { describe, expect, it } from 'vitest';
-import { judgeMove, sideToMove } from '../analysis/eval';
-import { validateTrapFile, type TrapFile } from '../explore/traps';
-import { positionKey, type Snapshot } from '../snapshot/format';
+import { judgeMove, sideToMove } from '../../analysis/eval';
+import { validateTrapFile, type TrapFile } from '../../explore/traps';
+import { positionKey, type Snapshot } from '../../snapshot/format';
 
 const read = <T>(name: string): T =>
   JSON.parse(readFileSync(fileURLToPath(new URL(`./${name}`, import.meta.url)), 'utf8')) as T;
-const file = read<TrapFile>('traps.json');
+const file = read<TrapFile>('ponziani.traps.json');
 const snapshot = read<Snapshot>('ponziani.json');
 
 describe('traps.json', () => {

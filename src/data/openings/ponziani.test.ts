@@ -1,10 +1,10 @@
-// Checks on the generated snapshot itself (src/data/ponziani.json), so a bad crawl cannot slip in.
+// Checks on the generated snapshot itself (src/data/openings/ponziani.json), so a bad crawl cannot slip in.
 import { existsSync, readFileSync, statSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import { Chess } from 'chess.js';
 import { describe, expect, it } from 'vitest';
-import { meetsThreshold } from '../snapshot/crawl';
-import { positionKey, sumCounts, validateSnapshot, type Snapshot, type SnapshotNode } from '../snapshot/format';
+import { meetsThreshold } from '../../snapshot/crawl';
+import { positionKey, sumCounts, validateSnapshot, type Snapshot, type SnapshotNode } from '../../snapshot/format';
 
 const file = fileURLToPath(new URL('./ponziani.json', import.meta.url));
 const text = readFileSync(file, 'utf8');

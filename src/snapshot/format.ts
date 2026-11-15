@@ -50,6 +50,9 @@ export interface SnapshotMeta {
   explorerHost: string;
   /** The Lichess games that were counted. */
   lichess: { ratings: number[]; speeds: string[] };
+  /** Which opening this is (a registry id) and the colour the user plays; missing = Ponziani, White. */
+  openingId?: string;
+  side?: 'white' | 'black';
   /** The moves that lead to the opening, in normal notation. */
   rootLine: string[];
   /**

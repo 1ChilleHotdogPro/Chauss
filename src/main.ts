@@ -22,8 +22,7 @@ import { ExplorerClient } from './explorer/client';
 import { describeResult } from './explorer/describe';
 import { describeRatings, loadSettings, saveSettings } from './explorer/settings';
 import type { RatingBand } from './explorer/types';
-import { IDEAS } from './explore/ideaList';
-import { ideaFor, latestIdea } from './explore/ideas';
+import { ideaFor, latestIdea, type Idea } from './explore/ideas';
 import { loadTraps } from './explore/loadTraps';
 import type { ExploreMove } from './explore/position';
 import { needsScores, withRanking } from './explore/ranked';
@@ -36,6 +35,8 @@ import { materialFromFen } from './game/material';
 import { moveSoundFor } from './game/moveSound';
 import { buildRepertoire, type Repertoire } from './repertoire/repertoire';
 import { positionKey, type Snapshot } from './snapshot/format';
+import { assetsFor } from './openings/assets';
+import { DEFAULT_OPENING_ID } from './openings/registry';
 import { describeSnapshot, loadSnapshot } from './snapshot/load';
 import { renderCapturedPieces } from './ui/capturedPieces';
 import { createBoard, type Arrow, type BoardInteraction } from './ui/board';
@@ -140,12 +141,18 @@ const explorer = new ExplorerClient({
   minIntervalMs: 1500,
 });
 
+/** The opening being taught (the picker that chooses it comes later). */
+const OPENING_ID = DEFAULT_OPENING_ID;
+/** The short remarks of that opening, loaded together with its data. */
+let IDEAS: readonly Idea[] = [];
+
 // The bundled opening data: works offline and needs no token.
 // undefined = still loading, null = could not be loaded.
 let snapshot: Snapshot | null | undefined;
 const snapshotInfo = byId<HTMLElement>('snapshot-info');
-loadSnapshot().then(
-  (loaded) => {
+Promise.all([loadSnapshot(OPENING_ID), assetsFor(OPENING_ID).ideas()]).then(
+  ([loaded, loadedIdeas]) => {
+    IDEAS = loadedIdeas;
     snapshot = loaded;
     snapshotInfo.dataset.state = 'ready';
     snapshotInfo.dataset.positions = String(loaded.meta.counts.positions);
@@ -621,7 +628,7 @@ const trapsDialog = createTrapsDialog({
   openButton: byId<HTMLButtonElement>('open-traps'),
   onShow: showTrap,
 });
-loadTraps().then(
+loadTraps(OPENING_ID).then(
   (file) => {
     trapsDialog.setTraps(file);
     routes = trapRoutes(file.traps);
