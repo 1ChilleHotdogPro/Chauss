@@ -21,6 +21,12 @@ describe('the chosen opening', () => {
     expect(loadChosenOpening(storage)).toBe('caro-kann');
   });
 
+  it('is null for an opening whose data is not available yet', () => {
+    const storage = memoryStorage({ [OPENING_STORAGE_KEY]: 'caro-kann' });
+    expect(loadChosenOpening(storage, (id) => id === 'ponziani')).toBeNull();
+    expect(loadChosenOpening(storage, (id) => id === 'caro-kann')).toBe('caro-kann');
+  });
+
   it('is null for an id the registry does not know, and refuses to store one', () => {
     expect(loadChosenOpening(memoryStorage({ [OPENING_STORAGE_KEY]: 'sicilian' }))).toBeNull();
     const storage = memoryStorage();

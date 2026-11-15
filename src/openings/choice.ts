@@ -4,11 +4,17 @@ import { findOpening } from './registry';
 /** Where the chosen opening is remembered (the id from the registry). */
 export const OPENING_STORAGE_KEY = 'chauss.opening.v1';
 
-/** The remembered opening, or null when none is stored, the storage fails, or the id is unknown. */
-export function loadChosenOpening(storage: KeyValueStorage | undefined): string | null {
+/**
+ * The remembered opening, or null when none is stored, the storage fails, the id is unknown, or the
+ * opening cannot be used yet (`isAvailable`, e.g. its data files have not been built).
+ */
+export function loadChosenOpening(
+  storage: KeyValueStorage | undefined,
+  isAvailable: (id: string) => boolean = () => true,
+): string | null {
   try {
     const id = storage?.getItem(OPENING_STORAGE_KEY);
-    return id && findOpening(id) ? id : null;
+    return id && findOpening(id) && isAvailable(id) ? id : null;
   } catch {
     return null;
   }

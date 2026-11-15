@@ -19,6 +19,11 @@ export const OPENING_ASSETS: Record<string, OpeningAssets> = {
   },
 };
 
+/** True when the opening's data files are part of the site (an opening can be listed before they are built). */
+export function hasOpeningData(id: string): boolean {
+  return Object.hasOwn(OPENING_ASSETS, id);
+}
+
 export function assetsFor(id: string): OpeningAssets {
   const assets = OPENING_ASSETS[id];
   if (!assets) throw new Error(`no data files for opening "${id}"`);

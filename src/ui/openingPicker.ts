@@ -9,6 +9,8 @@ export interface OpeningPickerOptions {
   current: string | null;
   /** Called with the id the user picked (the page then reloads with it). */
   onChoose(id: string): void;
+  /** False for an opening that is listed but cannot be learned yet (its data is not built). */
+  isAvailable?: (id: string) => boolean;
 }
 
 export interface OpeningPicker {
@@ -54,6 +56,14 @@ export function createOpeningPicker(options: OpeningPickerOptions): OpeningPicke
       moves.className = 'hint';
       moves.textContent = rootMoves(opening);
       choice.append(name, side, moves);
+      if (!(options.isAvailable?.(opening.id) ?? true)) {
+        choice.disabled = true;
+        const soon = document.createElement('span');
+        soon.className = 'hint';
+        soon.textContent = 'Coming soon: the data for this opening is still being built.';
+        choice.append(soon);
+        return choice;
+      }
       choice.addEventListener('click', () => {
         if (opening.id === current) dialog.close();
         else onChoose(opening.id);

@@ -11,13 +11,16 @@ const loading = new Map<string, Promise<TrapFile>>();
 export function loadTraps(openingId: string = DEFAULT_OPENING_ID): Promise<TrapFile> {
   const cached = loading.get(openingId);
   if (cached) return cached;
-  const request = fetch(assetsFor(openingId).trapsUrl).then(async (response) => {
-    if (!response.ok) throw new Error(`HTTP ${response.status}`);
-    const data: unknown = await response.json();
-    const problems = validateTrapFile(data);
-    if (problems.length > 0) throw new Error(`the trap list is damaged (${problems[0]})`);
-    return data as TrapFile;
-  });
+  // Inside the promise, so an opening without data files rejects instead of throwing.
+  const request = Promise.resolve()
+    .then(() => fetch(assetsFor(openingId).trapsUrl))
+    .then(async (response) => {
+      if (!response.ok) throw new Error(`HTTP ${response.status}`);
+      const data: unknown = await response.json();
+      const problems = validateTrapFile(data);
+      if (problems.length > 0) throw new Error(`the trap list is damaged (${problems[0]})`);
+      return data as TrapFile;
+    });
   loading.set(openingId, request);
   return request;
 }

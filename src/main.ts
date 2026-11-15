@@ -47,7 +47,7 @@ import { materialFromFen } from './game/material';
 import { moveSoundFor } from './game/moveSound';
 import { buildRepertoire, type Repertoire } from './repertoire/repertoire';
 import { positionKey, type Snapshot } from './snapshot/format';
-import { assetsFor, OPENING_ASSETS } from './openings/assets';
+import { assetsFor, hasOpeningData, OPENING_ASSETS } from './openings/assets';
 import { loadChosenOpening, saveChosenOpening } from './openings/choice';
 import { DEFAULT_OPENING_ID, getOpening, OPENINGS } from './openings/registry';
 import { describeSnapshot, loadSnapshot } from './snapshot/load';
@@ -106,7 +106,8 @@ const enginePanel = {
 
 /** The opening being taught (the picker that chooses it comes later). */
 const storage = browserStorage();
-const chosenOpening = loadChosenOpening(storage);
+// An opening counts as chosen only once its data files exist (the registry may list it earlier).
+const chosenOpening = loadChosenOpening(storage, hasOpeningData);
 /** Until a choice is made the picker is on top and no opening data is loaded. */
 const OPENING_ID = chosenOpening ?? DEFAULT_OPENING_ID;
 /** The colour the user plays in it, and the colour of the app's side of the board. */
@@ -898,6 +899,7 @@ const openingPicker = createOpeningPicker({
   button: byId<HTMLButtonElement>('open-picker'),
   openings: OPENINGS,
   current: chosenOpening,
+  isAvailable: hasOpeningData,
   onChoose: (id) => {
     // All state is rebuilt from the chosen opening's data, so start the page afresh.
     saveChosenOpening(storage, id);

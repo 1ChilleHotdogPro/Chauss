@@ -14,13 +14,17 @@ const loading = new Map<string, Promise<Snapshot>>();
 export function loadSnapshot(openingId: string = DEFAULT_OPENING_ID): Promise<Snapshot> {
   const cached = loading.get(openingId);
   if (cached) return cached;
-  const request = fetch(assetsFor(openingId).snapshotUrl).then(async (response) => {
-    if (!response.ok) throw new Error(`HTTP ${response.status}`);
-    const data: unknown = await response.json();
-    const problems = validateSnapshot(data);
-    if (problems.length > 0) throw new Error(`the data file is damaged (${problems[0]})`);
-    return data as Snapshot;
-  });
+  // Inside the promise, so an opening without data files rejects (shown as "could not be loaded")
+  // instead of throwing and stopping the page.
+  const request = Promise.resolve()
+    .then(() => fetch(assetsFor(openingId).snapshotUrl))
+    .then(async (response) => {
+      if (!response.ok) throw new Error(`HTTP ${response.status}`);
+      const data: unknown = await response.json();
+      const problems = validateSnapshot(data);
+      if (problems.length > 0) throw new Error(`the data file is damaged (${problems[0]})`);
+      return data as Snapshot;
+    });
   loading.set(openingId, request);
   return request;
 }
