@@ -13,7 +13,7 @@ async function openEndgameDrill(page: Page): Promise<void> {
 }
 
 const prompt = (page: Page) => page.locator('#endgame-prompt');
-const fen = (page: Page) => page.locator('#fen').innerText();
+const fen = async (page: Page) => (await page.locator('#fen').textContent()) ?? ''; // folded away in a <details>, so not innerText
 
 /** A move that mates in at most `depth` moves for the side to move (tiny brute force, enough for KQ vs K near the edge). */
 function mateIn(fenText: string, depth: number): string | null {

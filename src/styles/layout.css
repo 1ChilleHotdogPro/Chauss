@@ -13,11 +13,37 @@
   }
 }
 
-/* On a wide screen the board stays in view while the (longer) side panel scrolls. */
+/* On a wide screen the app is a fixed frame: header on top, the board stays put, and only the side panel
+   (or the drill hub) scrolls. On phones the page scrolls as a whole. */
 @media (min-width: 761px) {
-  .board-area {
-    position: sticky;
-    top: 8px;
+  #app {
+    height: 100vh;
+    height: 100dvh;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .site-header {
+    flex: none;
+  }
+
+  .layout {
+    flex: 1 1 auto;
+    min-height: 0;
+    grid-template-rows: minmax(0, 1fr);
+  }
+
+  .panel {
+    max-height: 100%;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+  }
+
+  .drill-hub {
+    flex: 1 1 auto;
+    min-height: 0;
+    width: 100%;
+    overflow-y: auto;
   }
 }
 

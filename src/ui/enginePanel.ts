@@ -41,9 +41,7 @@ export function renderEnginePanel(elements: EnginePanelElements, model: EnginePa
   const { status, lines, verdict, toggleEval, toggleArrows } = elements;
 
   toggleEval.setAttribute('aria-pressed', String(model.evalShown));
-  toggleEval.textContent = model.evalShown ? 'Hide eval' : 'Show eval';
   toggleArrows.setAttribute('aria-pressed', String(model.arrowsShown));
-  toggleArrows.textContent = model.arrowsShown ? 'Hide arrows' : 'Show arrows';
 
   status.dataset.state = model.engineState;
   status.dataset.depth = String(model.evaluation?.depth ?? 0);

@@ -3,14 +3,41 @@
 .site-header {
   display: flex;
   flex-wrap: wrap;
-  align-items: baseline;
-  gap: 8px 12px;
-  margin-bottom: 12px;
+  align-items: center;
+  gap: var(--space-2) var(--space-4);
+  margin-bottom: var(--space-3);
+  padding-bottom: var(--space-3);
+  border-bottom: 1px solid var(--border-soft);
 }
 
-.site-header h1 {
+/* Logo: the crest and the word mark. */
+.brand {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
   margin: 0;
-  font-size: 1.5rem;
+  line-height: 1;
+}
+
+.crest {
+  width: 34px;
+  height: 34px;
+  flex: none;
+  filter: drop-shadow(0 0 6px rgba(230, 194, 122, 0.3));
+}
+
+.crest-ring {
+  fill: var(--panel);
+  stroke: var(--heading);
+  stroke-width: 1;
+}
+
+.crest-knight {
+  fill: var(--heading);
+}
+
+.crest-eye {
+  fill: var(--panel);
 }
 
 .site-header p {
@@ -18,32 +45,103 @@
   color: var(--muted);
 }
 
-.picker-button {
-  align-self: center;
-}
-
-.settings-button {
-  margin-left: auto;
-  align-self: center;
-}
-
-/* ---- Modes ---- */
+/* ---- Mode tabs: a segmented control ---- */
 .mode-tabs {
   display: flex;
-  gap: 4px;
-  align-self: center;
+  gap: 2px;
   padding: 3px;
-  border-radius: 8px;
+  border: 1px solid var(--border-soft);
+  border-radius: var(--radius);
   background: var(--button);
 }
 
 .mode-tabs button {
+  padding: 6px var(--space-4);
   border-color: transparent;
   background: transparent;
+  color: var(--muted);
   font-weight: 600;
+  letter-spacing: 0.02em;
+}
+
+.mode-tabs button:hover:not(:disabled) {
+  color: var(--text);
+  background: var(--btn-ghost-hover);
 }
 
 .mode-tabs button[aria-selected='true'] {
   background: var(--panel);
   border-color: var(--border);
+}
+
+/* ---- The opening switcher: a book-label chip, not a tab ---- */
+.picker-button {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  margin-left: auto;
+  padding: 5px var(--space-3) 5px 10px;
+  border-radius: 999px;
+  border-color: var(--border);
+  background: transparent;
+  color: var(--text);
+  font-size: var(--fs-sm);
+}
+
+/* A small book, drawn with a mask so the button's text can be replaced freely. */
+.picker-button::before {
+  content: '';
+  width: 16px;
+  height: 16px;
+  flex: none;
+  background: var(--heading);
+  -webkit-mask: var(--icon-book) center / contain no-repeat;
+  mask: var(--icon-book) center / contain no-repeat;
+}
+
+.picker-button {
+  --icon-book: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M5 4.5A1.5 1.5 0 0 1 6.5 3H19v15H6.5A1.5 1.5 0 0 0 5 19.5z'/%3E%3Cpath d='M5 19.5A1.5 1.5 0 0 0 6.5 21H19'/%3E%3Cpath d='M9 7.5h6'/%3E%3C/svg%3E");
+}
+
+/* ---- Settings: a gear, with its word on wide screens ---- */
+.settings-button {
+  font-size: var(--fs-sm);
+}
+
+@media (max-width: 760px) {
+  .brand {
+    margin-right: auto;
+  }
+
+  .settings-button {
+    order: -1;
+    margin-left: auto;
+  }
+
+  /* Logo and gear on the first row; tabs and the opening chip below. */
+  .brand {
+    order: -2;
+  }
+
+  .settings-label {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+  }
+
+  .mode-tabs {
+    flex: 1 1 auto;
+  }
+
+  .mode-tabs button {
+    flex: 1 1 0;
+    padding-inline: var(--space-2);
+  }
+
+  .picker-button {
+    margin-left: 0;
+  }
 }

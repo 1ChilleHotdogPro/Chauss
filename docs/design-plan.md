@@ -57,6 +57,13 @@ Owns `index.html` (header and the `.controls` markup), `layout.css`, `header.css
 - Apply the three button tiers. Toggles (Show eval/arrows) become switch-style buttons using `aria-pressed`.
 - Swap the favicon for the crest SVG.
 
+**Done in Wave 1.** Notes for later waves:
+- Panel order kept the mode section (drill prompt, analysis input) right under the status strip, above the toolbar: it is the "what to do now" part, so it ranks above the moves.
+- New classes to reuse: `.btn-primary`, `.btn-ghost`, `.btn-icon` + `<svg class="icon">`, `.icon-only`, `.toolbar`, `.switch` (state in `aria-pressed`). A plain `<button>` is the secondary tier.
+- The eval/arrow toggles now have fixed labels ("Eval bar", "Best-move arrows"); `enginePanel.ts` only sets `aria-pressed`.
+- The FEN sits in a closed `<details>`: tests read it with `textContent`, not `innerText`.
+- On wide screens the page never scrolls: `.panel` and `.drill-hub` are the scroll containers.
+
 ### Wave 2 — Components (3 agents in parallel, each in its own worktree; file sets don't overlap)
 **2a. Board skin — Sonnet.** Owns `board.css`, `appearance.css` (non-cursed part only), `src/ui/board.ts` (brush colours and highlight config only), `src/ui/evalBar.ts`, `src/ui/capturedPieces.ts`.
 - Add a "Walnut" board as the new default (it goes in the board list in `appearancePanel.ts`'s data source; read-only coordination: only add the entry). Last-move, selected, check and move-dot colours come from the tokens. Arrows use `--arrow-1..3`.

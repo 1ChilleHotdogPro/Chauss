@@ -62,7 +62,7 @@ test('the eval bar toggles with the button and the E key', async ({ page }) => {
   await page.locator('#toggle-eval').click();
   await expect(evalBar(page)).toBeVisible();
   await expect(page.locator('#toggle-eval')).toHaveAttribute('aria-pressed', 'true');
-  await expect(page.locator('#toggle-eval')).toHaveText('Hide eval');
+  await expect(page.locator('#toggle-eval')).toHaveText('Eval bar'); // a switch: the label stays, aria-pressed carries the state
 
   // The start position is roughly equal: a small number, and a bar near the middle.
   await expect(evalBar(page)).toHaveAttribute('data-score', /^([+-]\d\.\d|0\.0)$/);

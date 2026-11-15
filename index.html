@@ -6,20 +6,38 @@
     <title>Chauss — opening trainer</title>
     <link
       rel="icon"
-      href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E%E2%99%99%3C/text%3E%3C/svg%3E"
+      href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Ccircle cx='16' cy='16' r='15.5' fill='%232a2119' stroke='%23e6c27a'/%3E%3Cpath fill='%23e6c27a' d='M10 25.5c0-4.2 2.2-7.4 5.4-9.4-1.6-.2-3.3.4-4.8 1.4-1.3.8-2.9-.4-2.4-1.9l1.3-3.1c.9-2.2 2.5-4.1 4.5-5.2l.4-2.5 2.1 1.9c4.6.6 8 4.9 8 10.3v8.5z'/%3E%3Crect fill='%23e6c27a' x='8.5' y='24.5' width='16' height='2.6' rx='1'/%3E%3C/svg%3E"
     />
   </head>
   <body>
     <div id="app">
       <header class="site-header">
-        <h1>Chauss</h1>
+        <h1 class="brand">
+          <svg class="crest" viewBox="0 0 32 32" aria-hidden="true" focusable="false">
+            <circle class="crest-ring" cx="16" cy="16" r="15" />
+            <path
+              class="crest-knight"
+              d="M10 25.5c0-4.2 2.2-7.4 5.4-9.4-1.6-.2-3.3.4-4.8 1.4-1.3.8-2.9-.4-2.4-1.9l1.3-3.1c.9-2.2 2.5-4.1 4.5-5.2l.4-2.5 2.1 1.9c4.6.6 8 4.9 8 10.3v8.5z"
+            />
+            <circle class="crest-eye" cx="14.3" cy="10.4" r="0.9" />
+            <rect class="crest-knight" x="8.5" y="24.5" width="16" height="2.6" rx="1" />
+          </svg>
+          <span>Chauss</span>
+        </h1>
         <nav class="mode-tabs" role="tablist" aria-label="Mode">
           <button id="mode-explore" type="button" role="tab" aria-selected="true">Explore</button>
           <button id="mode-drill" type="button" role="tab" aria-selected="false">Drill</button>
           <button id="mode-analysis" type="button" role="tab" aria-selected="false">Analyse</button>
         </nav>
         <button id="open-picker" class="picker-button" type="button" title="Choose which opening to learn">Choose an opening ▾</button>
-        <button id="open-settings" class="settings-button" type="button">Settings</button>
+        <button id="open-settings" class="settings-button btn-ghost btn-icon" type="button" aria-label="Settings">
+          <svg class="icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+            <circle cx="12" cy="12" r="6.2" />
+            <circle cx="12" cy="12" r="2.4" />
+            <path d="M12 2.6v2.2M12 19.2v2.2M2.6 12h2.2M19.2 12h2.2M5.4 5.4l1.5 1.5M17.1 17.1l1.5 1.5M5.4 18.6l1.5-1.5M17.1 6.9l1.5-1.5" class="icon-teeth" />
+          </svg>
+          <span class="settings-label">Settings</span>
+        </button>
       </header>
 
       <section id="drill-hub" class="drill-hub" aria-label="Choose a drill" hidden></section>
@@ -43,15 +61,17 @@
         </section>
 
         <aside class="panel">
-          <p id="status" class="status" role="status" aria-live="polite"></p>
-          <p id="verdict" class="verdict not-drill" aria-live="polite" hidden></p>
+          <div class="panel-head">
+            <p id="status" class="status" role="status" aria-live="polite"></p>
+            <p id="verdict" class="verdict not-drill" aria-live="polite" hidden></p>
+          </div>
 
           <!-- Drill mode: the app plays Black, you find the repertoire move as White. -->
           <section id="drill" class="drill drill-only opening-drill-only" aria-label="Drill">
             <p id="drill-prompt" class="drill-prompt" role="status" aria-live="polite"></p>
             <p id="drill-feedback" class="drill-feedback" data-kind="none" role="status" aria-live="polite" hidden></p>
             <div class="controls">
-              <button id="drill-next" type="button" title="Start the next line (Enter)">Next line</button>
+              <button id="drill-next" class="btn-primary" type="button" title="Start the next line (Enter)">Next line</button>
               <button id="drill-menu" type="button" title="Back to the drill menu to pick another drill">← Drill menu</button>
               <button id="open-stats" type="button">Statistics</button>
             </div>
@@ -68,7 +88,7 @@
             <p id="endgame-counts" class="hint"></p>
             <div id="endgame-summary" class="endgame-summary" hidden></div>
             <div class="controls">
-              <button id="endgame-next" type="button" title="The next position (Enter)">Next position</button>
+              <button id="endgame-next" class="btn-primary" type="button" title="The next position (Enter)">Next position</button>
               <button id="endgame-retry" type="button" title="Start this position again">Retry</button>
               <button id="endgame-again" type="button" hidden>Start the drill again</button>
               <button id="endgame-menu" type="button" title="Back to the drill menu to pick another drill">← Drill menu</button>
@@ -81,9 +101,9 @@
               <label for="analysis-pgn">Paste a game (PGN from Lichess, chess.com, or moves like <code>1.e4 e5 2.Nf3</code>)</label>
               <textarea id="analysis-pgn" rows="5" spellcheck="false" autocomplete="off"></textarea>
               <div class="controls">
-                <button id="analysis-start" type="button">Analyse</button>
+                <button id="analysis-start" class="btn-primary" type="button">Analyse</button>
               </div>
-                          </div>
+            </div>
             <p id="analysis-error" class="test-result" data-status="error" role="alert" hidden></p>
             <div id="analysis-run" class="analysis-run" hidden>
               <progress id="analysis-progress" max="1" value="0"></progress>
@@ -114,12 +134,26 @@
             <p id="oob-engine" class="hint" role="status" aria-live="polite" hidden></p>
           </section>
 
-          <div class="controls">
-            <button id="prev" class="nav-only" type="button" title="Previous move (Left arrow)" aria-label="Previous move">&#9664;</button>
-            <button id="next" class="nav-only" type="button" title="Next move (Right arrow)" aria-label="Next move">&#9654;</button>
-            <button id="flip" type="button" title="Flip board (F)">Flip board</button>
-            <button id="undo" class="explore-only" type="button" title="Take back the last move">Undo</button>
-            <button id="reset" class="explore-only" type="button" title="Start a new game">New game</button>
+          <div class="toolbar" role="toolbar" aria-label="Board">
+            <button id="prev" class="nav-only btn-ghost btn-icon icon-only" type="button" title="Previous move (Left arrow)" aria-label="Previous move">
+              <svg class="icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M15 5l-7 7 7 7" /></svg>
+            </button>
+            <button id="next" class="nav-only btn-ghost btn-icon icon-only" type="button" title="Next move (Right arrow)" aria-label="Next move">
+              <svg class="icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M9 5l7 7-7 7" /></svg>
+            </button>
+            <span class="toolbar-gap" aria-hidden="true"></span>
+            <button id="flip" class="btn-ghost btn-icon" type="button" title="Flip board (F)">
+              <svg class="icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M7 3v17M3.5 16.5L7 20l3.5-3.5M17 21V4M13.5 7.5L17 4l3.5 3.5" /></svg>
+              <span>Flip</span>
+            </button>
+            <button id="undo" class="explore-only btn-ghost btn-icon" type="button" title="Take back the last move">
+              <svg class="icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M9 14L4 9l5-5M4 9h10.5a5.5 5.5 0 010 11H11" /></svg>
+              <span>Undo</span>
+            </button>
+            <button id="reset" class="explore-only btn-ghost btn-icon" type="button" title="Start a new game">
+              <svg class="icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M4 12a8 8 0 102.4-5.7M4 3.5v5h5" /></svg>
+              <span>New game</span>
+            </button>
           </div>
 
           <h2>Moves</h2>
@@ -128,13 +162,9 @@
 
           <div class="not-drill">
             <h2>Engine</h2>
-            <div class="controls">
-              <button id="toggle-eval" type="button" aria-pressed="false" title="Show or hide the evaluation (E)">
-                Show eval
-              </button>
-              <button id="toggle-arrows" type="button" aria-pressed="false" title="Show or hide best-move arrows (A)">
-                Show arrows
-              </button>
+            <div class="controls switches">
+              <button id="toggle-eval" class="switch" type="button" aria-pressed="false" title="Show or hide the evaluation (E)">Eval bar</button>
+              <button id="toggle-arrows" class="switch" type="button" aria-pressed="false" title="Show or hide best-move arrows (A)">Best-move arrows</button>
             </div>
             <p id="engine-status" class="hint engine-status" data-state="loading">Engine: loading Stockfish…</p>
             <ol id="engine-lines" class="engine-lines" hidden></ol>
@@ -148,10 +178,10 @@
             </div>
           </div>
 
-          <p class="fen">
-            <span class="fen-label" title="FEN: a one-line text description of the position">FEN</span>
+          <details class="fen">
+            <summary title="FEN: a one-line text description of the position">Position code (FEN)</summary>
             <code id="fen"></code>
-          </p>
+          </details>
         </aside>
       </main>
     </div>

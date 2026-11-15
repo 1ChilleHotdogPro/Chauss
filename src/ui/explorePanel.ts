@@ -20,7 +20,7 @@ export interface ExplorePanelModel {
   view: ExploreView;
   /** e.g. "1000-1399": the rating groups of the data shown. */
   ratingsLabel: string;
-  /** Show Stockfish's numbers (follows the "Show eval" switch). */
+  /** Show Stockfish's numbers (follows the "Eval bar" switch). */
   evalShown: boolean;
   /** A short, data-backed remark about this position, if there is one. */
   idea: string | null;
