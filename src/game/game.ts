@@ -1,6 +1,6 @@
-import { Chess, DEFAULT_POSITION, type Square } from 'chess.js';
+import { Chess, DEFAULT_POSITION, type PieceSymbol, type Square } from 'chess.js';
 
-export type { Square };
+export type { PieceSymbol, Square };
 export type Side = 'white' | 'black';
 export type PromotionPiece = 'q' | 'r' | 'b' | 'n';
 export type GameStatus = 'playing' | 'checkmate' | 'stalemate' | 'draw';
@@ -15,6 +15,8 @@ export interface MoveRecord {
   to: Square;
   promotion?: PromotionPiece;
   color: Side;
+  /** The kind of piece this move captured (also for en passant); absent when nothing was taken. */
+  captured?: PieceSymbol;
   /** Position (FEN) after this move. */
   fenAfter: string;
 }
@@ -100,6 +102,7 @@ export class Game {
       fenAfter: move.after,
     };
     if (isPromotion && promotion) record.promotion = promotion;
+    if (move.captured) record.captured = move.captured;
 
     this.moves = this.moves.slice(0, this.cursor);
     this.moves.push(record);
@@ -177,6 +180,7 @@ export class Game {
         fenAfter: move.after,
       };
       if (move.promotion && move.promotion !== 'p' && move.promotion !== 'k') record.promotion = move.promotion;
+      if (move.captured) record.captured = move.captured;
       records.push(record);
     }
     this.moves = records;

@@ -31,6 +31,7 @@ import { explainRefutation } from './explore/refutation';
 import { ExploreSource } from './explore/source';
 import type { Trap } from './explore/traps';
 import { Game, type PromotionPiece } from './game/game';
+import { moveSoundFor } from './game/moveSound';
 import { buildRepertoire, type Repertoire } from './repertoire/repertoire';
 import { positionKey, type Snapshot } from './snapshot/format';
 import { describeSnapshot, loadSnapshot } from './snapshot/load';
@@ -49,6 +50,7 @@ import { renderMoveList, updateMoveMarks } from './ui/moveList';
 import { fillStrengthOptions, renderOutOfBook, type OutOfBookModel } from './ui/outOfBookPanel';
 import { renderPlayPanel, type PlayPanelModel } from './ui/playPanel';
 import { createPromotionPicker } from './ui/promotion';
+import { createMoveSounds } from './ui/sound';
 import { createSettingsPanel } from './ui/settingsPanel';
 import { createStatsDialog } from './ui/statsDialog';
 import { createTrapsDialog } from './ui/trapsDialog';
@@ -81,6 +83,8 @@ const enginePanel = {
 
 const game = new Game();
 const promotion = createPromotionPicker(byId('promotion'));
+const moveSounds = createMoveSounds();
+let renderedPly = 0;
 const board = createBoard(byId('board'), game, handleUserMove);
 const evalBar = createEvalBar(byId('evalbar'));
 
@@ -770,6 +774,15 @@ function statusText(): string {
 function render(): void {
   board.setInteraction(interaction());
   board.sync();
+
+  // A move was just played (going back, or starting over, makes no sound).
+  const justPlayed = game.currentPly() > renderedPly ? game.lastMove() : undefined;
+  renderedPly = game.currentPly();
+  if (justPlayed) {
+    const sound = moveSoundFor(justPlayed);
+    document.body.dataset.lastSound = sound; // lets the browser tests check which sound it was
+    moveSounds.play(sound);
+  }
 
   const moves = game.history();
   const ply = game.currentPly();
