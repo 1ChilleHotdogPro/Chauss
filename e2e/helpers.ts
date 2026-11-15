@@ -1,14 +1,36 @@
 import { test as base, expect, type Page } from '@playwright/test';
 
 export { expect };
+
+/**
+ * The opening every page starts with, so the first-time picker does not cover the board. It is only
+ * stored when nothing is stored yet, so a test that switches opening keeps its choice across reloads.
+ * Set `test.use({ openingSeed: null })` to see the app as a first-time visitor.
+ */
+const seeded = base.extend<{ openingSeed: string | null }>({
+  openingSeed: ['ponziani', { option: true }],
+  context: async ({ context, openingSeed }, use) => {
+    if (openingSeed) {
+      await context.addInitScript((id) => {
+        try {
+          if (!localStorage.getItem('chauss.opening.v1')) localStorage.setItem('chauss.opening.v1', id);
+        } catch {
+          // storage blocked: the picker will show, which is what such a browser gets
+        }
+      }, openingSeed);
+    }
+    await use(context);
+  },
+});
+
 /** The plain Playwright test, without the "no errors" guard — for tests that cause an error on purpose. */
-export { base as unguardedTest };
+export { seeded as unguardedTest };
 
 /**
  * Every test using this `test` fails if the page logged a console error or
  * warning, threw an exception, or a request failed.
  */
-export const test = base.extend<{ problems: string[]; allowedProblems: RegExp | null }>({
+export const test = seeded.extend<{ problems: string[]; allowedProblems: RegExp | null }>({
   /** Problems a test causes on purpose (e.g. a mocked HTTP 401). Set with `test.use(...)`. */
   allowedProblems: [null, { option: true }],
   problems: [

@@ -48,8 +48,9 @@ export const OPENINGS: readonly OpeningDef[] = [
     name: 'Caro-Kann',
     side: 'black',
     rootLine: ['e4', 'c6'],
-    // Same settings as the Ponziani to start with; the survey run decides the real ones.
-    crawl: { minShare: 0.03, minGames: 51384, minGamesMasters: 20, maxPly: 24, maxPositions: 1000, depth: 18 },
+    // 1.e4 c6 is far more played than the Ponziani, so the position limit does the cutting: the
+    // most played positions (and all book lines) come first. About an hour of crawling.
+    crawl: { minShare: 0.03, minGames: 10000, minGamesMasters: 20, maxPly: 24, maxPositions: 400, depth: 18 },
   },
 ];
 
