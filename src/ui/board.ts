@@ -47,19 +47,19 @@ export interface Arrow {
   opacity?: number;
 }
 
-/** Best move: thick cyan. Second: lime. Third: grapefruit. */
+/** Best move: thick gold. Second: muted green. Third: parchment. Hex copies of --arrow-1..3 in src/theme.css (an SVG attribute cannot read CSS variables). */
 const ARROW_STYLES = [
-  { color: '#00c8e0', lineWidth: 12 },
-  { color: '#8fd91f', lineWidth: 8 },
-  { color: '#ff6b5a', lineWidth: 6 },
+  { color: '#e6c27a', lineWidth: 12 },
+  { color: '#93b97a', lineWidth: 8 },
+  { color: '#cbb994', lineWidth: 6 },
 ] as const;
 
-/** Chessground insists on its four standard brushes (used for arrows the user draws with the mouse). */
+/** Chessground insists on its four standard brushes (used for arrows the user draws with the mouse). Arrows the user draws: forest green, brick red, slate blue, candle gold. */
 const DEFAULT_BRUSHES = {
-  green: { key: 'g', color: '#15781B', opacity: 1, lineWidth: 10 },
-  red: { key: 'r', color: '#882020', opacity: 1, lineWidth: 10 },
-  blue: { key: 'b', color: '#003088', opacity: 1, lineWidth: 10 },
-  yellow: { key: 'y', color: '#e68f00', opacity: 1, lineWidth: 10 },
+  green: { key: 'g', color: '#6f9a5a', opacity: 1, lineWidth: 10 },
+  red: { key: 'r', color: '#c4574a', opacity: 1, lineWidth: 10 },
+  blue: { key: 'b', color: '#6b8fb0', opacity: 1, lineWidth: 10 },
+  yellow: { key: 'y', color: '#e6c27a', opacity: 1, lineWidth: 10 },
 };
 
 /** The board draws opacity in steps of a tenth, so each colour gets one brush per step. */

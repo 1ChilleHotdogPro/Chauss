@@ -21,8 +21,8 @@ function memoryStorage(initial: Record<string, string> = {}) {
 }
 
 describe('appearance', () => {
-  it('offers ten boards and ten piece sets, one cursed each', () => {
-    expect(BOARD_STYLES).toHaveLength(10);
+  it('offers eleven boards and ten piece sets, one cursed each', () => {
+    expect(BOARD_STYLES).toHaveLength(11);
     expect(PIECE_STYLES).toHaveLength(10);
     expect(BOARD_STYLES.filter((style) => 'cursed' in style)).toHaveLength(1);
     expect(PIECE_STYLES.filter((style) => 'cursed' in style)).toHaveLength(1);

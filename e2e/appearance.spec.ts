@@ -13,11 +13,11 @@ const SCHOLAR = `[Event "Test"]
 test('board and piece styles can be picked, are remembered, and the cursed set makes explosions', async ({ page }) => {
   await openApp(page);
   const board = page.locator('#board');
-  await expect(board).toHaveAttribute('data-board', 'brown');
+  await expect(board).toHaveAttribute('data-board', 'walnut');
   await expect(board).toHaveAttribute('data-pieces', 'classic');
 
   await page.locator('#open-settings').click();
-  await expect(page.locator('#board-styles .style-tile')).toHaveCount(10);
+  await expect(page.locator('#board-styles .style-tile')).toHaveCount(11);
   await expect(page.locator('#piece-styles .style-tile')).toHaveCount(10);
   await page.locator('#board-styles .style-tile', { hasText: 'Ocean blue' }).click();
   await page.locator('#piece-styles .style-tile', { hasText: 'Merida' }).click();

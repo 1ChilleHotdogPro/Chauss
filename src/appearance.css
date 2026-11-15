@@ -5,6 +5,8 @@
  */
 
 /* ---- Boards: two square colours each ---- */
+/* Walnut: the default, warm and low-glare on the dark page. */
+:is(#board, .style-preview)[data-board='walnut'] { --board-light: #e8d3ae; --board-dark: #a06f48; }
 :is(#board, .style-preview)[data-board='brown'] { --board-light: #f0d9b5; --board-dark: #b58863; }
 :is(#board, .style-preview)[data-board='green'] { --board-light: #eeeed2; --board-dark: #769656; }
 :is(#board, .style-preview)[data-board='blue'] { --board-light: #dee3e6; --board-dark: #8ca2ad; }
