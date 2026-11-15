@@ -1,3 +1,4 @@
+import { moveNumber } from './pv';
 import { describe, expect, it } from 'vitest';
 import { numberedLine, parseUciMove, pvToSan, toUci } from './pv';
 
@@ -68,5 +69,14 @@ describe('numberedLine', () => {
 
   it('returns an empty string for no moves', () => {
     expect(numberedLine(START, [])).toBe('');
+  });
+});
+
+describe('moveNumber', () => {
+  it('counts from the start position, also when Black moves first or the game starts later', () => {
+    const start = 'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1';
+    expect([1, 2, 3].map((ply) => moveNumber(start, ply))).toEqual([1, 1, 2]);
+    const blackAt23 = '4k3/8/8/8/8/8/4P3/4K3 b - - 0 23';
+    expect([1, 2, 3].map((ply) => moveNumber(blackAt23, ply))).toEqual([23, 24, 24]);
   });
 });

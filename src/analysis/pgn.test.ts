@@ -34,6 +34,11 @@ describe('importPgn', () => {
   it('names the illegal move and where it is', () => {
     expect(importPgn('1. e4 e5 2. Ke3 Nc6')).toEqual({ ok: false, error: '"Ke3" is not a legal move (move 2).' });
     expect(importPgn('1. e4 e5 2. Nf3 Ke7 3. Nc3 Kf9')).toMatchObject({ ok: false });
+    // The same move was legal earlier: the later, illegal one is named.
+    expect(importPgn('1. Nf3 Nf6 2. Ng1 Ng8 3. Nf3 Nf6 4. Nf3')).toEqual({
+      ok: false,
+      error: '"Nf3" is not a legal move (move 4).',
+    });
   });
 
   it('rejects empty input, junk and other variants', () => {

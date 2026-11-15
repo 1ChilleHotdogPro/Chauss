@@ -422,10 +422,13 @@ function analysisLimitLabel(): string {
 }
 
 function analysisBookLookup(): Promise<BookLookup> {
-  analysisBook ??= Promise.allSettled(Object.keys(OPENING_ASSETS).map((id) => loadSnapshot(id))).then((results) =>
-    snapshotBook(results.flatMap((result) => (result.status === 'fulfilled' ? [result.value] : []))),
-  );
-  return analysisBook.catch(() => NO_BOOK);
+  analysisBook ??= Promise.allSettled(Object.keys(OPENING_ASSETS).map((id) => loadSnapshot(id))).then((results) => {
+    const loaded = results.flatMap((result) => (result.status === 'fulfilled' ? [result.value] : []));
+    // Something could not be loaded (offline?): try again next time instead of keeping a smaller book.
+    if (loaded.length < results.length) analysisBook = null;
+    return loaded.length > 0 ? snapshotBook(loaded) : NO_BOOK;
+  });
+  return analysisBook;
 }
 
 function ensureAnalysisEngine(): Engine {
@@ -466,6 +469,11 @@ async function startAnalysis(next: AnalysedGame): Promise<void> {
   game.goTo(0);
   render();
 
+  // A worker that failed earlier answers nothing: start a fresh one, so trying again can work.
+  if (analysisEngine?.state() === 'failed') {
+    analysisEngine.dispose();
+    analysisEngine = null;
+  }
   const engineForRun = ensureAnalysisEngine();
   const moves = game.history().map((move) => ({ san: move.san, uci: toUci(move), fenAfter: move.fenAfter }));
   const book = await analysisBookLookup();
@@ -576,6 +584,7 @@ function renderAnalysis(): void {
       }),
       classes: Array.from({ length: plies }, (_, index) => moves[index]?.classification),
       current: game.currentPly(),
+      startFen: game.startFen,
     });
   }
   updateMoveMarks(movesEl, () => undefined);
@@ -1074,7 +1083,7 @@ function render(): void {
 
   const moves = game.history();
   const ply = game.currentPly();
-  renderMoveList(movesEl, moves, ply, goTo);
+  renderMoveList(movesEl, moves, ply, goTo, game.startFen);
   movesEmptyEl.hidden = moves.length > 0;
 
   statusEl.textContent = statusText();

@@ -46,6 +46,13 @@ export function pvToSan(fen: string, pv: readonly string[], maxPlies = Infinity)
   return sans;
 }
 
+/** The move number of half-move `ply` (1 = the first move played from `startFen`). */
+export function moveNumber(startFen: string, ply: number): number {
+  const fields = startFen.split(' ');
+  const offset = fields[1] === 'b' ? 1 : 0;
+  return (Number(fields[5]) || 1) + Math.floor((ply - 1 + offset) / 2);
+}
+
 /**
  * Add move numbers to a list of moves that starts from `fen`:
  * "3. Bc4 Nf6 4. Qxf7#", or "3... Nf6 4. Qxf7#" when Black moves first.

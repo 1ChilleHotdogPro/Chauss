@@ -1,4 +1,5 @@
 import type { Classification } from '../analysis/classify';
+import { moveNumber } from '../analysis/pv';
 import { CLASSIFICATION_INFO } from '../analysis/classificationText';
 
 export interface EvalGraphModel {
@@ -8,6 +9,8 @@ export interface EvalGraphModel {
   classes: (Classification | undefined)[];
   /** The half-move on the board. */
   current: number;
+  /** Where the game starts, for the move numbers in the tooltips. */
+  startFen: string;
 }
 
 /** Moves that get a dot on the graph. */
@@ -79,7 +82,7 @@ export function createEvalGraph(container: HTMLElement, onSelect: (ply: number) 
         dot.dataset.class = classification;
         dot.style.left = `${(ply / plies) * 100}%`;
         dot.style.top = `${100 - value}%`;
-        dot.title = `Move ${Math.ceil(ply / 2)}: ${CLASSIFICATION_INFO[classification].name}`;
+        dot.title = `Move ${moveNumber(model.startFen, ply)}: ${CLASSIFICATION_INFO[classification].name}`;
         return [dot];
       });
 

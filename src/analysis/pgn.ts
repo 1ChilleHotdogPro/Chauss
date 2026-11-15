@@ -62,7 +62,16 @@ export function importPgn(text: string): PgnImport {
     if (illegal) {
       const headerFen = /\[FEN\s+"([^"]+)"\]/.exec(game)?.[1] ?? DEFAULT_POSITION;
       const movetext = game.replace(/^\s*\[[^\]]*\]\s*$/gm, '');
-      const index = moveTokens(movetext).indexOf(illegal[1]!);
+      // Replay the moves to find the one that fails (the same move may have been legal earlier).
+      const replay = new Chess(headerFen);
+      const index = moveTokens(movetext).findIndex((token) => {
+        try {
+          replay.move(token);
+          return false;
+        } catch {
+          return true;
+        }
+      });
       const where = index >= 0 ? ` (${describePly(index, headerFen)})` : '';
       return { ok: false, error: `"${illegal[1]}" is not a legal move${where}.` };
     }

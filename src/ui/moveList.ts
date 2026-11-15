@@ -1,6 +1,8 @@
 import { CLASSIFICATION_INFO } from '../analysis/classificationText';
 import type { Classification } from '../analysis/classify';
+import { DEFAULT_POSITION } from 'chess.js';
 import type { Verdict } from '../analysis/eval';
+import { moveNumber } from '../analysis/pv';
 import { verdictName, verdictSymbol } from '../analysis/verdictText';
 import type { MoveRecord } from '../game/game';
 
@@ -63,6 +65,8 @@ export function renderMoveList(
   moves: readonly MoveRecord[],
   currentPly: number,
   onSelect: (ply: number) => void,
+  /** Where the moves start, for the move numbers (a game from a set-up position may start at move 23). */
+  startFen: string = DEFAULT_POSITION,
 ): void {
   list.replaceChildren();
   let row: HTMLLIElement | null = null;
@@ -73,7 +77,7 @@ export function renderMoveList(
       row = document.createElement('li');
       const number = document.createElement('span');
       number.className = 'move-number';
-      number.textContent = `${Math.ceil(move.ply / 2)}.`;
+      number.textContent = `${moveNumber(startFen, move.ply)}.`;
       row.append(number);
       if (move.color === 'black') {
         // The line starts with a Black move: leave White's slot empty.
