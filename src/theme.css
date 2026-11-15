@@ -1,0 +1,203 @@
+/* Dark Academia theme: the one place where the app's look is decided.
+   Deep brown and forest green, parchment text, candlelight gold, serif type.
+   style.css only uses these variables; boards and pieces are owned by appearance.css and
+   are deliberately not touched here (the cursed set must keep overriding everything). */
+
+:root {
+  color-scheme: dark;
+  accent-color: #93b97a;
+
+  /* Surfaces: a study at night. */
+  --bg: #1a1511;
+  --bg-glow: rgba(214, 160, 76, 0.16); /* candlelight in the corner of the page */
+  --panel: #2a2119;
+  --panel-raised: #33281f;
+  --button: #3b2f24;
+  --button-hover: #4d3d2d;
+  --border: #5c4733;
+  --border-soft: #46362a;
+
+  /* Ink: parchment on brown. Every pair here is above 4.5:1 (most above 7:1). */
+  --text: #efe2c6;
+  --muted: #bba98a;
+  --heading: #e6c27a; /* candlelight gold */
+
+  /* Forest green: selected things, "good" marks, links. */
+  --accent: #93b97a;
+  --accent-text: #15200f;
+  --accent-deep: #2f4a2c; /* a darker green for fills that carry light text */
+
+  /* Verdicts, light enough to read on the dark panels. */
+  --inaccuracy: #e6b550;
+  --mistake: #ec8f50;
+  --blunder: #f0806e;
+  --on-flag: #1d150f; /* dark ink that sits on the verdict colours */
+
+  /* Analyse classification colours. */
+  --c-brilliant: #5dd0c6;
+  --c-great: #8fb8e0;
+  --c-best: #9cc873;
+  --c-excellent: #b0c97c;
+  --c-good: #b4bd9f;
+  --c-book: #d2ac80;
+  --c-forced: #b9b1a3;
+  --c-miss: #f08aae;
+
+  /* Shape and depth. */
+  --radius: 8px;
+  --radius-sm: 6px;
+  --shadow-soft: 0 2px 6px rgba(0, 0, 0, 0.35), 0 8px 24px rgba(0, 0, 0, 0.28);
+  --shadow-button: 0 1px 2px rgba(0, 0, 0, 0.4);
+  --inset-light: inset 0 1px 0 rgba(255, 233, 190, 0.07);
+  --backdrop: rgba(10, 6, 3, 0.68);
+
+  /* Type: a warm serif for everything; the system's old-style faces first, no downloads. */
+  --font-body: 'Iowan Old Style', 'Palatino Linotype', Palatino, 'Book Antiqua', Georgia, 'Times New Roman', serif;
+  --font-mono: ui-monospace, SFMono-Regular, Consolas, monospace;
+
+  /* A faint paper grain (an inline SVG, so nothing extra is fetched). */
+  --grain: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 1  0 0 0 0 0.9  0 0 0 0 0.7  0 0 0 0.5 0'/%3E%3C/filter%3E%3Crect width='160' height='160' filter='url(%23n)'/%3E%3C/svg%3E");
+
+  font-family: var(--font-body);
+  font-size: 17px;
+  line-height: 1.5;
+}
+
+body {
+  min-height: 100vh;
+  background-color: var(--bg);
+  background-image:
+    radial-gradient(900px 520px at 8% -8%, var(--bg-glow), transparent 70%),
+    radial-gradient(700px 480px at 100% 100%, rgba(63, 96, 58, 0.18), transparent 70%);
+  background-attachment: fixed;
+}
+
+/* The grain sits over the page background, under the content. */
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  background-image: var(--grain);
+  opacity: 0.045;
+  pointer-events: none;
+}
+
+h1,
+h2,
+h3,
+h4 {
+  font-family: var(--font-body);
+  color: var(--heading);
+  font-weight: 600;
+}
+
+.site-header h1 {
+  font-size: 1.9rem;
+  letter-spacing: 0.06em;
+  font-variant: small-caps;
+  text-shadow: 0 0 18px rgba(230, 194, 122, 0.35);
+}
+
+.panel,
+.settings,
+.promotion-dialog {
+  background-color: var(--panel);
+  background-image: linear-gradient(180deg, rgba(255, 233, 190, 0.035), transparent 60%);
+  box-shadow: var(--shadow-soft), var(--inset-light);
+}
+
+.panel {
+  border-color: var(--border);
+}
+
+.panel h2 {
+  color: var(--heading);
+  font-variant: small-caps;
+  text-transform: none;
+  font-size: 1rem;
+  letter-spacing: 0.08em;
+  padding-bottom: 3px;
+  border-bottom: 1px solid var(--border-soft);
+}
+
+button {
+  font-family: inherit;
+  box-shadow: var(--shadow-button), var(--inset-light);
+}
+
+button:hover:not(:disabled) {
+  border-color: var(--heading);
+}
+
+button[aria-pressed='true'],
+.moves .move.current {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: var(--accent-text);
+}
+
+.mode-tabs {
+  box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.45);
+  background: #221a14;
+}
+
+.mode-tabs button {
+  box-shadow: none;
+}
+
+.mode-tabs button[aria-selected='true'] {
+  background: var(--accent-deep);
+  border-color: var(--accent);
+  color: var(--text);
+  box-shadow: var(--shadow-button), var(--inset-light);
+}
+
+.settings::backdrop {
+  background: var(--backdrop);
+}
+
+input,
+select,
+textarea {
+  font-family: inherit;
+}
+
+.token-row input,
+.analysis-input textarea,
+select {
+  background-color: #211912;
+  color: var(--text);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+}
+
+.analysis-input textarea {
+  font-family: var(--font-mono);
+}
+
+code {
+  font-family: var(--font-mono);
+  color: var(--heading);
+}
+
+/* A wooden frame around the board. It is on the wrapper, so the cursed board's own glow and shake
+   (which live on #board) are untouched. */
+.board-wrap {
+  border-radius: 5px;
+  box-shadow: 0 0 0 4px #4a3624, 0 0 0 5px #7a5a3a, 0 10px 28px rgba(0, 0, 0, 0.55);
+}
+
+.settings a {
+  color: var(--accent);
+}
+
+::selection {
+  background: var(--accent-deep);
+  color: var(--text);
+}
+
+/* Scrollbars in the same brown. */
+* {
+  scrollbar-color: var(--border) transparent;
+}

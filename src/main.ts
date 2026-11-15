@@ -1,8 +1,9 @@
-// Stylesheet order matters: our own style.css comes last so it can adjust chessground's defaults.
+// Stylesheet order matters: our own style.css and theme.css (the look) come last so it can adjust chessground's defaults.
 import '@lichess-org/chessground/assets/chessground.base.css';
 import '@lichess-org/chessground/assets/chessground.brown.css';
 import '@lichess-org/chessground/assets/chessground.cburnett.css';
 import './style.css';
+import './theme.css';
 import './appearance.css';
 import { Chess } from 'chess.js';
 import { Analysis } from './analysis/analysis';
