@@ -2,6 +2,7 @@ import type { KeyValueStorage } from '../explorer/cache';
 
 /** Board looks. Colours live in CSS variables (src/appearance.css), keyed by these ids. */
 export const BOARD_STYLES = [
+  { id: 'walnut', name: 'Walnut' },
   { id: 'brown', name: 'Classic brown' },
   { id: 'green', name: 'Tournament green' },
   { id: 'blue', name: 'Ocean blue' },
@@ -40,7 +41,7 @@ export interface Appearance {
 
 export const APPEARANCE_KEY = 'chauss.appearance.v1';
 export const MAX_EXPLOSION_VOLUME = 3;
-export const DEFAULT_APPEARANCE: Appearance = { board: 'brown', pieces: 'classic', explosionVolume: 1.5 };
+export const DEFAULT_APPEARANCE: Appearance = { board: 'walnut', pieces: 'classic', explosionVolume: 1.5 };
 
 /** The cursed board or the cursed pieces switch the capture sound to explosions. */
 export function isCursed(appearance: Pick<Appearance, 'board' | 'pieces'>): boolean {

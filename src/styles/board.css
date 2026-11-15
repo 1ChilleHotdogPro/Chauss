@@ -2,7 +2,7 @@
 
 /* The eval bar and the board side by side; together they fit the column and the window height. */
 .board-row {
-  --bar: 30px;
+  --bar: 18px;
   --gap: 8px;
   --strip: 28px; /* the captured-pieces line above and below the board */
   display: flex;
@@ -53,7 +53,7 @@
 }
 
 .captured-piece[data-color="white"] {
-  color: #fff;
+  color: var(--evalbar-light);
   text-shadow: 0 0 1px #000, 0 0 2px #000, 0 0 2px #000;
 }
 
@@ -68,15 +68,15 @@
   color: var(--muted, #6b655a);
 }
 
-/* Eval bar: the dark part is Black's share, the light part (.evalbar-fill) is White's. */
+/* Eval bar: the dark part is Black's share (ink), the light part (.evalbar-fill) is White's (ivory). */
 .evalbar {
   position: relative;
   flex: 0 0 var(--bar);
   margin: var(--strip) 0; /* lines up with the board, not with the captured-pieces lines */
-  background: #3b3834;
+  background: var(--evalbar-dark);
   border: 1px solid var(--border);
-  border-radius: 4px;
-  overflow: hidden;
+  border-radius: 9px;
+  /* The score badge is wider than the bar, so nothing is clipped; the fill rounds its own ends. */
 }
 
 /* When switched off it keeps its space, so the board does not jump when it is switched on. */
@@ -98,7 +98,8 @@
   right: 0;
   bottom: 0;
   height: 50%;
-  background: #f4f1ea;
+  background: var(--evalbar-light);
+  border-radius: 0 0 8px 8px;
   transition: height 0.3s ease;
 }
 
@@ -106,34 +107,41 @@
 .evalbar[data-orientation='black'] .evalbar-fill {
   bottom: auto;
   top: 0;
+  border-radius: 8px 8px 0 0;
 }
 
+/* The score is a small badge in the end of the leading side's colour. It is wider than the bar,
+   so it is centred and allowed to spill over the bar's rounded edge. */
 .evalbar-score {
   position: absolute;
-  left: 0;
-  right: 0;
-  text-align: center;
-  font-size: 10px;
+  left: 50%;
+  transform: translateX(-50%);
+  padding: 1px 3px;
+  border-radius: 4px;
+  font-size: 11px;
   font-weight: 700;
   line-height: 1.2;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
 }
 
 .evalbar-score.at-bottom {
-  bottom: 3px;
+  bottom: 4px;
 }
 
 .evalbar-score.at-top {
-  top: 3px;
+  top: 4px;
 }
 
 .evalbar-score.on-white {
-  color: #2b2823;
+  color: var(--evalbar-dark);
+  background: rgba(239, 226, 198, 0.85);
 }
 
 .evalbar-score.on-black {
-  color: #f4f1ea;
+  color: var(--evalbar-light);
+  background: rgba(33, 25, 18, 0.85);
 }
-
 #board {
   width: 100%;
   height: 100%;
@@ -237,3 +245,28 @@ cg-board {
   font-size: 2rem;
   line-height: 1.1;
 }
+
+
+/* ---- Highlights and move dots from the theme tokens (the cursed board keeps its own look) ---- */
+#board:not([data-board='cursed']) cg-board square.last-move { background-color: var(--hl-last); }
+#board:not([data-board='cursed']) cg-board square.selected { background-color: var(--hl-select); }
+#board:not([data-board='cursed']) cg-board square.check {
+  background: radial-gradient(ellipse at center, var(--hl-check) 0%, var(--hl-check) 25%, transparent 89%, transparent 100%);
+}
+#board:not([data-board='cursed']) cg-board square.move-dest {
+  background: radial-gradient(var(--move-dot) 22%, transparent 24%);
+}
+#board:not([data-board='cursed']) cg-board square.oc.move-dest {
+  background: radial-gradient(transparent 0%, transparent 80%, var(--move-dot) 80%);
+}
+#board:not([data-board='cursed']) cg-board square.move-dest:hover,
+#board:not([data-board='cursed']) cg-board square.move-dest.hover {
+  background: var(--hl-select);
+}
+#board:not([data-board='cursed']) cg-board square.premove-dest {
+  background: radial-gradient(var(--move-dot) 22%, transparent 24%);
+}
+#board:not([data-board='cursed']) cg-board square.oc.premove-dest {
+  background: radial-gradient(transparent 0%, transparent 80%, var(--move-dot) 80%);
+}
+#board:not([data-board='cursed']) cg-board square.current-premove { background-color: var(--hl-select); }

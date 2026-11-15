@@ -269,7 +269,7 @@ unguardedTest('if the engine cannot be loaded, the board still works and says so
   expect(pageErrors).toEqual([]);
 });
 
-test('arrows are cyan, lime and grapefruit, and a weaker move is drawn fainter', async ({ page }) => {
+test('arrows are gold, green and parchment, and a weaker move is drawn fainter', async ({ page }) => {
   await openApp(page);
   await engineReady(page);
   await page.locator('#toggle-arrows').click();
@@ -281,7 +281,7 @@ test('arrows are cyan, lime and grapefruit, and a weaker move is drawn fainter',
       stroke: group.querySelector('line')?.getAttribute('stroke') ?? '',
     })),
   );
-  expect(arrows.map((arrow) => arrow.stroke)).toEqual(['#00c8e0', '#8fd91f', '#ff6b5a']);
+  expect(arrows.map((arrow) => arrow.stroke)).toEqual(['#e6c27a', '#93b97a', '#cbb994']);
   expect(arrows[0]!.opacity).toBe(0.9);
   expect(arrows[1]!.opacity).toBeLessThanOrEqual(arrows[0]!.opacity);
   expect(arrows[2]!.opacity).toBeLessThanOrEqual(arrows[1]!.opacity);
