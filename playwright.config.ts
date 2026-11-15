@@ -1,6 +1,7 @@
 import { defineConfig, devices } from '@playwright/test';
 
-const PORT = 4173;
+// E2E_PORT lets several checkouts (git worktrees) run the e2e suite at the same time.
+const PORT = Number(process.env.E2E_PORT ?? 4173);
 const URL = `http://localhost:${PORT}/Chauss/`;
 
 export default defineConfig({
