@@ -16,7 +16,7 @@ export interface Trap {
   fen: string;
   /** Who plays the bad move. */
   victim: Side;
-  /** exploit = the opponent (Black) errs and White can punish; avoid = White is the one who errs. */
+  /** exploit = the opponent errs and the user can punish; avoid = the user's own side is the one who errs. */
   kind: 'exploit' | 'avoid';
   move: { uci: string; san: string };
   opening?: string;
@@ -33,9 +33,16 @@ export interface Trap {
   refutation: { uci: string[]; san: string[]; why: string };
 }
 
+/** The kind of a trap, from who errs and which colour the user plays. */
+export function trapKind(victim: Side, userSide: Side): Trap['kind'] {
+  return victim === userSide ? 'avoid' : 'exploit';
+}
+
 export interface TrapFile {
   meta: {
     formatVersion: 1;
+    /** The colour the user plays in this opening; missing = White (the Ponziani file). */
+    side?: Side;
     createdAt: string;
     /** The snapshot the traps were selected from. */
     snapshotCreatedAt: string;
@@ -138,6 +145,8 @@ export function validateTrapFile(value: unknown): string[] {
   if (typeof meta !== 'object' || meta === null || meta.formatVersion !== 1) problems.push('meta is missing or has the wrong version');
   if (!Array.isArray(file.traps)) return [...problems, 'traps is missing'];
 
+  const userSide: Side = meta?.side === 'black' ? 'black' : 'white';
+  if (meta?.side !== undefined && meta.side !== 'white' && meta.side !== 'black') problems.push('meta.side is not a colour');
   const ids = new Set<string>();
   for (const raw of file.traps as unknown[]) {
     if (typeof raw !== 'object' || raw === null) {
@@ -152,7 +161,7 @@ export function validateTrapFile(value: unknown): string[] {
     if (!Array.isArray(trap.line) || !trap.line.every((san) => typeof san === 'string')) problems.push(`${where}: bad line`);
     if (typeof trap.fen !== 'string') problems.push(`${where}: bad fen`);
     if (trap.victim !== 'white' && trap.victim !== 'black') problems.push(`${where}: bad victim`);
-    if (trap.kind !== (trap.victim === 'white' ? 'avoid' : 'exploit')) problems.push(`${where}: kind does not match the victim`);
+    if (trap.kind !== trapKind(trap.victim as Side, userSide)) problems.push(`${where}: kind does not match the victim`);
     if (trap.verdict !== 'mistake' && trap.verdict !== 'blunder') problems.push(`${where}: bad verdict`);
     if (!isScore(trap.scoreBefore) || !isScore(trap.scoreAfter)) problems.push(`${where}: bad scores`);
     if (typeof trap.drop !== 'number') problems.push(`${where}: bad drop`);

@@ -1,17 +1,20 @@
 /**
- * Builds src/data/openings/ponziani.json: crawls the Ponziani tree from the Lichess opening explorer and
+ * Builds src/data/openings/<id>.json: crawls an opening's tree from the Lichess opening explorer and
  * attaches a Stockfish score to every position and listed move.
  *
- *   npm run snapshot -- --survey          look only: how big would the tree be for various settings?
- *   npm run snapshot                      crawl, evaluate and write the file
- *   npm run snapshot -- --min-games=5000  override a setting (see OPTIONS below)
+ *   npm run snapshot -- --survey                   look only: how big would the tree be for various settings?
+ *   npm run snapshot                               crawl, evaluate and write the Ponziani file
+ *   npm run snapshot -- --opening=caro-kann        another opening from src/openings/registry.ts
+ *   npm run snapshot -- --min-games=5000           override a setting (see OPTIONS below)
+ *   npm run snapshot -- --root="e4 c6" --side=black --out=path.json   an opening that is not in the registry
  *
  * Needs a personal Lichess token in .env.local (LICHESS_TOKEN=...) — see the README.
  * Safe to stop and restart: explorer answers and engine scores are kept in .cache/.
  */
 import { mkdirSync, statSync, writeFileSync } from 'node:fs';
-import { join } from 'node:path';
+import { dirname, join, resolve } from 'node:path';
 import type { Score } from '../src/analysis/eval';
+import { DEFAULT_OPENING_ID, findOpening, type Side } from '../src/openings/registry';
 import { ENGINE_FILE } from '../src/engine/workerTransport';
 import { ExplorerClient, EXPLORER_HOST } from '../src/explorer/client';
 import { describeRatings } from '../src/explorer/settings';
@@ -23,12 +26,18 @@ import { CrawlAbort, createPoliteSource } from '../src/snapshot/politeSource';
 import { createDiskCache, createEvalStore } from './lib/diskCache';
 import { readToken } from './lib/env';
 import { createEvaluator } from './lib/nodeEngine';
-
-/** The moves that define the opening: 1.e4 e5 2.Nf3 Nc6 3.c3. */
-const ROOT_LINE = ['e4', 'e5', 'Nf3', 'Nc6', 'c3'];
+import { openingFiles } from './lib/openingFiles';
 
 const OPTIONS = {
   survey: false,
+  /** Registry id (sets the root line, side and thresholds), or '' for an ad hoc --root. */
+  opening: '',
+  /** The moves that define the opening, e.g. ['e4', 'c6']. */
+  rootLine: [] as string[],
+  /** The colour the user plays. */
+  side: 'white' as Side,
+  /** Output file; the default is src/data/openings/<id>.json. */
+  out: '',
   /** Rating groups and speeds of the Lichess games that are counted. */
   ratings: [1000, 1200] as RatingBand[],
   speeds: ['blitz', 'rapid', 'classical'] as Speed[],
@@ -54,8 +63,27 @@ const OPTIONS = {
 
 function parseArgs(argv: readonly string[]): typeof OPTIONS {
   const options = { ...OPTIONS };
+  // --opening first, so the other flags override its settings whatever the order.
+  const named = argv.find((arg) => arg.startsWith('--opening='))?.slice('--opening='.length);
+  const hasRoot = argv.some((arg) => arg.startsWith('--root='));
+  const id = named ?? (hasRoot ? '' : DEFAULT_OPENING_ID);
+  if (id !== '') {
+    const opening = findOpening(id);
+    if (!opening) throw new CrawlAbort(`Unknown opening "${id}".`);
+    options.opening = opening.id;
+    options.rootLine = [...opening.rootLine];
+    options.side = opening.side;
+    options.minShare = opening.crawl.minShare;
+    options.minGames = opening.crawl.minGames;
+    options.minGamesMasters = opening.crawl.minGamesMasters;
+    options.maxPly = opening.crawl.maxPly;
+    options.maxPositions = opening.crawl.maxPositions;
+    options.depth = opening.crawl.depth;
+  }
   for (const arg of argv) {
-    const [name, value] = arg.replace(/^--/, '').split('=') as [string, string | undefined];
+    const equals = arg.indexOf('=');
+    const name = (equals < 0 ? arg : arg.slice(0, equals)).replace(/^--/, '');
+    const value = equals < 0 ? undefined : arg.slice(equals + 1);
     const number = (): number => {
       const parsed = Number(value);
       if (value === undefined || !Number.isFinite(parsed)) throw new CrawlAbort(`--${name} needs a number`);
@@ -64,6 +92,18 @@ function parseArgs(argv: readonly string[]): typeof OPTIONS {
     switch (name) {
       case 'survey':
         options.survey = true;
+        break;
+      case 'opening':
+        break; // handled above
+      case 'root':
+        options.rootLine = (value ?? '').split(/[s,]+/).filter(Boolean);
+        break;
+      case 'side':
+        if (value !== 'white' && value !== 'black') throw new CrawlAbort('--side must be white or black');
+        options.side = value;
+        break;
+      case 'out':
+        options.out = value ?? '';
         break;
       case 'ratings':
         options.ratings = RATING_BANDS.filter((band) => (value ?? '').split(',').map(Number).includes(band));
@@ -102,6 +142,10 @@ function parseArgs(argv: readonly string[]): typeof OPTIONS {
         throw new CrawlAbort(`Unknown option: ${arg}`);
     }
   }
+  if (options.rootLine.length === 0) throw new CrawlAbort('--root needs at least one move.');
+  if (options.opening === '' && options.out === '' && !options.survey) {
+    throw new CrawlAbort('An opening that is not in the registry needs --out=<file>.');
+  }
   if (options.ratings.length === 0 || options.speeds.length === 0) {
     throw new CrawlAbort('At least one rating group and one speed are needed.');
   }
@@ -122,7 +166,7 @@ function printSurvey(result: CrawlResult, thresholds: CrawlThresholds, options: 
   for (const minGames of [300, 5000, 20000, 50000, 75000, 100000, 150000, 200000, 500000, 10_000_000]) {
     if (minGames < thresholds.minGamesLichess) continue;
     const counts = mastersOptions.map((minGamesMasters) =>
-      countReachable(result, ROOT_LINE, { ...thresholds, minGamesLichess: minGames, minGamesMasters }),
+      countReachable(result, options.rootLine, { ...thresholds, minGamesLichess: minGames, minGamesMasters }, options.side),
     );
     log(`  ${String(minGames).padStart(9)} | ${counts.map((n) => String(n).padStart(11)).join(' | ')}`);
   }
@@ -143,11 +187,11 @@ function printSurvey(result: CrawlResult, thresholds: CrawlThresholds, options: 
     log(`  ${String(entry.positions).padStart(4)} | ${thousands(entry.masters).padStart(7)} | ${thousands(entry.lichess).padStart(10)} | ${name}`);
   }
 
-  const ponziani = [...result.nodes.values()].find((node) => node.kind === 'tree' && node.ply === ROOT_LINE.length);
-  if (ponziani) {
+  const start = [...result.nodes.values()].find((node) => node.kind === 'tree' && node.ply === options.rootLine.length);
+  if (start) {
     log('');
-    log(`The opening position itself: ${thousands(sumCounts(ponziani.lichess))} Lichess games (${describeRatings(options.ratings)}, ${options.speeds.join('/')}), ${thousands(sumCounts(ponziani.masters))} master games.`);
-    for (const move of ponziani.moves.slice(0, 8)) {
+    log(`The opening position itself (${start.opening ? `the explorer names it "${start.opening.name}"` : 'unnamed'}): ${thousands(sumCounts(start.lichess))} Lichess games (${describeRatings(options.ratings)}, ${options.speeds.join('/')}), ${thousands(sumCounts(start.masters))} master games.`);
+    for (const move of start.moves.slice(0, 8)) {
       log(`  ${move.san.padEnd(6)} Lichess ${thousands(sumCounts(move.lichess)).padStart(9)}   masters ${thousands(sumCounts(move.masters)).padStart(5)}${move.follow ? '' : '   (not followed)'}`);
     }
   }
@@ -182,11 +226,11 @@ export async function main(argv: readonly string[]): Promise<number> {
       maxPositions: options.maxPositions > 0 ? options.maxPositions : options.survey ? 1500 : 800,
     };
 
-    log(`Crawling the opening explorer (${EXPLORER_HOST}).`);
+    log(`Crawling the opening explorer (${EXPLORER_HOST}) for ${options.rootLine.join(' ')}, played by ${options.side}.`);
     log(`Lichess games: rated ${describeRatings(options.ratings)}, speeds ${options.speeds.join(', ')}.`);
     log(`Following moves with >= ${options.minShare * 100}% of the games and >= ${thresholds.minGamesLichess} Lichess games or >= ${thresholds.minGamesMasters} master games; depth limit ${thresholds.maxPly} half-moves; at most ${thresholds.maxPositions} positions.`);
 
-    const result = await crawl(source, { rootLine: ROOT_LINE, thresholds }, (visited, waiting, node) => {
+    const result = await crawl(source, { rootLine: options.rootLine, thresholds, side: options.side }, (visited, waiting, node) => {
       if (visited % 10 === 0 || waiting === 0) {
         log(`  ${visited} positions (${waiting} waiting) — move ${Math.ceil(node.ply / 2)}, ${node.opening?.name ?? 'unnamed'}; ${client.requestsSent()} requests sent, ${diskCache.hits()} answered from disk`);
       }
@@ -232,7 +276,9 @@ export async function main(argv: readonly string[]): Promise<number> {
       createdAt: new Date().toISOString(),
       explorerHost: EXPLORER_HOST,
       lichess: { ratings: options.ratings, speeds: options.speeds },
-      rootLine: ROOT_LINE,
+      ...(options.opening ? { openingId: options.opening } : {}),
+      side: options.side,
+      rootLine: options.rootLine,
       ...(result.family ? { family: result.family } : {}),
       thresholds: {
         minShare: thresholds.minShare,
@@ -256,9 +302,8 @@ export async function main(argv: readonly string[]): Promise<number> {
     const text = stringifySnapshot(snapshot);
     if (text.includes(token)) throw new CrawlAbort('Refusing to write: the token appeared in the output.');
 
-    const outDir = join(root, 'src', 'data', 'openings');
-    mkdirSync(outDir, { recursive: true });
-    const outFile = join(outDir, 'ponziani.json');
+    const outFile = options.out ? resolve(root, options.out) : openingFiles(root, options.opening).snapshot;
+    mkdirSync(dirname(outFile), { recursive: true });
     writeFileSync(outFile, text);
     log(`Wrote ${outFile}: ${snapshot.meta.counts.positions} positions, ${snapshot.meta.counts.moves} moves, ${thousands(statSync(outFile).size)} bytes.`);
     log(`Total time: ${Math.round((Date.now() - started) / 1000)} s.`);

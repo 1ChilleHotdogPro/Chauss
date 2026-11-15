@@ -4,10 +4,11 @@ import type { Score } from '../analysis/eval';
 export type Counts = [white: number, draws: number, black: number];
 
 /**
- * - prelude: the fixed moves on the way to the Ponziani (1.e4 e5 2.Nf3 Nc6 3.c3)
- * - sideline: Black left that path at move 1 or 2 (Sicilian, Petrov, ...) — covered lightly:
+ * - prelude: the fixed moves on the way to the opening (e.g. 1.e4 e5 2.Nf3 Nc6 3.c3)
+ * - sideline: the opponent left that path early (Black at move 1 or 2 against the Ponziani:
+ *   Sicilian, Petrov, ...; White's first move against the Caro-Kann) — covered lightly:
  *   the data for the position and one recommended reply, nothing deeper
- * - tree: inside the Ponziani, followed as deep as the data supports
+ * - tree: inside the opening, followed as deep as the data supports
  */
 export type NodeKind = 'prelude' | 'sideline' | 'tree';
 
@@ -39,7 +40,7 @@ export interface SnapshotNode {
   eval?: Score;
   /** Most played first (by Lichess games, then master games). */
   moves: SnapshotMove[];
-  /** Sidelines only: the one reply recommended for White (a `uci` from `moves`). */
+  /** Sidelines only: the one reply recommended for the user's side (a `uci` from `moves`). */
   recommended?: string;
 }
 

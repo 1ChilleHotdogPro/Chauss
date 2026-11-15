@@ -4,7 +4,7 @@ import { assembleSnapshot, positionsToEvaluate } from '../snapshot/assemble';
 import { crawl, type CrawlThresholds } from '../snapshot/crawl';
 import { positionKey, type Snapshot } from '../snapshot/format';
 import { fakeSource, fenAfter, type FakeBook } from '../snapshot/testData';
-import { pathsFromRoot, trapCandidates, validateTrapFile, type Trap, type TrapFile, type TrapRule } from './traps';
+import { pathsFromRoot, trapCandidates, trapKind, validateTrapFile, type Trap, type TrapFile, type TrapRule } from './traps';
 
 const ROOT = ['e4', 'e5', 'Nf3', 'Nc6', 'c3'];
 const P = 'e4 e5 Nf3 Nc6 c3';
@@ -100,6 +100,13 @@ describe('trapCandidates', () => {
     expect(trapCandidates(await snapshot(SCORES), { ...RULE, maxCandidates: 2 }).map((c) => c.move.san)).toEqual(['f6', 'Ng5']);
   });
 
+  it("names the kind by who errs relative to the user's side", () => {
+    expect(trapKind('black', 'white')).toBe('exploit');
+    expect(trapKind('white', 'white')).toBe('avoid');
+    expect(trapKind('white', 'black')).toBe('exploit');
+    expect(trapKind('black', 'black')).toBe('avoid');
+  });
+
   it('finds nothing when nobody blunders', async () => {
     expect(trapCandidates(await snapshot({}), RULE)).toEqual([]);
   });
@@ -132,6 +139,18 @@ describe('validateTrapFile', () => {
       },
       traps,
     }) as TrapFile;
+
+  it('checks the kind against the side recorded in the file', () => {
+    const asBlack = (kind: string, victim: string): TrapFile => {
+      const sound = file([{ ...trap, victim, kind }]);
+      sound.meta.side = 'black';
+      return sound;
+    };
+    expect(validateTrapFile(asBlack('exploit', 'white'))).toEqual([]);
+    expect(validateTrapFile(asBlack('avoid', 'black'))).toEqual([]);
+    expect(validateTrapFile(asBlack('exploit', 'black')).join(' ')).toMatch(/kind does not match the victim/);
+    expect(validateTrapFile(file([{ ...trap, victim: 'white', kind: 'exploit' }])).join(' ')).toMatch(/kind does not match/);
+  });
 
   it('accepts a sound file, also an empty one', () => {
     expect(validateTrapFile(file([trap]))).toEqual([]);

@@ -1,5 +1,6 @@
 import { Chess } from 'chess.js';
 import type { ExplorerPosition } from '../explorer/types';
+import type { Side } from '../openings/registry';
 import { positionKey, sumCounts, type Counts, type NodeKind } from './format';
 
 /** Where the crawl gets its data. Each call either returns an answer or throws (crawl aborts). */
@@ -132,6 +133,8 @@ export function meetsThreshold(
 /**
  * Which moves of a position lead further, and to what kind of position.
  * @param rootLine the fixed moves leading to the opening, e.g. ["e4","e5","Nf3","Nc6","c3"]
+ * @param side the colour the user plays; the other colour is the opponent, whose early
+ *   alternatives to the root line become sidelines
  */
 export function movesToFollow(
   node: Pick<CrawlNode, 'ply' | 'kind' | 'masters' | 'lichess' | 'fen'> & { moves: readonly CrawlMove[] },
@@ -139,17 +142,18 @@ export function movesToFollow(
   thresholds: CrawlThresholds,
   /** The opening the tree is about; moves into a differently named opening are not followed. */
   family?: string,
+  side: Side = 'white',
 ): Map<string, NodeKind> {
   const follow = new Map<string, NodeKind>();
   if (node.kind === 'sideline') return follow; // light coverage: nothing deeper
 
   if (node.kind === 'prelude') {
     const mainMove = rootLine[node.ply];
-    const blackToMove = node.fen.split(' ')[1] === 'b';
+    const opponentToMove = node.fen.split(' ')[1] !== (side === 'white' ? 'w' : 'b');
     for (const move of node.moves) {
       if (move.san === mainMove) follow.set(move.uci, node.ply + 1 < rootLine.length ? 'prelude' : 'tree');
-      // Black leaving the path early is recorded as a sideline; White's other first moves are not ours.
-      else if (blackToMove && meetsThreshold(move, node, thresholds)) follow.set(move.uci, 'sideline');
+      // The opponent leaving the path early is recorded as a sideline; the user's own other moves are not ours.
+      else if (opponentToMove && meetsThreshold(move, node, thresholds)) follow.set(move.uci, 'sideline');
     }
     return follow;
   }
@@ -185,16 +189,17 @@ interface Pending {
 }
 
 /**
- * Walk the opening from the start position: along the fixed moves to the opening, noting Black's
- * early alternatives as sidelines, then through the opening itself following every move that meets
+ * Walk the opening from the start position: along the fixed moves to the opening, noting the
+ * opponent's early alternatives as sidelines, then through the opening itself following every move that meets
  * the thresholds.
  */
 export async function crawl(
   source: CrawlSource,
-  options: { rootLine: readonly string[]; thresholds: CrawlThresholds },
+  options: { rootLine: readonly string[]; thresholds: CrawlThresholds; side?: Side },
   onProgress?: (visited: number, waiting: number, node: CrawlNode) => void,
 ): Promise<CrawlResult> {
   const { rootLine, thresholds } = options;
+  const side = options.side ?? 'white';
   const nodes = new Map<string, CrawlNode>();
   const queue: Pending[] = [{ fen: START_FEN, ply: 0, kind: 'prelude', priority: Infinity }];
   let truncated = false;
@@ -230,7 +235,7 @@ export async function crawl(
     // The first position of the opening itself names the family the tree stays in.
     if (node.kind === 'tree' && family === undefined && node.opening) family = openingFamily(node.opening.name);
 
-    const follow = movesToFollow(node, rootLine, thresholds, family);
+    const follow = movesToFollow(node, rootLine, thresholds, family, side);
     for (const move of node.moves) {
       const kind = follow.get(move.uci);
       if (!kind) continue;
@@ -257,6 +262,7 @@ export function countReachable(
   result: CrawlResult,
   rootLine: readonly string[],
   thresholds: CrawlThresholds,
+  side: Side = 'white',
 ): number {
   const seen = new Set<string>();
   const stack = [{ key: result.rootKey, kind: 'prelude' as NodeKind }];
@@ -265,7 +271,7 @@ export function countReachable(
     const node = result.nodes.get(key);
     if (!node || seen.has(key)) continue;
     seen.add(key);
-    for (const [uci, childKind] of movesToFollow({ ...node, kind }, rootLine, thresholds, result.family)) {
+    for (const [uci, childKind] of movesToFollow({ ...node, kind }, rootLine, thresholds, result.family, side)) {
       const move = node.moves.find((candidate) => candidate.uci === uci);
       if (move) stack.push({ key: positionKey(move.fenAfter), kind: childKind });
     }

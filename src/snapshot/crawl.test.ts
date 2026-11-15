@@ -49,6 +49,54 @@ async function run(thresholds: Partial<CrawlThresholds> = {}) {
   return { source, result, kindOf };
 }
 
+describe('crawl as Black (the opponent is White)', () => {
+  const BLACK_BOOK: FakeBook = {
+    '': { lichess: { e4: 6000, d4: 3000, Nf3: 800, g4: 20 }, masters: { e4: 500, d4: 300, Nf3: 100 } },
+    e4: { lichess: { c6: 700, e5: 5000 }, masters: { c6: 100, e5: 300 } },
+    'e4 c6': { lichess: { d4: 500, Nc3: 150, Nf3: 40 }, masters: { d4: 80, Nc3: 15 } },
+    'e4 c6 d4': { lichess: { d5: 480 }, masters: { d5: 80 } },
+    d4: { lichess: { d5: 2000, Nf6: 800 }, masters: { d5: 200, Nf6: 80 } },
+    Nf3: { lichess: { d5: 400 }, masters: { d5: 50 } },
+  };
+  const t: CrawlThresholds = { ...THRESHOLDS, minGamesLichess: 100 };
+  const go = async () => {
+    const result = await crawl(fakeSource(BLACK_BOOK, { 'e4 c6': { eco: 'B10', name: 'Caro-Kann Defense' } }), {
+      rootLine: ['e4', 'c6'],
+      thresholds: t,
+      side: 'black',
+    });
+    return { result, kindOf: (line: string) => result.nodes.get(key(line))?.kind };
+  };
+
+  it("records White's other first moves as sidelines and goes on inside the opening", async () => {
+    const { kindOf } = await go();
+    expect(kindOf('')).toBe('prelude');
+    expect(kindOf('e4')).toBe('prelude');
+    expect(kindOf('e4 c6')).toBe('tree');
+    expect(kindOf('e4 c6 d4')).toBe('tree');
+    expect(kindOf('d4')).toBe('sideline');
+    expect(kindOf('Nf3')).toBe('sideline');
+  });
+
+  it("does not follow White moves that are too rare, nor Black's other replies to 1.e4", async () => {
+    const { result, kindOf } = await go();
+    expect(kindOf('g4')).toBeUndefined();
+    expect(kindOf('e4 e5')).toBeUndefined();
+    expect(result.nodes.get(key('e4'))!.moves.find((move) => move.san === 'e5')?.follow).toBeUndefined();
+  });
+
+  it('covers a sideline lightly: nothing beyond it', async () => {
+    const { kindOf } = await go();
+    expect(kindOf('d4 d5')).toBeUndefined();
+    expect(kindOf('Nf3 d5')).toBeUndefined();
+  });
+
+  it('counts the same tree when estimating other thresholds', async () => {
+    const { result } = await go();
+    expect(countReachable(result, ['e4', 'c6'], t, 'black')).toBe(result.nodes.size);
+  });
+});
+
 describe('meetsThreshold', () => {
   const node = { lichess: [500, 100, 400] as [number, number, number], masters: [50, 20, 30] as [number, number, number] };
   const t = { minShare: 0.03, minGamesLichess: 100, minGamesMasters: 5 };

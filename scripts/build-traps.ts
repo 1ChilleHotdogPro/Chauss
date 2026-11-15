@@ -1,10 +1,11 @@
 /**
- * Builds src/data/openings/ponziani.traps.json from the snapshot (src/data/openings/ponziani.json):
+ * Builds src/data/openings/<id>.traps.json from the snapshot src/data/openings/<id>.json:
  *   1. picks the moves that are popular at the snapshot's level and lose a lot by its scores;
  *   2. re-checks each with a deeper Stockfish search (the position before and after the move);
  *   3. keeps those that are still at least a mistake, with the engine's punishing line.
  *
- *   npm run traps
+ *   npm run traps                          the Ponziani (default)
+ *   npm run traps -- --opening=caro-kann   another opening from src/openings/registry.ts
  *
  * No network and no token: everything comes from the snapshot and the local engine.
  */
@@ -15,9 +16,11 @@ import { judgeMove } from '../src/analysis/eval';
 import { pvToSan } from '../src/analysis/pv';
 import { ENGINE_FILE } from '../src/engine/workerTransport';
 import { explainRefutation } from '../src/explore/refutation';
-import { trapCandidates, validateTrapFile, type Trap, type TrapFile, type TrapRule } from '../src/explore/traps';
+import { trapCandidates, trapKind, validateTrapFile, type Trap, type TrapFile, type TrapRule } from '../src/explore/traps';
+import { getOpening, DEFAULT_OPENING_ID } from '../src/openings/registry';
 import { sumCounts, validateSnapshot, type Snapshot } from '../src/snapshot/format';
 import { createEvaluator } from './lib/nodeEngine';
+import { openingFiles } from './lib/openingFiles';
 
 const RULE: TrapRule = {
   /** Played in at least 5% of the games at its position, and at least 1,000 times. */
@@ -36,9 +39,29 @@ const MAX_TRAPS = 30;
 
 const log = (message: string): void => console.log(message);
 
-export async function main(): Promise<number> {
+export async function main(argv: readonly string[] = []): Promise<number> {
   const root = process.cwd();
-  const snapshot = JSON.parse(readFileSync(join(root, 'src', 'data', 'openings', 'ponziani.json'), 'utf8')) as Snapshot;
+  let openingId = DEFAULT_OPENING_ID;
+  for (const arg of argv) {
+    if (arg.startsWith('--opening=')) openingId = arg.slice('--opening='.length);
+    else {
+      log(`Unknown option: ${arg}`);
+      return 1;
+    }
+  }
+  const def = (() => {
+    try {
+      return getOpening(openingId);
+    } catch {
+      return undefined;
+    }
+  })();
+  if (!def) {
+    log(`Unknown opening "${openingId}".`);
+    return 1;
+  }
+  const files = openingFiles(root, def.id);
+  const snapshot = JSON.parse(readFileSync(files.snapshot, 'utf8')) as Snapshot;
   const snapshotProblems = validateSnapshot(snapshot);
   if (snapshotProblems.length > 0) {
     log(`The snapshot is not sound: ${snapshotProblems[0]}`);
@@ -79,7 +102,7 @@ export async function main(): Promise<number> {
         line: candidate.line,
         fen: node.fen,
         victim,
-        kind: victim === 'white' ? 'avoid' : 'exploit',
+        kind: trapKind(victim, def.side),
         move: { uci: move.uci, san: move.san },
         popular: { games: candidate.games, share: candidate.share },
         book: {
@@ -110,6 +133,7 @@ export async function main(): Promise<number> {
   const file: TrapFile = {
     meta: {
       formatVersion: 1,
+      side: def.side,
       createdAt: new Date().toISOString(),
       snapshotCreatedAt: snapshot.meta.createdAt,
       engine: { name: snapshot.meta.engine.name, depth: DEPTH },
@@ -123,7 +147,7 @@ export async function main(): Promise<number> {
     return 1;
   }
 
-  const outFile = join(root, 'src', 'data', 'openings', 'ponziani.traps.json');
+  const outFile = files.traps;
   writeFileSync(outFile, `${JSON.stringify(file, null, 1)}\n`);
   log(`Wrote ${outFile}: ${file.traps.length} traps (${dropped} candidates did not survive the deeper check).`);
   return 0;
