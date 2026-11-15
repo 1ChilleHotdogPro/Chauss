@@ -47,7 +47,7 @@ test("Stop at the end of a drill line shows the line's key idea", async ({ page 
       .poll(async () => {
         const state = await prompt.getAttribute('data-state');
         const interaction = await page.locator('#board').getAttribute('data-interaction');
-        return state === 'finished' || (state === 'asking' && interaction === 'white-only');
+        return state === 'finished' || (state === 'asking' && interaction === 'player-only');
       })
       .toBe(true);
     if ((await prompt.getAttribute('data-state')) !== 'asking') break;

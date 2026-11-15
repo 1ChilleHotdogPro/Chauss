@@ -31,7 +31,7 @@ async function startDrill(page: Page): Promise<void> {
 
 /** Wait until it is the user's turn in the drill. */
 async function ready(page: Page): Promise<void> {
-  await expect(page.locator('#board')).toHaveAttribute('data-interaction', 'white-only');
+  await expect(page.locator('#board')).toHaveAttribute('data-interaction', 'player-only');
   await expect(prompt(page)).toHaveAttribute('data-state', 'asking');
 }
 
@@ -164,7 +164,7 @@ test('a line can be played to its end, and Enter starts the next one', async ({ 
       .poll(async () => {
         const state = await prompt(page).getAttribute('data-state');
         const interaction = await page.locator('#board').getAttribute('data-interaction');
-        return state === 'finished' || (state === 'asking' && interaction === 'white-only');
+        return state === 'finished' || (state === 'asking' && interaction === 'player-only');
       })
       .toBe(true);
   }

@@ -3,7 +3,7 @@ import { describe, expect, it } from 'vitest';
 import { buildExplorePosition, type PositionData } from '../explore/position';
 import type { Trap } from '../explore/traps';
 import { positionKey, type Counts } from '../snapshot/format';
-import { pickBlackMove, trapRoutes, type TrapRoutes } from './choose';
+import { pickOpponentMove, trapRoutes, type TrapRoutes } from './choose';
 
 // Made-up numbers for the logic only (not opening theory).
 const AFTER_C3 = 'r1bqkbnr/pppp1ppp/2n5/4p3/4P3/2P2N2/PP1P1PPP/RNBQKB1R b KQkq - 0 3';
@@ -25,50 +25,50 @@ const F5 = move('f7f5', 'f5', [10, 0, 5], 300); // 15 games, a mistake (drop ~24
 const BE7 = move('f8e7', 'Be7', [5, 0, 5], 130); // 10 games, an inaccuracy (drop ~11 points)
 const NGE7 = move('g8e7', 'Nge7', [0, 0, 0], 40, [2, 0, 0]); // masters only
 
-describe('pickBlackMove — realistic', () => {
+describe('pickOpponentMove — realistic', () => {
   const full = position([NF6, D5, F5, BE7, NGE7]);
 
   it('draws moves in proportion to how often they are played', () => {
     // 185 games: Nf6 takes tickets 0-100, d5 100-160, f5 160-175, Be7 175-185.
-    expect(pickBlackMove(full, 'realistic', NONE, () => 0)?.move.san).toBe('Nf6');
-    expect(pickBlackMove(full, 'realistic', NONE, () => 0.6)?.move.san).toBe('d5');
-    expect(pickBlackMove(full, 'realistic', NONE, () => 0.9)?.move.san).toBe('f5');
-    expect(pickBlackMove(full, 'realistic', NONE, () => 0.999)?.move.san).toBe('Be7');
-    expect(pickBlackMove(full, 'realistic', NONE, () => 0.5)?.reason).toBe('popular');
+    expect(pickOpponentMove(full, 'white', 'realistic', NONE, () => 0)?.move.san).toBe('Nf6');
+    expect(pickOpponentMove(full, 'white', 'realistic', NONE, () => 0.6)?.move.san).toBe('d5');
+    expect(pickOpponentMove(full, 'white', 'realistic', NONE, () => 0.9)?.move.san).toBe('f5');
+    expect(pickOpponentMove(full, 'white', 'realistic', NONE, () => 0.999)?.move.san).toBe('Be7');
+    expect(pickOpponentMove(full, 'white', 'realistic', NONE, () => 0.5)?.reason).toBe('popular');
   });
 
   it('never plays a move nobody at the level plays', () => {
     for (let i = 0; i < 100; i++) {
-      expect(pickBlackMove(full, 'realistic', NONE, () => i / 100)?.move.san).not.toBe('Nge7');
+      expect(pickOpponentMove(full, 'white', 'realistic', NONE, () => i / 100)?.move.san).not.toBe('Nge7');
     }
   });
 
   it('has nothing to play when no one at the level has played here, or when it is White to move', () => {
-    expect(pickBlackMove(position([NGE7]), 'realistic', NONE)).toBeNull();
-    expect(pickBlackMove(position([]), 'realistic', NONE)).toBeNull();
+    expect(pickOpponentMove(position([NGE7]), 'white', 'realistic', NONE)).toBeNull();
+    expect(pickOpponentMove(position([]), 'white', 'realistic', NONE)).toBeNull();
     const white = position([move('d2d4', 'd4', [5, 0, 5], 30)], 'rnbqkbnr/pppp1ppp/8/4p3/4P3/8/PPPP1PPP/RNBQKBNR w KQkq - 0 2');
-    expect(pickBlackMove(white, 'realistic', NONE)).toBeNull();
+    expect(pickOpponentMove(white, 'white', 'realistic', NONE)).toBeNull();
   });
 });
 
-describe('pickBlackMove — punish me', () => {
+describe('pickOpponentMove — punish me', () => {
   it('prefers a mistake that people play', () => {
-    const choice = pickBlackMove(position([NF6, D5, F5, BE7]), 'punish', NONE, () => 0);
+    const choice = pickOpponentMove(position([NF6, D5, F5, BE7]), 'white', 'punish', NONE, () => 0);
     expect(choice).toMatchObject({ move: { san: 'f5' }, reason: 'mistake' });
   });
 
   it('without a mistake, heads for a known trap', () => {
     const routes: TrapRoutes = new Map([[positionKey(AFTER_C3), new Set(['g8f6'])]]);
-    const choice = pickBlackMove(position([NF6, D5, BE7]), 'punish', routes, () => 0.99);
+    const choice = pickOpponentMove(position([NF6, D5, BE7]), 'white', 'punish', routes, () => 0.99);
     expect(choice).toMatchObject({ move: { san: 'Nf6' }, reason: 'trap-route' });
   });
 
   it('then settles for an inaccuracy, then for any move', () => {
-    expect(pickBlackMove(position([NF6, D5, BE7]), 'punish', NONE, () => 0)).toMatchObject({
+    expect(pickOpponentMove(position([NF6, D5, BE7]), 'white', 'punish', NONE, () => 0)).toMatchObject({
       move: { san: 'Be7' },
       reason: 'inaccuracy',
     });
-    expect(pickBlackMove(position([NF6, D5]), 'punish', NONE, () => 0)).toMatchObject({
+    expect(pickOpponentMove(position([NF6, D5]), 'white', 'punish', NONE, () => 0)).toMatchObject({
       move: { san: 'Nf6' },
       reason: 'popular',
     });
@@ -76,7 +76,7 @@ describe('pickBlackMove — punish me', () => {
 
   it('ignores a mistake almost nobody plays', () => {
     const rare = move('f7f5', 'f5', [1, 0, 0], 300); // 1 game of 161: under 1%
-    const choice = pickBlackMove(position([NF6, D5, rare]), 'punish', NONE, () => 0);
+    const choice = pickOpponentMove(position([NF6, D5, rare]), 'white', 'punish', NONE, () => 0);
     expect(choice?.reason).toBe('popular');
   });
 });

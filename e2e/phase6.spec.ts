@@ -2,7 +2,7 @@ import { readFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import type { Page } from '@playwright/test';
 import { Chess } from 'chess.js';
-import { pickBlackMove, trapRoutes, type BotStyle } from '../src/bot/choose';
+import { pickOpponentMove, trapRoutes, type BotStyle } from '../src/bot/choose';
 import { buildExplorePosition } from '../src/explore/position';
 import type { TrapFile } from '../src/explore/traps';
 import { buildRepertoire } from '../src/repertoire/repertoire';
@@ -29,7 +29,7 @@ function allowedReplies(fenBefore: string, style: BotStyle): Set<string> {
   const position = buildExplorePosition(node);
   const allowed = new Set<string>();
   for (let i = 0; i < 1000; i++) {
-    const choice = pickBlackMove(position, style, routes, () => i / 1000);
+    const choice = pickOpponentMove(position, 'white', style, routes, () => i / 1000);
     if (choice) allowed.add(choice.move.san);
   }
   return allowed;
@@ -63,7 +63,7 @@ async function settled(page: Page): Promise<void> {
     .poll(async () => {
       const state = await prompt(page).getAttribute('data-state');
       const interaction = await page.locator('#board').getAttribute('data-interaction');
-      return (state === 'your-move' && interaction === 'white-only') || state === 'out' || state === 'over';
+      return (state === 'your-move' && interaction === 'player-only') || state === 'out' || state === 'over';
     })
     .toBe(true);
 }
@@ -102,7 +102,7 @@ test('the Play tab: the realistic bot answers from the data and the board waits 
   await expect(page.locator('#board')).toHaveAttribute('data-arrows', '0');
   await expect(page.locator('#toggle-eval')).toBeVisible();
   for (const hidden of ['#explore', '#undo', '#prev', '#next', '#drill', '#oob']) await expect(page.locator(hidden)).toBeHidden();
-  await expect(page.locator('#board')).toHaveAttribute('data-interaction', 'white-only');
+  await expect(page.locator('#board')).toHaveAttribute('data-interaction', 'player-only');
 
   // At least one reply (the bot may leave the main line at once, as real players sometimes do).
   const replies = await playThroughTheData(page, 'realistic');
@@ -157,7 +157,7 @@ test('leaving the data asks what to do; Stop shows the verdict, Play on brings i
   await expect(page.locator('#oob-lead')).toHaveText('Playing on against Stockfish (Medium).');
   await expect(page.locator('#moves .move')).toHaveCount(2, { timeout: 20_000 });
   await expect(page.locator('#oob-engine')).toHaveText('Your move as White.');
-  await expect(page.locator('#board')).toHaveAttribute('data-interaction', 'white-only');
+  await expect(page.locator('#board')).toHaveAttribute('data-interaction', 'player-only');
 
   // And again after another White move.
   const chess = new Chess(await fen(page));
@@ -198,7 +198,7 @@ test('a drill that runs out of data asks the same question, and can be played on
       .poll(async () => {
         const state = await drillPrompt.getAttribute('data-state');
         const interaction = await page.locator('#board').getAttribute('data-interaction');
-        return state === 'finished' || (state === 'asking' && interaction === 'white-only');
+        return state === 'finished' || (state === 'asking' && interaction === 'player-only');
       })
       .toBe(true);
     if ((await drillPrompt.getAttribute('data-state')) !== 'asking') break;
@@ -218,7 +218,7 @@ test('a drill that runs out of data asks the same question, and can be played on
   await expect(oob(page)).toHaveAttribute('data-state', 'engine');
   // Whoever is to move, the game goes on: Stockfish moves for Black, then it is White's turn.
   await expect(page.locator('#oob-engine')).toHaveText('Your move as White.', { timeout: 20_000 });
-  await expect(page.locator('#board')).toHaveAttribute('data-interaction', 'white-only');
+  await expect(page.locator('#board')).toHaveAttribute('data-interaction', 'player-only');
   expect((await moveTexts(page)).length).toBeGreaterThanOrEqual(count);
 
   // Enter does not throw the game away; Next line does start a new line.

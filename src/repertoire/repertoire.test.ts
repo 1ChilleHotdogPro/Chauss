@@ -4,7 +4,7 @@ import { assembleSnapshot, positionsToEvaluate } from '../snapshot/assemble';
 import { crawl, type CrawlThresholds } from '../snapshot/crawl';
 import { positionKey, type Counts, type Snapshot, type SnapshotMove } from '../snapshot/format';
 import { fakeSource, fenAfter, type FakeBook } from '../snapshot/testData';
-import { blackReplies, buildRepertoire, cardLabel, chooseMove } from './repertoire';
+import { opponentReplies, buildRepertoire, cardLabel, chooseMove } from './repertoire';
 
 const cp = (value: number): Score => ({ type: 'cp', value });
 const key = (line: string) => positionKey(fenAfter(line));
@@ -67,8 +67,8 @@ describe('chooseMove', () => {
 
   it('respects a custom tolerance', () => {
     const position = node([move('d3', 80, 100, cp(0)), move('d4', 20, 100, cp(60))]); // about 5.5 points apart
-    expect(chooseMove(position, { tolerance: 5, minBookGames: 5 })?.move.san).toBe('d4');
-    expect(chooseMove(position, { tolerance: 10, minBookGames: 5 })?.move.san).toBe('d3');
+    expect(chooseMove(position, 'white', { tolerance: 5, minBookGames: 5 })?.move.san).toBe('d4');
+    expect(chooseMove(position, 'white', { tolerance: 10, minBookGames: 5 })?.move.san).toBe('d3');
   });
 });
 
@@ -163,10 +163,10 @@ describe('buildRepertoire', () => {
   });
 });
 
-describe('blackReplies', () => {
+describe('opponentReplies', () => {
   it('lists only the moves the snapshot continues after, weighted by Lichess games', async () => {
     const data = await snapshot();
-    const replies = blackReplies(data.nodes[key(P)]!);
+    const replies = opponentReplies(data.nodes[key(P)]!);
     expect(replies.map((reply) => [reply.move.san, reply.weight])).toEqual([
       ['Nf6', 600],
       ['d5', 300],

@@ -10,16 +10,21 @@ export interface BoardView {
   /**
    * Who may move pieces with the mouse:
    *  - 'side-to-move': whoever's turn it is (exploring);
-   *  - 'white-only': White on White's turn, nobody on Black's (drills, where the app plays Black);
+   *  - 'player-only': the user's colour (see setPlayerSide) on its turn, nobody on the opponent's
+   *    (drills and games, where the app plays the other colour);
    *  - 'none': nobody (while the app is showing something).
    * Takes effect at the next sync().
    */
   setInteraction(who: BoardInteraction): void;
+  /** The colour the user plays: who 'player-only' lets move. Takes effect at the next sync(). */
+  setPlayerSide(side: Side): void;
+  /** Put this colour at the bottom (Flip still turns the board afterwards). */
+  setOrientation(side: Side): void;
   /** Draw arrows for the engine's suggestions, best first (at most three). An empty list clears them. */
   setArrows(arrows: readonly Arrow[]): void;
 }
 
-export type BoardInteraction = 'side-to-move' | 'white-only' | 'none';
+export type BoardInteraction = 'side-to-move' | 'player-only' | 'none';
 
 export interface Arrow {
   from: string;
@@ -83,11 +88,12 @@ export function createBoard(
   });
 
   let interaction: BoardInteraction = 'side-to-move';
+  let playerSide: Side = 'white';
 
   function sync(): void {
     const last = game.lastMove();
     const turn = game.turn();
-    const mayMove = interaction === 'side-to-move' || (interaction === 'white-only' && turn === 'white');
+    const mayMove = interaction === 'side-to-move' || (interaction === 'player-only' && turn === playerSide);
     ground.set({
       fen: game.fen(),
       turnColor: turn,
@@ -130,6 +136,10 @@ export function createBoard(
     setInteraction: (who) => {
       interaction = who;
     },
+    setPlayerSide: (side) => {
+      playerSide = side;
+    },
+    setOrientation: (side) => ground.set({ orientation: side }),
     setArrows,
   };
 }

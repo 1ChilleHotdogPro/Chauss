@@ -60,7 +60,7 @@ describe('DrillSession', () => {
     expect(session.line()).toEqual([...ROOT, 'Nf6']);
     expect(session.fen()).toBe(fenAfter(`${P} Nf6`));
     expect(session.card()?.move.san).toBe('d4');
-    expect(session.lastBlackMove()?.san).toBe('Nf6');
+    expect(session.lastOpponentMove()?.san).toBe('Nf6');
     expect(session.finished()).toBeNull();
   });
 

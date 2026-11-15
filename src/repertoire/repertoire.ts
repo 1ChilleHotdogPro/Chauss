@@ -1,4 +1,5 @@
 import { sideToMove, winPercent, type Score } from '../analysis/eval';
+import type { Side } from '../game/game';
 import { sumCounts, type Snapshot, type SnapshotMove, type SnapshotNode } from '../snapshot/format';
 
 export interface RepertoireOptions {
@@ -25,7 +26,7 @@ export interface Card {
   /** Why this move, in a few data-backed words (see `chooseMove`). */
   reason: MoveReason;
   /**
-   * How likely this position is to come up when Black picks moves the way players at the
+   * How likely this position is to come up when the opponent picks moves the way players at the
    * snapshot's level do, starting from the drill's start position (0-1).
    */
   reach: number;
@@ -42,7 +43,9 @@ export type MoveReason =
   | { kind: 'engine' };
 
 export interface Repertoire {
-  /** Where drills start (the first position of the opening itself). */
+  /** The colour the user plays; cards are the positions where it is this colour's turn. */
+  side: Side;
+  /** Where drills start (the first position of the opening itself; for Black, the position before Black's first move). */
   startKey: string;
   /** The moves that lead to `startKey`. */
   startLine: string[];
@@ -50,10 +53,8 @@ export interface Repertoire {
   cards: Map<string, Card>;
 }
 
-const whiteWin = (score: Score): number => winPercent(score, 'white');
-
 /**
- * Pick White's move in a position, by rule from the data:
+ * Pick the user's move in a position, by rule from the data (scores are judged from `side`'s view):
  *   1. the move masters play most (with enough games to mean something), unless Stockfish says it
  *      gives away more than the tolerance compared with the best listed move;
  *   2. otherwise the best-scoring move that masters do play;
@@ -61,8 +62,10 @@ const whiteWin = (score: Score): number => winPercent(score, 'white');
  */
 export function chooseMove(
   node: Pick<SnapshotNode, 'moves' | 'masters'>,
+  side: Side = 'white',
   options: RepertoireOptions = DEFAULT_REPERTOIRE_OPTIONS,
 ): { move: SnapshotMove; reason: MoveReason } | undefined {
+  const whiteWin = (score: Score): number => winPercent(score, side);
   const scored = node.moves.filter((move): move is SnapshotMove & { eval: Score } => move.eval !== undefined);
   if (scored.length === 0) return undefined;
   const best = Math.max(...scored.map((move) => whiteWin(move.eval)));
@@ -85,8 +88,8 @@ export function chooseMove(
   return { move: better, reason: { kind: 'engine-over-book', bookMove: favourite.san } };
 }
 
-/** The Black moves the drill can play in a position (those the snapshot continues after), with their weights. */
-export function blackReplies(node: SnapshotNode): { move: SnapshotMove; weight: number }[] {
+/** The opponent's moves the drill can play in a position (those the snapshot continues after), with their weights. */
+export function opponentReplies(node: SnapshotNode): { move: SnapshotMove; weight: number }[] {
   return node.moves
     .filter((move) => move.next !== undefined)
     .map((move) => ({ move, weight: sumCounts(move.lichess) }))
@@ -94,18 +97,24 @@ export function blackReplies(node: SnapshotNode): { move: SnapshotMove; weight: 
 }
 
 /**
- * Build the repertoire from the snapshot: starting at the opening position, follow White's chosen
- * move at every White position and every Black reply the snapshot continues after. Each White
- * position reached becomes a card.
+ * Build the repertoire from the snapshot: starting at the opening position, follow the user's
+ * chosen move at every position where it is the user's turn and every opponent reply the snapshot
+ * continues after. Each position of the user's turn that is reached becomes a card.
+ *
+ * As White the drill starts after the opening's last move (the opponent is to move). As Black it
+ * starts one move earlier, so the first card is the opening's own last move (1.e4, then 1...c6).
  */
 export function buildRepertoire(
   snapshot: Snapshot,
+  side: Side = snapshot.meta.side ?? 'white',
   options: RepertoireOptions = DEFAULT_REPERTOIRE_OPTIONS,
 ): Repertoire {
-  // Walk the fixed moves to the opening.
+  // Walk the fixed moves to the start of the drill.
+  const rootLine = snapshot.meta.rootLine;
+  const walked = side === 'black' ? rootLine.slice(0, -1) : rootLine;
   const startLine: string[] = [];
   let key = snapshot.rootKey;
-  for (const san of snapshot.meta.rootLine) {
+  for (const san of walked) {
     const next = snapshot.nodes[key]?.moves.find((move) => move.san === san)?.next;
     if (next === undefined) break;
     startLine.push(san);
@@ -138,8 +147,13 @@ export function buildRepertoire(
     const reach = reachOf.get(current) ?? 0;
     const line = lineOf.get(current) ?? [];
 
-    if (sideToMove(node.fen) === 'white') {
-      const chosen = chooseMove(node, options);
+    if (sideToMove(node.fen) === side) {
+      // The opening's own move comes first: it is not up for choice.
+      const fixed = current === startKey ? rootLine[startLine.length] : undefined;
+      const fixedMove = fixed === undefined ? undefined : node.moves.find((move) => move.san === fixed);
+      const chosen = fixedMove
+        ? { move: fixedMove, reason: { kind: 'opening-move' } as MoveReason }
+        : chooseMove(node, side, options);
       if (!chosen) continue;
       cards.set(current, {
         key: current,
@@ -151,7 +165,7 @@ export function buildRepertoire(
       });
       if (chosen.move.next !== undefined) pass(chosen.move.next, reach, [...line, chosen.move.san]);
     } else {
-      const replies = blackReplies(node);
+      const replies = opponentReplies(node);
       const total = replies.reduce((sum, reply) => sum + reply.weight, 0);
       for (const reply of replies) {
         pass(reply.move.next!, reach * (reply.weight / total), [...line, reply.move.san]);
@@ -159,7 +173,7 @@ export function buildRepertoire(
     }
   }
 
-  return { startKey, startLine, cards };
+  return { side, startKey, startLine, cards };
 }
 
 /** "After 3...Nf6": a short name for a card, from the last Black move of its line. */

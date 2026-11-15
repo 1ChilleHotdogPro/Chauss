@@ -1,3 +1,4 @@
+import type { Side } from '../game/game';
 import type { DrillView } from '../drill/controller';
 import { cardLabel } from '../repertoire/repertoire';
 
@@ -16,7 +17,7 @@ const WHY: Record<NonNullable<DrillView['targetReason']>, string> = {
 };
 
 /** What the drill panel says. `view` is null while the opening data is still loading (or missing). */
-export function renderDrillPanel(elements: DrillPanelElements, view: DrillView | null, unavailable: string | null): void {
+export function renderDrillPanel(elements: DrillPanelElements, view: DrillView | null, unavailable: string | null, side: Side = 'white'): void {
   const { prompt, feedback, counts, score, next } = elements;
 
   if (!view) {
@@ -41,7 +42,7 @@ export function renderDrillPanel(elements: DrillPanelElements, view: DrillView |
     const why = view.targetReason && view.lineScore.asked === 0 ? ` ${WHY[view.targetReason]}` : '';
     const label = cardLabel(view.card);
     // "After 3...Nf6" -> "after 3...Nf6": only the first letter, the move keeps its capital.
-    prompt.textContent = `Your move as White (${label.charAt(0).toLowerCase()}${label.slice(1)}).${why}`;
+    prompt.textContent = `Your move as ${side === 'white' ? 'White' : 'Black'} (${label.charAt(0).toLowerCase()}${label.slice(1)}).${why}`;
   } else {
     prompt.dataset.state = 'idle';
     prompt.textContent = 'Press Next line to start.';

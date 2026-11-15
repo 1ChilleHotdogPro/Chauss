@@ -1,22 +1,23 @@
 import type { PositionEval } from '../analysis/analysis';
 import { formatScore, sideToMove, winPercent, type Score } from '../analysis/eval';
 import { numberedLine, pvToSan } from '../analysis/pv';
+import type { Side } from '../game/game';
 import type { ExploreView } from '../explore/source';
 
 /**
  * Is the position on the board still inside the opening data?
  *  - loading: not known yet (live data on its way);
- *  - in: there is data to go on — for Black, moves that people at the chosen level play; for
- *    White, any listed move;
+ *  - in: there is data to go on — for the opponent, moves that people at the chosen level play;
+ *    for the user, any listed move;
  *  - out: the game has left the known tree.
  */
 export type TreeStatus = 'loading' | 'in' | 'out';
 
-export function treeStatus(view: ExploreView): TreeStatus {
+export function treeStatus(view: ExploreView, side: Side = 'white'): TreeStatus {
   if (view.status === 'loading') return 'loading';
   if (view.status === 'unavailable') return 'out';
   const { position } = view;
-  if (position.mover === 'black') {
+  if (position.mover !== side) {
     return position.popularMoves.some((move) => (move.popular?.games ?? 0) > 0) ? 'in' : 'out';
   }
   return position.moves.length > 0 ? 'in' : 'out';
@@ -24,7 +25,7 @@ export function treeStatus(view: ExploreView): TreeStatus {
 
 export type StrengthId = 'easy' | 'medium' | 'hard';
 
-/** How strongly Stockfish plays Black once the opening data has run out ("play on"). */
+/** How strongly Stockfish plays the opponent once the opening data has run out ("play on"). */
 export interface Strength {
   id: StrengthId;
   label: string;

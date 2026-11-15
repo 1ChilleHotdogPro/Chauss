@@ -1,10 +1,12 @@
 import { Chess } from 'chess.js';
+import { opposite } from '../analysis/eval';
+import type { Side } from '../game/game';
 import type { ExploreMove, ExplorePosition } from '../explore/position';
 import type { Trap } from '../explore/traps';
 import { positionKey } from '../snapshot/format';
 
 /**
- * How the bot picks Black's moves while the opening data lasts:
+ * How the bot picks the opponent's moves while the opening data lasts:
  *  - realistic: like players at the chosen level — each move as often as they play it;
  *  - punish: prefers the moves that give something away, so you practise punishing them.
  */
@@ -26,14 +28,16 @@ export interface BotChoice {
   reason: BotReason;
 }
 
-/** Position key -> Black moves (engine spelling) that head for a known trap from there. */
+/** Position key -> opponent moves (engine spelling) that head for a known trap from there. */
 export type TrapRoutes = ReadonlyMap<string, ReadonlySet<string>>;
 
 /**
- * For every trap in which Black is the one who errs, the Black moves along its line, and the bad
- * move itself. Positions are keyed by position (not by move order), so a transposition counts too.
+ * For every trap in which the opponent (the colour other than `side`, the user's) is the one who
+ * errs, the opponent's moves along its line, and the bad move itself. Positions are keyed by
+ * position (not by move order), so a transposition counts too.
  */
-export function trapRoutes(traps: readonly Trap[]): TrapRoutes {
+export function trapRoutes(traps: readonly Trap[], side: Side = 'white'): TrapRoutes {
+  const opponentColor = opposite(side) === 'white' ? 'w' : 'b';
   const routes = new Map<string, Set<string>>();
   const add = (fen: string, uci: string): void => {
     const key = positionKey(fen);
@@ -55,7 +59,7 @@ export function trapRoutes(traps: readonly Trap[]): TrapRoutes {
         complete = false;
         break;
       }
-      if (move.color === 'b') add(before, move.from + move.to + (move.promotion ?? ''));
+      if (move.color === opponentColor) add(before, move.from + move.to + (move.promotion ?? ''));
     }
     if (complete) add(trap.fen, trap.move.uci);
   }
@@ -79,7 +83,7 @@ function weighted(moves: readonly ExploreMove[], random: () => number): ExploreM
 }
 
 /**
- * Black's move in a position of the opening data, or null when the data has no move that people
+ * The opponent's move in a position of the opening data, or null when the data has no move that people
  * at the chosen level play here (the game has left the known tree).
  *
  * Only moves that really are played at the chosen level are considered (the "Popular at your
@@ -87,14 +91,15 @@ function weighted(moves: readonly ExploreMove[], random: () => number): ExploreM
  * mistakes and blunders, then moves towards a known trap, then inaccuracies, then any move. Within
  * a group, more popular moves are more likely. `random` returns a number in [0, 1).
  */
-export function pickBlackMove(
+export function pickOpponentMove(
   position: ExplorePosition,
+  side: Side,
   style: BotStyle,
   routes: TrapRoutes,
   random: () => number = Math.random,
   options: PickOptions = {},
 ): BotChoice | null {
-  if (position.mover !== 'black') return null;
+  if (position.mover === side) return null;
   const played = position.popularMoves.filter((move) => (move.popular?.games ?? 0) > 0);
   if (played.length === 0) return null;
 

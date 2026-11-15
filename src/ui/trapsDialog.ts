@@ -1,10 +1,13 @@
 import { formatScore } from '../analysis/eval';
+import type { Side } from '../game/game';
 import type { Trap, TrapFile } from '../explore/traps';
 import { compactNumber, sharePercent } from './explorePanel';
 
 export interface TrapsDialogOptions {
   dialog: HTMLDialogElement;
   openButton: HTMLButtonElement;
+  /** The colour the user plays (default White). */
+  side?: Side;
   /** Put the trap's position on the board and explain the bad move. */
   onShow(trap: Trap): void;
 }
@@ -118,7 +121,7 @@ export function createTrapsDialog(options: TrapsDialogOptions): TrapsDialog {
 
       for (const [title, id, traps] of [
         ['Mistakes your opponents make — punish them', 'traps-exploit', exploit],
-        ['Mistakes to avoid as White', 'traps-avoid', avoid],
+        [`Mistakes to avoid as ${options.side === 'black' ? 'Black' : 'White'}`, 'traps-avoid', avoid],
       ] as const) {
         const heading = document.createElement('h3');
         heading.textContent = `${title} (${traps.length})`;

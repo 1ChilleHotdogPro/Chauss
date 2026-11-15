@@ -1,9 +1,10 @@
-import { blackReplies, type Card, type Repertoire } from '../repertoire/repertoire';
+import { sideToMove } from '../analysis/eval';
+import { opponentReplies, type Card, type Repertoire } from '../repertoire/repertoire';
 import type { Snapshot, SnapshotMove } from '../snapshot/format';
 
 /** Why a drill line stopped. */
 export type FinishReason =
-  /** The bundled data does not continue after White's move. */
+  /** The bundled data does not continue after the user's move. */
   | 'end-of-data'
   /** The repertoire has no move for the position reached. */
   | 'no-card';
@@ -23,8 +24,8 @@ export type AnswerResult =
   | { result: 'ignored' };
 
 /**
- * One drill line: the app plays Black, the user must find the repertoire move as White at each
- * turn. Black's moves follow the path to the `target` card while there is one, and after that are
+ * One drill line: the app plays the opponent, the user must find the repertoire move at each turn
+ * (as the repertoire's side). The opponent's moves follow the path to the `target` card while there is one, and after that are
  * drawn at random, weighted by how often they are played at the snapshot's level.
  *
  * Pure logic: no board, no timers. `random` returns a number from 0 (inclusive) to 1 (exclusive).
@@ -36,8 +37,8 @@ export class DrillSession {
   private wrongHere = false;
   private finishedValue: FinishReason | null = null;
   private readonly stepsValue: DrillStep[] = [];
-  /** Black's replies played by the app, newest last (so the caller can animate them). */
-  private readonly blackMoves: SnapshotMove[] = [];
+  /** The opponent's replies played by the app, newest last (so the caller can animate them). */
+  private readonly opponentMoves: SnapshotMove[] = [];
 
   constructor(
     private readonly snapshot: Snapshot,
@@ -47,8 +48,8 @@ export class DrillSession {
   ) {
     this.path = [...repertoire.startLine];
     this.key = repertoire.startKey;
-    // The drill starts at the opening position, where it is Black's turn.
-    this.playBlackUntilCard();
+    // The drill starts where it may be the opponent's turn: play on until the user's card.
+    this.playOpponentUntilCard();
   }
 
   /** Moves from the start position to the position on the board. */
@@ -100,29 +101,29 @@ export class DrillSession {
       this.finishedValue = 'end-of-data';
     } else {
       this.key = move.next;
-      this.playBlackUntilCard();
+      this.playOpponentUntilCard();
     }
     return { result: 'correct', card, firstTry };
   }
 
-  /** Black's most recent reply (after the last correct answer), if the line went on. */
-  lastBlackMove(): SnapshotMove | undefined {
-    return this.blackMoves.at(-1);
+  /** The opponent's most recent reply (after the last correct answer), if the line went on. */
+  lastOpponentMove(): SnapshotMove | undefined {
+    return this.opponentMoves.at(-1);
   }
 
-  /** From a Black-to-move position: play Black's reply and stop at the next card (or the end). */
-  private playBlackUntilCard(): void {
+  /** From the opponent's turn: play its reply and stop at the next card (or the end). */
+  private playOpponentUntilCard(): void {
     const node = this.snapshot.nodes[this.key];
     if (!node) {
       this.finishedValue = 'end-of-data';
       return;
     }
-    if (node.fen.split(' ')[1] !== 'b') {
+    if (sideToMove(node.fen) === this.repertoire.side) {
       if (!this.repertoire.cards.has(this.key)) this.finishedValue = 'no-card';
       return;
     }
 
-    const replies = blackReplies(node);
+    const replies = opponentReplies(node);
     if (replies.length === 0) {
       this.finishedValue = 'end-of-data';
       return;
@@ -144,7 +145,7 @@ export class DrillSession {
       }
     }
 
-    this.blackMoves.push(chosen.move);
+    this.opponentMoves.push(chosen.move);
     this.path.push(chosen.move.san);
     this.key = chosen.move.next!;
     if (!this.repertoire.cards.has(this.key)) this.finishedValue = 'no-card';

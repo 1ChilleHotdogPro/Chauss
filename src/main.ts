@@ -9,7 +9,7 @@ import { arrowOpacities } from './analysis/arrowFade';
 import { formatScore } from './analysis/eval';
 import { numberedLine, parseUciMove, pvToSan, toUci } from './analysis/pv';
 import { verdictSentence } from './analysis/verdictText';
-import { pickBlackMove, trapRoutes, type BotChoice, type TrapRoutes } from './bot/choose';
+import { pickOpponentMove, trapRoutes, type BotChoice, type TrapRoutes } from './bot/choose';
 import { stopSummary, strengthById, treeStatus } from './bot/outOfBook';
 import { loadPlaySettings, savePlaySettings, type PlaySettings } from './bot/playSettings';
 import { DrillController } from './drill/controller';
@@ -36,9 +36,10 @@ import { moveSoundFor } from './game/moveSound';
 import { buildRepertoire, type Repertoire } from './repertoire/repertoire';
 import { positionKey, type Snapshot } from './snapshot/format';
 import { assetsFor } from './openings/assets';
-import { DEFAULT_OPENING_ID } from './openings/registry';
+import { DEFAULT_OPENING_ID, getOpening } from './openings/registry';
 import { describeSnapshot, loadSnapshot } from './snapshot/load';
 import { renderCapturedPieces } from './ui/capturedPieces';
+import type { Side } from './game/game';
 import { createBoard, type Arrow, type BoardInteraction } from './ui/board';
 import { renderDrillPanel } from './ui/drillPanel';
 import { renderEnginePanel, type EnginePanelModel } from './ui/enginePanel';
@@ -87,11 +88,19 @@ const enginePanel = {
   toggleArrows: byId<HTMLButtonElement>('toggle-arrows'),
 };
 
+/** The opening being taught (the picker that chooses it comes later). */
+const OPENING_ID = DEFAULT_OPENING_ID;
+/** The colour the user plays in it, and the colour of the app's side of the board. */
+const SIDE: Side = getOpening(OPENING_ID).side;
+const OPPONENT: Side = SIDE === 'white' ? 'black' : 'white';
+const sideName = (side: Side): string => (side === 'white' ? 'White' : 'Black');
 const game = new Game();
 const promotion = createPromotionPicker(byId('promotion'));
 const moveSounds = createMoveSounds();
 let renderedPly = 0;
 const board = createBoard(byId('board'), game, handleUserMove);
+board.setPlayerSide(SIDE);
+board.setOrientation(SIDE);
 const evalBar = createEvalBar(byId('evalbar'));
 
 // Hidden until asked for, so you think first.
@@ -141,8 +150,6 @@ const explorer = new ExplorerClient({
   minIntervalMs: 1500,
 });
 
-/** The opening being taught (the picker that chooses it comes later). */
-const OPENING_ID = DEFAULT_OPENING_ID;
 /** The short remarks of that opening, loaded together with its data. */
 let IDEAS: readonly Idea[] = [];
 
@@ -158,8 +165,8 @@ Promise.all([loadSnapshot(OPENING_ID), assetsFor(OPENING_ID).ideas()]).then(
     snapshotInfo.dataset.positions = String(loaded.meta.counts.positions);
     snapshotInfo.textContent = describeSnapshot(loaded.meta);
 
-    // The repertoire (White's move in every position it reaches) and the drills built on it.
-    repertoire = buildRepertoire(loaded);
+    // The repertoire (the user's move in every position it reaches) and the drills built on it.
+    repertoire = buildRepertoire(loaded, SIDE);
     drill = new DrillController({
       snapshot: loaded,
       repertoire,
@@ -185,14 +192,14 @@ Promise.all([loadSnapshot(OPENING_ID), assetsFor(OPENING_ID).ideas()]).then(
   },
 );
 
-// ---- Modes: Explore (look things up), Drill (the app plays Black, you find White's move) and
-// Play (a game against a bot that plays Black from the data) ----
+// ---- Modes: Explore (look things up), Drill (the app plays the opponent, you find your move) and
+// Play (a game against a bot that plays the opponent from the data) ----
 type Mode = 'explore' | 'drill' | 'play';
 let mode: Mode = 'explore';
 let repertoire: Repertoire | null = null;
 let drill: DrillController | null = null;
 let progress: Progress = loadProgress(storage);
-/** True while the app is showing Black's reply in a drill (no moving pieces meanwhile). */
+/** True while the app is showing the opponent's reply in a drill (no moving pieces meanwhile). */
 let drillShowing = false;
 let drillTimer: ReturnType<typeof setTimeout> | undefined;
 
@@ -227,10 +234,10 @@ function renderDrill(): void {
   let unavailable: string | null = null;
   if (snapshot === null) unavailable = 'The bundled opening data could not be loaded, so drills are not available.';
   else if (repertoire && repertoire.cards.size === 0) unavailable = 'The bundled opening data has no lines to drill.';
-  renderDrillPanel(drillPanel, drill && !unavailable ? drill.view() : null, unavailable);
+  renderDrillPanel(drillPanel, drill && !unavailable ? drill.view() : null, unavailable, SIDE);
 }
 
-/** Put the drill's line on the board; with `showReply`, play Black's last move after a short pause. */
+/** Put the drill's line on the board; with `showReply`, play the opponent's last move after a short pause. */
 function showDrillLine(showReply: boolean): void {
   if (!drill) return;
   const line = [...drill.view().line];
@@ -254,10 +261,10 @@ function showDrillLine(showReply: boolean): void {
 function startDrillLine(): void {
   if (!drill) return;
   promotion.cancel();
-  stopBlack();
+  stopOpponent();
   drillAfter = null;
   drill.next();
-  // A line can be over at once (the data stops right after Black's first reply).
+  // A line can be over at once (the data stops right after the opponent's first reply).
   if (drill.view().finished) drillAfter = { kind: 'prompt' };
   showDrillLine(true);
 }
@@ -276,7 +283,7 @@ function drillMove(from: string, to: string, piece?: PromotionPiece): void {
   const outcome = drill.answer(`${from}${to}${played.promotion ?? ''}`, played.san);
   // The data has run out: ask what to do next (every time).
   if (outcome === 'correct' && drill.view().finished) drillAfter = { kind: 'prompt' };
-  // After a right answer the line grew by our move and (unless it ended) Black's reply.
+  // After a right answer the line grew by our move and (unless it ended) the opponent's reply.
   if (outcome === 'correct') showDrillLine(drill.view().line.length === lengthBefore + 2);
   else render();
 }
@@ -285,7 +292,7 @@ function setMode(next: Mode): void {
   if (next === mode) return;
   // Remember the game in Play, to pick it up again when coming back.
   if (mode === 'play') playLine = game.history().map((move) => move.san);
-  stopBlack();
+  stopOpponent();
   mode = next;
   document.body.dataset.mode = next;
   for (const [name, button] of Object.entries(modeButtons)) button.setAttribute('aria-selected', String(name === next));
@@ -317,13 +324,13 @@ function interaction(): BoardInteraction {
   if (mode === 'explore') return 'side-to-move';
   const after = currentAfter();
   if (after?.kind === 'engine') {
-    // Playing on against Stockfish: White's turn, once it has moved.
-    return game.status() === 'playing' && !blackThinking() ? 'white-only' : 'none';
+    // Playing on against Stockfish: the user's turn, once it has moved.
+    return game.status() === 'playing' && !opponentThinking() ? 'player-only' : 'none';
   }
-  if (mode === 'drill') return drill?.view().card && !drillShowing ? 'white-only' : 'none';
+  if (mode === 'drill') return drill?.view().card && !drillShowing ? 'player-only' : 'none';
   // Play, inside the opening data.
-  if (after !== null || game.status() !== 'playing' || blackThinking()) return 'none';
-  return 'white-only';
+  if (after !== null || game.status() !== 'playing' || opponentThinking()) return 'none';
+  return 'player-only';
 }
 
 modeButtons.explore.addEventListener('click', () => setMode('explore'));
@@ -332,7 +339,7 @@ modeButtons.play.addEventListener('click', () => setMode('play'));
 drillPanel.next.addEventListener('click', startDrillLine);
 document.body.dataset.mode = mode;
 
-// ---- Play: the bot plays Black from the data; outside it, the user chooses what happens ----
+// ---- Play: the bot plays the opponent from the data; outside it, the user chooses what happens ----
 
 /** What happens once a drill or a game has left the opening data. */
 type After = { kind: 'prompt' } | { kind: 'stopped' } | { kind: 'engine' };
@@ -341,7 +348,7 @@ let playAfter: After | null = null;
 /** The Play game's moves while another mode is shown. */
 let playLine: string[] = [];
 let playSettings: PlaySettings = loadPlaySettings(storage);
-/** Black moves that head for a known trap (from the traps list, once loaded). */
+/** Opponent moves that head for a known trap (from the traps list, once loaded). */
 let routes: TrapRoutes = new Map();
 /** The bot's last move in Play, for the message under the board. */
 let botLast: { choice: BotChoice; label: string } | null = null;
@@ -384,12 +391,12 @@ function setAfter(after: After | null): void {
   else if (mode === 'play') playAfter = after;
 }
 
-function blackThinking(): boolean {
+function opponentThinking(): boolean {
   return botTimer !== undefined || engineThinking;
 }
 
-/** Cancel whatever Black was about to play. */
-function stopBlack(): void {
+/** Cancel whatever the opponent was about to play. */
+function stopOpponent(): void {
   clearTimeout(botTimer);
   botTimer = undefined;
   botWaiting = false;
@@ -405,7 +412,7 @@ function changePlaySettings(change: Partial<Omit<PlaySettings, 'version'>>): voi
 
 function startPlayGame(): void {
   promotion.cancel();
-  stopBlack();
+  stopOpponent();
   playAfter = null;
   botLast = null;
   game.reset();
@@ -420,35 +427,35 @@ function numberedSan(ply: number, san: string): string {
 }
 
 /**
- * Move the game along after a move or a change: let Black reply (from the data, or Stockfish when
+ * Move the game along after a move or a change: let the opponent reply (from the data, or Stockfish when
  * playing on), and notice when the game leaves the opening data.
  */
 function continueGame(): void {
   if (mode === 'explore' || game.status() !== 'playing') return;
   const after = currentAfter();
   if (after?.kind === 'engine') {
-    if (game.turn() === 'black') requestEngineMove();
+    if (game.turn() === OPPONENT) requestEngineMove();
     return;
   }
   if (mode !== 'play' || after !== null || botTimer !== undefined) return;
 
   const view = exploreSource.view(game.fen());
-  const status = treeStatus(view);
+  const status = treeStatus(view, SIDE);
   botWaiting = status === 'loading';
   if (status === 'loading') {
     render(); // the data source calls back when the answer is in
     return;
   }
   const choice =
-    status === 'in' && view.status === 'ready' && game.turn() === 'black'
-      ? pickBlackMove(view.position, playSettings.style, routes)
+    status === 'in' && view.status === 'ready' && game.turn() === OPPONENT
+      ? pickOpponentMove(view.position, SIDE, playSettings.style, routes)
       : null;
-  if (status === 'out' || (game.turn() === 'black' && !choice)) {
+  if (status === 'out' || (game.turn() === OPPONENT && !choice)) {
     playAfter = { kind: 'prompt' };
     render();
     return;
   }
-  if (!choice) return; // White's turn inside the data: wait for the user
+  if (!choice) return; // the user's turn inside the data: wait
 
   const fen = game.fen();
   botTimer = setTimeout(() => {
@@ -474,7 +481,7 @@ function ensurePlayEngine(): Engine {
   return playEngine;
 }
 
-/** Ask the weakened Stockfish for Black's move. */
+/** Ask the weakened Stockfish for the opponent's move. */
 function requestEngineMove(): void {
   if (engineThinking) return;
   const engine = ensurePlayEngine();
@@ -521,7 +528,7 @@ function playModel(): PlayPanelModel {
     detail = statusText();
   } else if (after !== null) state = 'out';
   else if (botWaiting) state = 'waiting';
-  else if (botTimer !== undefined || game.turn() === 'black') state = 'thinking';
+  else if (botTimer !== undefined || game.turn() === OPPONENT) state = 'thinking';
 
   let last: PlayPanelModel['last'] = null;
   if (botLast) {
@@ -529,14 +536,14 @@ function playModel(): PlayPanelModel {
     const share = choice.move.popular ? sharePercent(choice.move.popular.share) : null;
     const how = share ? ` — played in ${share} of games at this level` : '';
     if (choice.reason === 'mistake') {
-      last = { text: `Black played ${label}${how}. Stockfish calls it a ${choice.move.flag}: find the punishment!`, kind: 'mistake' };
+      last = { text: `${sideName(OPPONENT)} played ${label}${how}. Stockfish calls it a ${choice.move.flag}: find the punishment!`, kind: 'mistake' };
     } else if (choice.reason === 'trap-route') {
-      last = { text: `Black played ${label}${how}. This leads towards a common mistake — stay alert.`, kind: 'book' };
+      last = { text: `${sideName(OPPONENT)} played ${label}${how}. This leads towards a common mistake — stay alert.`, kind: 'book' };
     } else {
-      last = { text: `Black played ${label}${how}.`, kind: 'book' };
+      last = { text: `${sideName(OPPONENT)} played ${label}${how}.`, kind: 'book' };
     }
   }
-  return { style: playSettings.style, state, detail, last };
+  return { style: playSettings.style, side: SIDE, state, detail, last };
 }
 
 /** What the box for "out of the opening data" says, in Drill and Play. */
@@ -580,7 +587,7 @@ function outOfBookModel(): OutOfBookModel | null {
     if (playEngine?.state() === 'failed') model.engineText = `Stockfish could not be started: ${playEngine.error()}`;
     else if (game.status() !== 'playing') model.engineText = `Game over: ${statusText()}.`;
     else if (engineThinking) model.engineText = 'Stockfish is thinking…';
-    else model.engineText = game.turn() === 'white' ? 'Your move as White.' : '';
+    else model.engineText = game.turn() === SIDE ? `Your move as ${sideName(SIDE)}.` : '';
   }
   return model;
 }
@@ -624,6 +631,7 @@ let explained: { fen: string; uci: string } | null = null;
 let rankingFen: string | null = null;
 
 const trapsDialog = createTrapsDialog({
+  side: SIDE,
   dialog: byId<HTMLDialogElement>('traps'),
   openButton: byId<HTMLButtonElement>('open-traps'),
   onShow: showTrap,
@@ -631,7 +639,7 @@ const trapsDialog = createTrapsDialog({
 loadTraps(OPENING_ID).then(
   (file) => {
     trapsDialog.setTraps(file);
-    routes = trapRoutes(file.traps);
+    routes = trapRoutes(file.traps, SIDE);
   },
   (error: unknown) => trapsDialog.setFailed(error instanceof Error ? error.message : String(error)),
 );
