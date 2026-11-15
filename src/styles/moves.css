@@ -1,0 +1,64 @@
+/* Move list. */
+
+.moves {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  max-height: 124px;
+  overflow-y: auto;
+}
+
+.moves li {
+  display: grid;
+  grid-template-columns: 2.4em 1fr 1fr;
+  align-items: center;
+  gap: 4px;
+  padding: 1px 0;
+}
+
+.move-number {
+  color: var(--muted);
+  text-align: right;
+  padding-right: 4px;
+}
+
+.move-gap {
+  color: var(--muted);
+  padding-left: 8px;
+}
+
+.moves .move {
+  text-align: left;
+  background: transparent;
+  border-color: transparent;
+  padding: 3px 8px;
+}
+
+.moves .move.current {
+  background: var(--accent);
+  color: var(--accent-text);
+  font-weight: 600;
+}
+
+/* Verdict marks (?!, ?, ??) come from data-mark, so the button text stays the plain move. */
+.moves .move[data-mark]::after {
+  content: attr(data-mark);
+  margin-left: 1px;
+  font-weight: 700;
+}
+
+.moves .move[data-verdict='inaccuracy'] {
+  color: var(--inaccuracy);
+}
+
+.moves .move[data-verdict='mistake'] {
+  color: var(--mistake);
+}
+
+.moves .move[data-verdict='blunder'] {
+  color: var(--blunder);
+}
+
+.moves .move.current[data-verdict] {
+  color: var(--accent-text);
+}

@@ -1,6 +1,6 @@
 /* Dark Academia theme: the one place where the app's look is decided.
    Deep brown and forest green, parchment text, candlelight gold, serif type.
-   style.css only uses these variables; boards and pieces are owned by appearance.css and
+   styles/*.css only use these variables; boards and pieces are owned by appearance.css and
    are deliberately not touched here (the cursed set must keep overriding everything). */
 
 :root {
@@ -51,9 +51,53 @@
   --inset-light: inset 0 1px 0 rgba(255, 233, 190, 0.07);
   --backdrop: rgba(10, 6, 3, 0.68);
 
+  /* ---- Design tokens for the redesign (docs/design-plan.md). Defined here first, used as screens move over. ---- */
+
+  /* Spacing scale. */
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 24px;
+  --space-6: 32px;
+
+  /* Type scale. Data text (tables, numbers) never goes below --fs-xs. */
+  --fs-xs: 0.75rem;
+  --fs-sm: 0.875rem;
+  --fs-md: 1rem;
+  --fs-lg: 1.25rem;
+  --fs-xl: 1.9rem;
+
+  /* Button tiers: primary = the one main action, secondary = everything else, ghost = icons and toggles. */
+  --btn-primary-bg: var(--accent-deep);
+  --btn-primary-border: var(--accent);
+  --btn-primary-text: var(--text);
+  --btn-primary-hover: #3a5a36;
+  --btn-secondary-bg: var(--button);
+  --btn-secondary-border: var(--border);
+  --btn-secondary-text: var(--text);
+  --btn-secondary-hover: var(--button-hover);
+  --btn-ghost-bg: transparent;
+  --btn-ghost-border: transparent;
+  --btn-ghost-text: var(--muted);
+  --btn-ghost-hover: rgba(255, 233, 190, 0.06);
+
+  /* Board skin: highlights, move dots, engine arrows, eval bar. */
+  --hl-last: rgba(214, 160, 76, 0.42);
+  --hl-select: rgba(147, 185, 122, 0.5);
+  --hl-check: rgba(240, 128, 110, 0.75);
+  --move-dot: rgba(29, 21, 15, 0.38);
+  --arrow-1: #e6c27a;
+  --arrow-2: #93b97a;
+  --arrow-3: #cbb994;
+  --evalbar-light: #efe2c6;
+  --evalbar-dark: #211912;
+
   /* Type: a warm serif for everything; the system's old-style faces first, no downloads. */
   --font-body: 'Iowan Old Style', 'Palatino Linotype', Palatino, 'Book Antiqua', Georgia, 'Times New Roman', serif;
   --font-mono: ui-monospace, SFMono-Regular, Consolas, monospace;
+  /* For tables and numbers: the body serif; pair it with `font-variant-numeric: tabular-nums`. */
+  --font-data: var(--font-body);
 
   /* A faint paper grain (an inline SVG, so nothing extra is fetched). */
   --grain: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 1  0 0 0 0 0.9  0 0 0 0 0.7  0 0 0 0.5 0'/%3E%3C/filter%3E%3Crect width='160' height='160' filter='url(%23n)'/%3E%3C/svg%3E");

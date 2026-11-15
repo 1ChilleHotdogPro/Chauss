@@ -1,0 +1,49 @@
+/* Header: logo, mode tabs, opening switcher, Settings button. */
+
+.site-header {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 8px 12px;
+  margin-bottom: 12px;
+}
+
+.site-header h1 {
+  margin: 0;
+  font-size: 1.5rem;
+}
+
+.site-header p {
+  margin: 0;
+  color: var(--muted);
+}
+
+.picker-button {
+  align-self: center;
+}
+
+.settings-button {
+  margin-left: auto;
+  align-self: center;
+}
+
+/* ---- Modes ---- */
+.mode-tabs {
+  display: flex;
+  gap: 4px;
+  align-self: center;
+  padding: 3px;
+  border-radius: 8px;
+  background: var(--button);
+}
+
+.mode-tabs button {
+  border-color: transparent;
+  background: transparent;
+  font-weight: 600;
+}
+
+.mode-tabs button[aria-selected='true'] {
+  background: var(--panel);
+  border-color: var(--border);
+}

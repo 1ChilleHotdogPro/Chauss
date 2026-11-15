@@ -1,0 +1,38 @@
+/* Layout: the board column next to the side panel, and which parts show in which mode. */
+
+.layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 400px;
+  gap: 20px;
+  align-items: start;
+}
+
+@media (max-width: 760px) {
+  .layout {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+/* On a wide screen the board stays in view while the (longer) side panel scrolls. */
+@media (min-width: 761px) {
+  .board-area {
+    position: sticky;
+    top: 8px;
+  }
+}
+
+/* Parts that belong to one mode only. */
+body[data-mode='drill'] .explore-only,
+body[data-mode='explore'] .drill-only,
+body[data-mode='drill'] .not-drill,
+body[data-mode='explore'] .game-only,
+body[data-mode='analysis'] .explore-only,
+body[data-mode='analysis'] .drill-only,
+body[data-mode='analysis'] .game-only,
+body:not([data-mode='analysis']) .analysis-only,
+body[data-mode='drill'] .nav-only,
+/* Inside Drill: the opening drill's panel or the endgame drill's, never both. */
+body[data-drill='endgame'] .opening-drill-only,
+body:not([data-drill='endgame']) .endgame-only {
+  display: none !important;
+}
