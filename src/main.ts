@@ -280,6 +280,10 @@ const drillHub = createDrillHub({
   root: byId('drill-hub'),
   currentOpening: chosenOpening,
   onChoose: (category, entry) => drillStarters[category]?.(entry),
+  // For the progress on the cards ("3 due now · 12 of 71 learned"); only the open opening's positions are known.
+  openingProgress: () => withProgress(loadStore(storage), OPENING_ID, progress),
+  positionKeys: (id) => (id === OPENING_ID && repertoire ? repertoire.cards.keys() : null),
+  endgameProgress: () => endgameProgress,
 });
 
 /** What choosing an entry of each hub category does. A new kind of drill adds its handler here. */
@@ -946,6 +950,7 @@ const openingPicker = createOpeningPicker({
   openings: OPENINGS,
   current: chosenOpening,
   isAvailable: hasOpeningData,
+  progress: () => withProgress(loadStore(storage), OPENING_ID, progress),
   onChoose: (id) => {
     // All state is rebuilt from the chosen opening's data, so start the page afresh.
     saveChosenOpening(storage, id);

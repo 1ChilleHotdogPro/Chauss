@@ -1,5 +1,7 @@
 import { rootMoves } from '../drill/hub';
+import type { ProgressStore } from '../drill/progress';
 import type { OpeningDef } from '../openings/registry';
+import { drillCard, openingBoard, openingSummary, PROGRESS_TITLE, progressText, sideBadge } from './drillCard';
 
 export interface OpeningPickerOptions {
   dialog: HTMLDialogElement;
@@ -12,6 +14,8 @@ export interface OpeningPickerOptions {
   onChoose(id: string): void;
   /** False for an opening that is listed but cannot be learned yet (its data is not built). */
   isAvailable?: (id: string) => boolean;
+  /** The stored drill progress of every opening, shown on each card. */
+  progress?: () => ProgressStore;
 }
 
 export interface OpeningPicker {
@@ -37,36 +41,45 @@ export function createOpeningPicker(options: OpeningPickerOptions): OpeningPicke
   button.textContent = pickerButtonText(openings.find((opening) => opening.id === current));
   button.dataset.opening = current ?? '';
 
-  list.replaceChildren(
-    ...openings.map((opening) => {
-      const choice = document.createElement('button');
-      choice.type = 'button';
-      choice.className = 'opening-choice';
-      choice.dataset.opening = opening.id;
-      choice.setAttribute('aria-current', String(opening.id === current));
-      const name = document.createElement('strong');
-      name.textContent = opening.name;
-      const side = document.createElement('span');
-      side.textContent = `You play ${sideName(opening)}`;
-      const moves = document.createElement('span');
-      moves.className = 'hint';
-      moves.textContent = rootMoves(opening);
-      choice.append(name, side, moves);
-      if (!(options.isAvailable?.(opening.id) ?? true)) {
-        choice.disabled = true;
-        const soon = document.createElement('span');
-        soon.className = 'hint';
-        soon.textContent = 'Coming soon: the data for this opening is still being built.';
-        choice.append(soon);
+  /** One card per opening: its position, the side you play, its moves and your progress in it. */
+  function render(): void {
+    const store = options.progress?.();
+    const now = Date.now();
+    list!.replaceChildren(
+      ...openings.map((opening) => {
+        const available = options.isAvailable?.(opening.id) ?? true;
+        const lines: { text: string; className: string; title?: string }[] = [
+          { text: rootMoves(opening), className: 'card-line' },
+        ];
+        if (!available) {
+          lines.push({ text: 'Coming soon: the data for this opening is still being built.', className: 'card-note' });
+        } else if (store) {
+          lines.push({ text: progressText(openingSummary(store, opening.id, now)), className: 'card-progress', title: PROGRESS_TITLE });
+        }
+        const choice = drillCard({
+          className: 'opening-choice',
+          title: opening.name,
+          board: openingBoard(opening),
+          badge: sideBadge(opening.side, `You play ${sideName(opening)}`),
+          tag: opening.id === current ? 'Open now' : undefined,
+          lines,
+          chevron: available,
+        });
+        choice.dataset.opening = opening.id;
+        choice.setAttribute('aria-current', String(opening.id === current));
+        if (!available) {
+          choice.disabled = true;
+          return choice;
+        }
+        choice.addEventListener('click', () => {
+          if (opening.id === current) dialog.close();
+          else onChoose(opening.id);
+        });
         return choice;
-      }
-      choice.addEventListener('click', () => {
-        if (opening.id === current) dialog.close();
-        else onChoose(opening.id);
-      });
-      return choice;
-    }),
-  );
+      }),
+    );
+  }
+  render();
 
   const required = current === null;
   closeButton.hidden = required;
@@ -78,14 +91,17 @@ export function createOpeningPicker(options: OpeningPickerOptions): OpeningPicke
     if (event.target === dialog && !required) dialog.close();
   });
   closeButton.addEventListener('click', () => dialog.close());
-  button.addEventListener('click', () => {
-    if (!dialog.open) dialog.showModal();
-  });
+
+  const open = (): void => {
+    if (dialog.open) return;
+    // Drawn afresh each time, so the progress on the cards is up to date.
+    render();
+    dialog.showModal();
+  };
+  button.addEventListener('click', open);
 
   return {
-    show: () => {
-      if (!dialog.open) dialog.showModal();
-    },
+    show: open,
     isOpen: () => dialog.open,
   };
 }
