@@ -186,33 +186,49 @@
       </main>
     </div>
 
-    <dialog id="traps" class="settings traps" aria-labelledby="traps-title">
+    <dialog id="traps" class="settings dialog dialog-wide traps" aria-labelledby="traps-title">
+      <header class="dialog-head">
+        <div class="dialog-titles">
+          <h2 id="traps-title">Common mistakes in this opening</h2>
+        </div>
+        <button id="traps-close" class="dialog-close btn-ghost btn-icon icon-only" type="button" aria-label="Close" title="Close (Esc)">
+          <svg class="icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M6 6l12 12M18 6L6 18" /></svg>
+        </button>
+      </header>
       <div class="settings-body">
-        <h2 id="traps-title">Common mistakes in this opening</h2>
         <div id="traps-body"><p class="hint">Loading…</p></div>
-        <div class="settings-footer">
-          <button id="traps-close" type="button">Close</button>
-        </div>
       </div>
     </dialog>
 
-    <dialog id="opening-picker" class="settings" aria-labelledby="opening-title">
-      <div class="settings-body">
-        <h2 id="opening-title">Which opening do you want to learn?</h2>
-        <p class="hint">Your progress is kept separately for each opening. You can switch at any time.</p>
-        <div id="opening-list" class="opening-list"></div>
-        <div class="settings-footer">
-          <button id="opening-close" type="button">Close</button>
+    <dialog id="opening-picker" class="settings dialog dialog-wide picker" aria-labelledby="opening-title">
+      <header class="dialog-head">
+        <div class="dialog-titles">
+          <h2 id="opening-title">Which opening do you want to learn?</h2>
+          <p class="dialog-sub">Your progress is kept separately for each opening. You can switch at any time.</p>
         </div>
+        <button id="opening-close" class="dialog-close btn-ghost btn-icon icon-only" type="button" aria-label="Close" title="Close (Esc)">
+          <svg class="icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M6 6l12 12M18 6L6 18" /></svg>
+        </button>
+      </header>
+      <div class="settings-body">
+        <div id="opening-list" class="opening-list card-grid"></div>
       </div>
     </dialog>
 
-    <dialog id="stats" class="settings traps" aria-labelledby="stats-title">
+    <dialog id="stats" class="settings dialog dialog-wide stats" aria-labelledby="stats-title">
+      <header class="dialog-head">
+        <div class="dialog-titles">
+          <h2 id="stats-title">Statistics</h2>
+        </div>
+        <button id="stats-close" class="dialog-close btn-ghost btn-icon icon-only" type="button" aria-label="Close" title="Close (Esc)">
+          <svg class="icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M6 6l12 12M18 6L6 18" /></svg>
+        </button>
+      </header>
       <div class="settings-body">
-        <h2 id="stats-title">Statistics</h2>
-        <p id="stats-summary" class="hint"></p>
+        <p id="stats-summary" class="stats-summary"></p>
+        <p class="hint stats-legend"><span class="due-swatch" aria-hidden="true"></span>Gold rows are due now: they come first in the drill.</p>
         <div class="stats-scroll">
-          <table id="stats-table" class="explore-table stats-table">
+          <table id="stats-table" class="stats-table">
             <thead>
               <tr>
                 <th>Line</th>
@@ -227,82 +243,41 @@
           </table>
         </div>
 
-        <h3>Backup</h3>
-        <p class="hint">
-          Your progress is stored in this browser only. Save a backup file to keep it safe or move it to another
-          computer.
-        </p>
-        <div class="controls">
-          <button id="stats-export" type="button">Save a backup file</button>
-          <button id="stats-import" type="button">Load a backup file</button>
-          <input id="stats-import-file" type="file" accept="application/json,.json" hidden />
-          <button id="stats-reset" type="button">Reset progress</button>
-        </div>
-        <p id="stats-message" class="test-result" role="status" hidden></p>
-
-        <div class="settings-footer">
-          <button id="stats-close" type="button">Close</button>
-        </div>
+        <section class="settings-section">
+          <h3>Backup</h3>
+          <p class="hint">
+            Your progress is stored in this browser only. Save a backup file to keep it safe or move it to another
+            computer.
+          </p>
+          <div class="controls">
+            <button id="stats-export" type="button">Save a backup file</button>
+            <button id="stats-import" type="button">Load a backup file</button>
+            <input id="stats-import-file" type="file" accept="application/json,.json" hidden />
+            <button id="stats-reset" class="btn-danger" type="button">Reset progress</button>
+          </div>
+          <p id="stats-message" class="test-result" role="status" hidden></p>
+        </section>
       </div>
     </dialog>
 
-    <dialog id="settings" class="settings" aria-labelledby="settings-title">
+    <dialog id="settings" class="settings dialog" aria-labelledby="settings-title">
+      <header class="dialog-head">
+        <div class="dialog-titles">
+          <h2 id="settings-title">Settings</h2>
+          <p class="dialog-sub">Changes are saved straight away, in this browser.</p>
+        </div>
+        <button id="settings-close" class="dialog-close btn-ghost btn-icon icon-only" type="button" aria-label="Close" title="Close (Esc)">
+          <svg class="icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M6 6l12 12M18 6L6 18" /></svg>
+        </button>
+      </header>
       <div class="settings-body">
-        <h2 id="settings-title">Settings</h2>
+        <p id="settings-save-warning" class="test-result" data-status="error" hidden>
+          Your browser would not store these settings, so they will be lost when you close the page.
+        </p>
 
-        <section>
-          <h3>Lichess token</h3>
-          <p class="hint">
-            Only needed for live data from Lichess (positions outside the bundled opening data, or other rating
-            groups). Create one at
-            <a href="https://lichess.org/account/oauth/token" target="_blank" rel="noopener noreferrer"
-              >lichess.org/account/oauth/token</a
-            >
-            with no boxes ticked. It is stored in this browser only and sent only to Lichess.
-          </p>
-          <div class="token-row">
-            <input
-              id="token"
-              type="password"
-              autocomplete="off"
-              spellcheck="false"
-              placeholder="Paste your token here"
-              aria-label="Lichess token"
-            />
-            <button id="token-show" type="button" aria-pressed="false">Show</button>
-            <button id="token-clear" type="button">Clear</button>
-          </div>
-          <p id="token-state" class="hint"></p>
-        </section>
-
-        <section>
-          <h3>Rating groups (popular at your level)</h3>
-          <div id="rating-bands" class="checks"></div>
-          <p id="rating-summary" class="hint"></p>
-        </section>
-
-        <section>
-          <h3>Game speeds</h3>
-          <div id="speeds" class="checks"></div>
-        </section>
-
-        <section>
-          <h3>Connection</h3>
-          <button id="explorer-test" type="button">Test connection</button>
-          <p id="explorer-test-result" class="test-result" role="status" hidden></p>
-        </section>
-
-        <section>
-          <h3>Game analysis</h3>
-          <label class="oob-strength"
-            >How long Stockfish looks at each move <select id="analysis-limit"></select
-          ></label>
-          <p class="hint">Deeper is more accurate but slower: a 40-move game has 80 positions to look at.</p>
-        </section>
-
-        <section>
-          <h3>Board and pieces</h3>
-          <p class="hint">Ten boards and ten piece sets. Pick any mix; it is remembered in this browser.</p>
+        <section class="settings-section" aria-labelledby="settings-look">
+          <h3 id="settings-look">Board &amp; pieces</h3>
+          <p class="hint">Pick any board and piece set, and mix them as you like.</p>
           <h4>Board</h4>
           <div id="board-styles" class="style-grid" role="radiogroup" aria-label="Board style"></div>
           <h4>Pieces</h4>
@@ -316,18 +291,66 @@
           <p class="hint">With a cursed board or cursed pieces, every capture is a very loud explosion. Turn it down here.</p>
         </section>
 
-        <section>
-          <h3>Bundled opening data</h3>
-          <p id="snapshot-info" class="hint" data-state="loading">Loading…</p>
+        <section class="settings-section" aria-labelledby="settings-level">
+          <h3 id="settings-level">Your level</h3>
+          <p class="hint">"Popular at your level" shows the moves played in Lichess games of these rating groups and speeds.</p>
+          <h4>Rating groups</h4>
+          <div id="rating-bands" class="checks"></div>
+          <p id="rating-summary" class="hint"></p>
+          <h4>Game speeds</h4>
+          <div id="speeds" class="checks"></div>
         </section>
 
-        <p id="settings-save-warning" class="test-result" data-status="error" hidden>
-          Your browser would not store these settings, so they will be lost when you close the page.
-        </p>
+        <section class="settings-section" aria-labelledby="settings-analysis">
+          <h3 id="settings-analysis">Game analysis</h3>
+          <label class="field-row"
+            >How long Stockfish looks at each move <select id="analysis-limit"></select
+          ></label>
+          <p class="hint">Deeper is more accurate but slower: a 40-move game has 80 positions to look at.</p>
+        </section>
 
-        <div class="settings-footer">
-          <button id="settings-close" type="button">Close</button>
-        </div>
+        <details class="settings-advanced">
+          <summary>
+            <span class="advanced-title">Advanced</span>
+            <span class="advanced-sub">Lichess token, connection test, bundled data</span>
+          </summary>
+
+          <section class="settings-subsection">
+            <h4>Lichess token</h4>
+            <p class="hint">
+              Only needed for live data from Lichess (positions outside the bundled opening data, or other rating
+              groups). Create one at
+              <a href="https://lichess.org/account/oauth/token" target="_blank" rel="noopener noreferrer"
+                >lichess.org/account/oauth/token</a
+              >
+              with no boxes ticked. It is stored in this browser only and sent only to Lichess.
+            </p>
+            <div class="token-row">
+              <input
+                id="token"
+                type="password"
+                autocomplete="off"
+                spellcheck="false"
+                placeholder="Paste your token here"
+                aria-label="Lichess token"
+              />
+              <button id="token-show" type="button" aria-pressed="false">Show</button>
+              <button id="token-clear" type="button">Clear</button>
+            </div>
+            <p id="token-state" class="hint"></p>
+          </section>
+
+          <section class="settings-subsection">
+            <h4>Connection</h4>
+            <button id="explorer-test" type="button">Test connection</button>
+            <p id="explorer-test-result" class="test-result" role="status" hidden></p>
+          </section>
+
+          <section class="settings-subsection">
+            <h4>Bundled opening data</h4>
+            <p id="snapshot-info" class="hint" data-state="loading">Loading…</p>
+          </section>
+        </details>
       </div>
     </dialog>
     <script type="module" src="/src/main.ts"></script>
