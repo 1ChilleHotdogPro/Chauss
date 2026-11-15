@@ -26,6 +26,7 @@ import { IDEAS } from './explore/ideaList';
 import { ideaFor, latestIdea } from './explore/ideas';
 import { loadTraps } from './explore/loadTraps';
 import type { ExploreMove } from './explore/position';
+import { needsScores, withRanking } from './explore/ranked';
 import { buildRanking } from './explore/ranking';
 import { explainRefutation } from './explore/refutation';
 import { ExploreSource } from './explore/source';
@@ -677,7 +678,7 @@ function renderExplore(): void {
   if (explained && explained.fen !== fen) explained = null;
   if (rankingFen !== null && rankingFen !== fen) rankingFen = null;
 
-  const view = exploreSource.view(fen);
+  let view = exploreSource.view(fen);
   // Mark the repertoire move (the one the drills ask for) where the repertoire reaches this position.
   if (view.status === 'ready' && !view.position.recommended) {
     const card = repertoire?.cards.get(positionKey(fen));
@@ -696,12 +697,21 @@ function renderExplore(): void {
     if (move) ({ model: refutation, extra } = refutationFor(fen, move));
   }
   analysis.setExtras(extra ? [extra] : []);
-  analysis.setRanking(rankingFen);
+  // Outside the bundled data the listed moves have no scores. Stockfish scores every legal move
+  // there in the background, so the mistake icons appear for these moves too.
+  const wantsScores = view.status === 'ready' && needsScores(view.position);
+  analysis.setRanking(rankingFen ?? (wantsScores ? fen : null));
 
   let ranking: ExplorePanelModel['ranking'] = { state: 'off' };
   if (rankingFen !== null) {
     const ranked = analysis.ranking(rankingFen);
     ranking = ranked ? { state: 'ready', rows: buildRanking(ranked) } : { state: 'pending' };
+  }
+  let checking = false;
+  if (view.status === 'ready' && wantsScores) {
+    const ranked = analysis.ranking(fen);
+    if (ranked) view = { ...view, position: withRanking(view.position, buildRanking(ranked)) };
+    else checking = true;
   }
 
   renderExplorePanel(
@@ -714,6 +724,7 @@ function renderExplore(): void {
       selectedUci: refutation ? (explained?.uci ?? null) : null,
       refutation,
       ranking,
+      checking,
     },
     {
       onPlay: (uci) => {

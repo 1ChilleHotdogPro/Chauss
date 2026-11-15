@@ -349,3 +349,40 @@ test('the Book and Popular sections fold away, and stay folded after a reload', 
   await expect(page.locator('#section-book')).toHaveJSProperty('open', false);
   await expect(page.locator('#section-popular')).toHaveJSProperty('open', true);
 });
+
+test('outside the bundled data, Stockfish adds the mistake icons to the popular moves', async ({ page }) => {
+  await page.addInitScript((token) => {
+    localStorage.setItem(
+      'chauss.settings.v1',
+      JSON.stringify({ version: 1, token, ratings: [1000, 1200], speeds: ['blitz', 'rapid', 'classical'] }),
+    );
+  }, FAKE_TOKEN);
+  await page.route('https://explorer.lichess.org/**', async (route) => {
+    await route.fulfill({
+      status: 200,
+      contentType: 'application/json',
+      headers: { 'access-control-allow-origin': '*' },
+      body: JSON.stringify({
+        white: 600,
+        draws: 50,
+        black: 350,
+        opening: null,
+        moves: [
+          { uci: 'g8f6', san: 'Nf6', averageRating: 1200, white: 300, draws: 30, black: 170, game: null, opening: null },
+          { uci: 'd8h4', san: 'Qh4', averageRating: 1200, white: 300, draws: 20, black: 180, game: null, opening: null },
+        ],
+      }),
+    });
+  });
+
+  await openApp(page);
+  await playMoves(page, ['e2e4', 'e7e5', 'b1c3']);
+  await expect(page.locator('#popular-moves tr[data-uci="d8h4"]')).toHaveCount(1, { timeout: 20_000 });
+  // No "Rank every legal move" needed: Stockfish scores the listed moves by itself.
+  await expect(page.locator('#popular-moves tr[data-uci="d8h4"]')).toHaveAttribute('data-flag', /^(inaccuracy|mistake|blunder)$/, {
+    timeout: 60_000,
+  });
+  await expect(page.locator('#popular-moves tr[data-uci="d8h4"] .flag')).toHaveCount(1);
+  await expect(page.locator('#popular-moves tr[data-uci="g8f6"]')).toHaveAttribute('data-flag', 'none');
+  await expect(page.locator('#explore-checking')).toHaveCount(0);
+});

@@ -27,6 +27,8 @@ export interface ExplorePanelModel {
   /** The move whose refutation is being shown, in engine spelling. */
   selectedUci: string | null;
   refutation: RefutationModel | null;
+  /** Stockfish is still scoring the listed moves, so their mistake icons are not there yet. */
+  checking: boolean;
   ranking: { state: 'off' } | { state: 'pending' } | { state: 'ready'; rows: RankedMove[] };
 }
 
@@ -293,6 +295,12 @@ export function renderExplorePanel(root: HTMLElement, model: ExplorePanelModel, 
         popularBody,
       ),
     );
+
+    if (model.checking) {
+      const checking = el('p', 'hint explore-checking', 'Stockfish is checking these moves for mistakes…');
+      checking.id = 'explore-checking';
+      parts.push(checking);
+    }
 
     if (origin === 'live') parts.push(el('p', 'hint explore-origin', 'Live data from Lichess.'));
   }
