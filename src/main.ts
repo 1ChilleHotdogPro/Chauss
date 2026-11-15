@@ -5,8 +5,20 @@ import '@lichess-org/chessground/assets/chessground.cburnett.css';
 import './style.css';
 import { Chess } from 'chess.js';
 import { Analysis } from './analysis/analysis';
+import {
+  loadAnalysisSettings,
+  saveAnalysisSettings,
+  searchLimit,
+  SEARCH_LIMITS,
+  type AnalysisSettings,
+} from './analysis/analysisSettings';
 import { arrowOpacities } from './analysis/arrowFade';
-import { formatScore } from './analysis/eval';
+import { summarize } from './analysis/accuracy';
+import { NO_BOOK, snapshotBook, type BookLookup } from './analysis/book';
+import { CLASSIFICATION_INFO, classificationSentence } from './analysis/classificationText';
+import { formatScore, winPercent } from './analysis/eval';
+import { GameAnalyser, type GameReport } from './analysis/gameAnalyser';
+import { importPgn } from './analysis/pgn';
 import { numberedLine, parseUciMove, pvToSan, toUci } from './analysis/pv';
 import { verdictSentence } from './analysis/verdictText';
 import { pickOpponentMove, trapRoutes, type BotChoice, type TrapRoutes } from './bot/choose';
@@ -35,8 +47,9 @@ import { materialFromFen } from './game/material';
 import { moveSoundFor } from './game/moveSound';
 import { buildRepertoire, type Repertoire } from './repertoire/repertoire';
 import { positionKey, type Snapshot } from './snapshot/format';
-import { assetsFor } from './openings/assets';
-import { DEFAULT_OPENING_ID, getOpening } from './openings/registry';
+import { assetsFor, OPENING_ASSETS } from './openings/assets';
+import { loadChosenOpening, saveChosenOpening } from './openings/choice';
+import { DEFAULT_OPENING_ID, getOpening, OPENINGS } from './openings/registry';
 import { describeSnapshot, loadSnapshot } from './snapshot/load';
 import { renderCapturedPieces } from './ui/capturedPieces';
 import type { Side } from './game/game';
@@ -51,9 +64,12 @@ import {
   type ExplorePanelModel,
   type RefutationModel,
 } from './ui/explorePanel';
-import { renderMoveList, updateMoveMarks } from './ui/moveList';
+import { renderAnalysisPanel } from './ui/analysisPanel';
+import { createEvalGraph } from './ui/evalGraph';
+import { renderMoveList, updateMoveClasses, updateMoveMarks } from './ui/moveList';
 import { fillStrengthOptions, renderOutOfBook, type OutOfBookModel } from './ui/outOfBookPanel';
 import { renderPlayPanel, type PlayPanelModel } from './ui/playPanel';
+import { createOpeningPicker } from './ui/openingPicker';
 import { createPromotionPicker } from './ui/promotion';
 import { createMoveSounds } from './ui/sound';
 import { createSettingsPanel } from './ui/settingsPanel';
@@ -89,7 +105,10 @@ const enginePanel = {
 };
 
 /** The opening being taught (the picker that chooses it comes later). */
-const OPENING_ID = DEFAULT_OPENING_ID;
+const storage = browserStorage();
+const chosenOpening = loadChosenOpening(storage);
+/** Until a choice is made the picker is on top and no opening data is loaded. */
+const OPENING_ID = chosenOpening ?? DEFAULT_OPENING_ID;
 /** The colour the user plays in it, and the colour of the app's side of the board. */
 const SIDE: Side = getOpening(OPENING_ID).side;
 const OPPONENT: Side = SIDE === 'white' ? 'black' : 'white';
@@ -122,7 +141,6 @@ function browserStorage(): KeyValueStorage | undefined {
   }
 }
 
-const storage = browserStorage();
 const settingsPanel = createSettingsPanel({
   dialog: byId<HTMLDialogElement>('settings'),
   openButton: byId<HTMLButtonElement>('open-settings'),
@@ -153,11 +171,14 @@ const explorer = new ExplorerClient({
 /** The short remarks of that opening, loaded together with its data. */
 let IDEAS: readonly Idea[] = [];
 
+/** Stands in for the data while the first-time picker is open: it never resolves, the page reloads on a choice. */
+const WAIT_FOR_CHOICE = new Promise<never>(() => {});
+
 // The bundled opening data: works offline and needs no token.
 // undefined = still loading, null = could not be loaded.
 let snapshot: Snapshot | null | undefined;
 const snapshotInfo = byId<HTMLElement>('snapshot-info');
-Promise.all([loadSnapshot(OPENING_ID), assetsFor(OPENING_ID).ideas()]).then(
+(chosenOpening ? Promise.all([loadSnapshot(OPENING_ID), assetsFor(OPENING_ID).ideas()]) : WAIT_FOR_CHOICE).then(
   ([loaded, loadedIdeas]) => {
     IDEAS = loadedIdeas;
     snapshot = loaded;
@@ -194,7 +215,7 @@ Promise.all([loadSnapshot(OPENING_ID), assetsFor(OPENING_ID).ideas()]).then(
 
 // ---- Modes: Explore (look things up), Drill (the app plays the opponent, you find your move) and
 // Play (a game against a bot that plays the opponent from the data) ----
-type Mode = 'explore' | 'drill' | 'play';
+type Mode = 'explore' | 'drill' | 'play' | 'analysis';
 let mode: Mode = 'explore';
 let repertoire: Repertoire | null = null;
 let drill: DrillController | null = null;
@@ -207,6 +228,7 @@ const modeButtons: Record<Mode, HTMLButtonElement> = {
   explore: byId<HTMLButtonElement>('mode-explore'),
   drill: byId<HTMLButtonElement>('mode-drill'),
   play: byId<HTMLButtonElement>('mode-play'),
+  analysis: byId<HTMLButtonElement>('mode-analysis'),
 };
 const drillPanel = {
   prompt: byId<HTMLElement>('drill-prompt'),
@@ -293,6 +315,7 @@ function setMode(next: Mode): void {
   if (next === mode) return;
   // Remember the game in Play, to pick it up again when coming back.
   if (mode === 'play') playLine = game.history().map((move) => move.san);
+  if (mode === 'analysis') cancelAnalysis();
   stopOpponent();
   mode = next;
   document.body.dataset.mode = next;
@@ -315,6 +338,8 @@ function setMode(next: Mode): void {
     }
     render();
     continueGame();
+  } else if (next === 'analysis') {
+    showAnalysedGame();
   } else {
     render();
   }
@@ -323,6 +348,7 @@ function setMode(next: Mode): void {
 /** Who may move pieces on the board right now. */
 function interaction(): BoardInteraction {
   if (mode === 'explore') return 'side-to-move';
+  if (mode === 'analysis') return 'none'; // a finished game, to step through
   const after = currentAfter();
   if (after?.kind === 'engine') {
     // Playing on against Stockfish: the user's turn, once it has moved.
@@ -337,8 +363,224 @@ function interaction(): BoardInteraction {
 modeButtons.explore.addEventListener('click', () => setMode('explore'));
 modeButtons.drill.addEventListener('click', () => setMode('drill'));
 modeButtons.play.addEventListener('click', () => setMode('play'));
+modeButtons.analysis.addEventListener('click', () => setMode('analysis'));
 drillPanel.next.addEventListener('click', startDrillLine);
 document.body.dataset.mode = mode;
+
+// ---- Analyse: a whole game reviewed by Stockfish, move by move ----
+
+interface AnalysedGame {
+  startFen: string;
+  sans: string[];
+  players: Record<Side, string>;
+}
+/** The game in the Analyse tab, its results so far, and how the run is going. */
+let analysedGame: AnalysedGame | null = null;
+let analysisReport: GameReport | null = null;
+let analysisState: 'idle' | 'running' | 'done' | 'cancelled' = 'idle';
+let analysisError: string | null = null;
+/** True while the box for pasting a game is open. */
+let analysisEditing = true;
+/** Counts runs, so the result of an older one is ignored. */
+let analysisRunId = 0;
+/** A Stockfish of its own, so analysing a game never disturbs the live engine. Made when first needed. */
+let analysisEngine: Engine | null = null;
+let gameAnalyser: GameAnalyser | null = null;
+let analysisSettings: AnalysisSettings = loadAnalysisSettings(storage);
+/** Book moves of every opening in the registry (their data files are loaded on first use). */
+let analysisBook: Promise<BookLookup> | null = null;
+
+const analysisPanel = {
+  input: byId<HTMLElement>('analysis-input'),
+  pgn: byId<HTMLTextAreaElement>('analysis-pgn'),
+  start: byId<HTMLButtonElement>('analysis-start'),
+  error: byId<HTMLElement>('analysis-error'),
+  run: byId<HTMLElement>('analysis-run'),
+  progress: byId<HTMLProgressElement>('analysis-progress'),
+  progressText: byId<HTMLElement>('analysis-progress-text'),
+  cancel: byId<HTMLButtonElement>('analysis-cancel'),
+  result: byId<HTMLElement>('analysis-result'),
+  summary: byId<HTMLElement>('analysis-summary'),
+  another: byId<HTMLButtonElement>('analysis-another'),
+};
+const evalGraph = createEvalGraph(byId('analysis-graph'), (ply) => goTo(ply));
+const playAnalyseButton = byId<HTMLButtonElement>('play-analyse');
+const analysisLimitSelect = byId<HTMLSelectElement>('analysis-limit');
+
+analysisLimitSelect.replaceChildren(
+  ...SEARCH_LIMITS.map((choice) => new Option(choice.label, choice.id, false, choice.id === analysisSettings.limit)),
+);
+analysisLimitSelect.addEventListener('change', () => {
+  analysisSettings = { ...analysisSettings, limit: analysisLimitSelect.value };
+  saveAnalysisSettings(storage, analysisSettings);
+  renderEngine();
+});
+
+function analysisLimitLabel(): string {
+  const choice = SEARCH_LIMITS.find((candidate) => candidate.id === analysisSettings.limit);
+  return (choice?.label ?? '').replace(/\s*\(.*\)$/, '').toLowerCase();
+}
+
+function analysisBookLookup(): Promise<BookLookup> {
+  analysisBook ??= Promise.allSettled(Object.keys(OPENING_ASSETS).map((id) => loadSnapshot(id))).then((results) =>
+    snapshotBook(results.flatMap((result) => (result.status === 'fulfilled' ? [result.value] : []))),
+  );
+  return analysisBook.catch(() => NO_BOOK);
+}
+
+function ensureAnalysisEngine(): Engine {
+  analysisEngine ??= new Engine(createWorkerTransport(engineUrl(import.meta.env.BASE_URL)), {
+    multiPv: 2,
+    onStateChange: (state) => {
+      if (state === 'failed' && analysisState === 'running') {
+        analysisError = `Stockfish could not be started: ${analysisEngine?.error() ?? 'unknown error'}`;
+        cancelAnalysis();
+      }
+      scheduleEngineRender();
+    },
+  });
+  return analysisEngine;
+}
+
+/** Put the analysed game (or an empty board) on the board, at the start. */
+function showAnalysedGame(): void {
+  if (!analysedGame || !game.loadLine(analysedGame.sans, analysedGame.startFen)) game.reset();
+  game.goTo(0);
+  render();
+}
+
+/** Start analysing a game: from pasted text, or the moves of the Play game. */
+async function startAnalysis(next: AnalysedGame): Promise<void> {
+  cancelAnalysis();
+  if (!game.loadLine(next.sans, next.startFen)) {
+    analysisError = 'That game could not be put on the board.';
+    renderEngine();
+    return;
+  }
+  const runId = ++analysisRunId;
+  analysedGame = next;
+  analysisReport = null;
+  analysisError = null;
+  analysisEditing = false;
+  analysisState = 'running';
+  game.goTo(0);
+  render();
+
+  const engineForRun = ensureAnalysisEngine();
+  const moves = game.history().map((move) => ({ san: move.san, uci: toUci(move), fenAfter: move.fenAfter }));
+  const book = await analysisBookLookup();
+  if (runId !== analysisRunId) return; // cancelled or replaced while the opening data was loading
+  gameAnalyser = new GameAnalyser(engineForRun, searchLimit(analysisSettings));
+  const outcome = await gameAnalyser.start(next.startFen, moves, book, (report) => {
+    if (runId !== analysisRunId) return;
+    analysisReport = report;
+    scheduleEngineRender();
+  });
+  if (runId !== analysisRunId) return;
+  analysisState = outcome;
+  renderEngine();
+}
+
+function cancelAnalysis(): void {
+  if (analysisState !== 'running') return;
+  analysisRunId += 1;
+  gameAnalyser?.cancel();
+  gameAnalyser = null;
+  analysisState = 'cancelled';
+  scheduleEngineRender();
+}
+
+function analysePasted(): void {
+  const imported = importPgn(analysisPanel.pgn.value);
+  if (!imported.ok) {
+    analysisError = imported.error;
+    renderEngine();
+    return;
+  }
+  const name = (key: string, fallback: string) => {
+    const value = imported.headers[key];
+    return value && value !== '?' ? value : fallback;
+  };
+  void startAnalysis({
+    startFen: imported.startFen,
+    sans: imported.sans,
+    players: { white: name('White', 'White'), black: name('Black', 'Black') },
+  });
+}
+
+analysisPanel.start.addEventListener('click', analysePasted);
+analysisPanel.cancel.addEventListener('click', cancelAnalysis);
+analysisPanel.another.addEventListener('click', () => {
+  cancelAnalysis();
+  analysisEditing = true;
+  analysisError = null;
+  renderEngine();
+  analysisPanel.pgn.focus();
+});
+playAnalyseButton.addEventListener('click', () => {
+  const sans = game.history().map((move) => move.san);
+  const you = 'You';
+  const bot = 'Bot';
+  const next: AnalysedGame = {
+    startFen: game.startFen,
+    sans,
+    players: SIDE === 'white' ? { white: you, black: bot } : { white: bot, black: you },
+  };
+  setMode('analysis');
+  void startAnalysis(next);
+});
+
+/** "14...Qxd4": a move with its number, from the position it was played in. */
+function numberedFrom(fenBefore: string, san: string): string {
+  return numberedLine(fenBefore, [san]);
+}
+
+/** What to say about the move that led to the position on the board, in the Analyse tab. */
+function analysisVerdict(): EnginePanelModel['verdict'] {
+  const ply = game.currentPly();
+  if (ply === 0) return null;
+  const move = analysisReport?.moves[ply - 1];
+  if (!move) return analysisState === 'running' ? { text: 'Analysing this move…', kind: 'pending' } : null;
+  const bestSan = move.bestMove && move.bestMove !== move.uci ? pvToSan(move.fenBefore, [move.bestMove])[0] : undefined;
+  return {
+    text: classificationSentence({
+      san: numberedFrom(move.fenBefore, move.san),
+      mover: move.color,
+      result: move,
+      bestSan: bestSan ? numberedFrom(move.fenBefore, bestSan) : undefined,
+    }),
+    kind: CLASSIFICATION_INFO[move.classification].verdict,
+  };
+}
+
+/** Redraw the Analyse panel, the graph and the icons in the move list. */
+function renderAnalysis(): void {
+  const report = analysisReport;
+  const moves = report?.moves ?? [];
+  const classified = moves.filter((move) => move !== undefined);
+  renderAnalysisPanel(analysisPanel, {
+    showInput: analysisEditing,
+    error: analysisError,
+    progress: analysisState === 'running' ? { done: report?.done ?? 0, total: report?.total ?? game.history().length + 1 } : null,
+    limitLabel: analysisLimitLabel(),
+    players: analysedGame?.players ?? { white: 'White', black: 'Black' },
+    summary: analysedGame && classified.length > 0 ? summarize(moves) : null,
+    partial: analysisState === 'cancelled',
+  });
+  if (analysedGame) {
+    const plies = game.history().length;
+    evalGraph.render({
+      white: Array.from({ length: plies + 1 }, (_, ply) => {
+        const score = report?.positions[ply]?.lines[0]?.score;
+        return score ? winPercent(score, 'white') : undefined;
+      }),
+      classes: Array.from({ length: plies }, (_, index) => moves[index]?.classification),
+      current: game.currentPly(),
+    });
+  }
+  updateMoveMarks(movesEl, () => undefined);
+  updateMoveClasses(movesEl, (ply) => moves[ply - 1]?.classification);
+}
 
 // ---- Play: the bot plays the opponent from the data; outside it, the user chooses what happens ----
 
@@ -595,6 +837,7 @@ function outOfBookModel(): OutOfBookModel | null {
 
 function renderGamePanels(): void {
   if (mode === 'play') renderPlayPanel(playPanel, playModel());
+  playAnalyseButton.hidden = mode !== 'play' || game.history().length === 0;
   renderOutOfBook(oobPanel, outOfBookModel());
 }
 
@@ -637,13 +880,26 @@ const trapsDialog = createTrapsDialog({
   openButton: byId<HTMLButtonElement>('open-traps'),
   onShow: showTrap,
 });
-loadTraps(OPENING_ID).then(
+(chosenOpening ? loadTraps(OPENING_ID) : WAIT_FOR_CHOICE).then(
   (file) => {
     trapsDialog.setTraps(file);
     routes = trapRoutes(file.traps, SIDE);
   },
   (error: unknown) => trapsDialog.setFailed(error instanceof Error ? error.message : String(error)),
 );
+
+const openingPicker = createOpeningPicker({
+  dialog: byId<HTMLDialogElement>('opening-picker'),
+  button: byId<HTMLButtonElement>('open-picker'),
+  openings: OPENINGS,
+  current: chosenOpening,
+  onChoose: (id) => {
+    // All state is rebuilt from the chosen opening's data, so start the page afresh.
+    saveChosenOpening(storage, id);
+    location.reload();
+  },
+});
+if (chosenOpening === null) openingPicker.show();
 
 /** Put a trap's position on the board and open the explanation of its bad move. */
 function showTrap(trap: Trap): void {
@@ -830,11 +1086,9 @@ function render(): void {
   resetBtn.disabled = moves.length === 0;
 
   // Tell the engine what is on screen; results arrive later through scheduleEngineRender.
-  analysis.setLine(
-    [game.startFen, ...moves.map((move) => move.fenAfter)],
-    moves.map((move) => toUci(move)),
-    ply,
-  );
+  // In Analyse the stored results of the game are shown instead, and the live engine rests.
+  if (mode === 'analysis') analysis.setLine([], [], 0);
+  else analysis.setLine([game.startFen, ...moves.map((move) => move.fenAfter)], moves.map((move) => toUci(move)), ply);
   renderEngine();
 }
 
@@ -857,7 +1111,9 @@ function currentVerdict(): EnginePanelModel['verdict'] {
 
 /** Redraw everything that depends on the engine: bar, arrows, lines, verdicts. */
 function renderEngine(): void {
-  const evaluation = analysis.current();
+  const analysing = mode === 'analysis';
+  const evaluation = analysing ? analysisReport?.positions[game.currentPly()] : analysis.current();
+  const shownEngine = analysing && analysisEngine ? analysisEngine : engine;
 
   evalBar.update({
     shown: evalShown,
@@ -880,15 +1136,19 @@ function renderEngine(): void {
   }
   board.setArrows(arrows);
 
-  updateMoveMarks(movesEl, (ply) => analysis.judgement(ply)?.verdict);
+  if (analysing) renderAnalysis();
+  else {
+    updateMoveClasses(movesEl, () => undefined);
+    updateMoveMarks(movesEl, (ply) => analysis.judgement(ply)?.verdict);
+  }
 
   renderEnginePanel(enginePanel, {
-    engineState: engine.state(),
-    engineName: engine.name(),
+    engineState: shownEngine.state(),
+    engineName: shownEngine.name(),
     evalShown,
     arrowsShown,
     evaluation,
-    verdict: currentVerdict(),
+    verdict: analysing ? analysisVerdict() : currentVerdict(),
   });
 
   // The Explore panel shows engine results too (refutations, the ranking, the eval column).
@@ -909,7 +1169,8 @@ function scheduleEngineRender(): void {
 }
 
 function goTo(ply: number): void {
-  if (mode !== 'explore') return; // no stepping through the game while being tested or playing
+  // No stepping through the game while being tested or playing.
+  if (mode !== 'explore' && mode !== 'analysis') return;
   promotion.cancel();
   game.goTo(ply);
   render();
@@ -957,7 +1218,7 @@ document.addEventListener('keydown', (event) => {
   if (event.ctrlKey || event.metaKey || event.altKey) return;
   const target = event.target;
   if (target instanceof HTMLInputElement || target instanceof HTMLTextAreaElement) return;
-  if (settingsPanel.isOpen() || trapsDialog.isOpen() || statsDialog.isOpen()) return; // no board hotkeys while a dialog is open
+  if (settingsPanel.isOpen() || trapsDialog.isOpen() || statsDialog.isOpen() || openingPicker.isOpen()) return; // no board hotkeys while a dialog is open
 
   if (mode === 'drill' && event.key === 'Enter' && !promotion.isOpen()) {
     // Enter starts the next line once this one is over (and does nothing in the middle of one).

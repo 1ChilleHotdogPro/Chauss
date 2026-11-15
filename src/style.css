@@ -67,6 +67,26 @@ body {
   color: var(--muted);
 }
 
+.picker-button {
+  align-self: center;
+}
+
+.opening-list {
+  display: grid;
+  gap: 8px;
+}
+
+.opening-choice {
+  display: grid;
+  gap: 2px;
+  padding: 10px 12px;
+  text-align: left;
+}
+
+.opening-choice[aria-current='true'] {
+  border-color: var(--accent);
+}
+
 .settings-button {
   margin-left: auto;
   align-self: center;
@@ -514,7 +534,14 @@ body[data-mode='play'] .drill-only,
 body[data-mode='explore'] .play-only,
 body[data-mode='drill'] .play-only,
 body[data-mode='drill'] .not-drill,
-body[data-mode='explore'] .game-only {
+body[data-mode='explore'] .game-only,
+body[data-mode='analysis'] .explore-only,
+body[data-mode='analysis'] .drill-only,
+body[data-mode='analysis'] .play-only,
+body[data-mode='analysis'] .game-only,
+body:not([data-mode='analysis']) .analysis-only,
+body[data-mode='drill'] .nav-only,
+body[data-mode='play'] .nav-only {
   display: none !important;
 }
 
@@ -1090,4 +1117,195 @@ button[aria-pressed='true']:hover:not(:disabled) {
 .promotion-glyph {
   font-size: 2rem;
   line-height: 1.1;
+}
+
+/* ---- Analyse: a whole game reviewed move by move ---- */
+:root {
+  --c-brilliant: #1a9e98;
+  --c-great: #4a7fb0;
+  --c-best: #5b8f2e;
+  --c-excellent: #6f9a3c;
+  --c-good: #7d8c6a;
+  --c-book: #9a7650;
+  --c-forced: #7c776f;
+  --c-miss: #c23b6b;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --c-brilliant: #3cc8c1;
+    --c-great: #7fb0de;
+    --c-best: #8cc35a;
+    --c-excellent: #a3c46e;
+    --c-good: #aab595;
+    --c-book: #c9a27a;
+    --c-forced: #b0aaa0;
+    --c-miss: #ef7aa3;
+  }
+}
+
+[data-class='brilliant'] { --class-color: var(--c-brilliant); }
+[data-class='great'] { --class-color: var(--c-great); }
+[data-class='best'] { --class-color: var(--c-best); }
+[data-class='excellent'] { --class-color: var(--c-excellent); }
+[data-class='good'] { --class-color: var(--c-good); }
+[data-class='book'] { --class-color: var(--c-book); }
+[data-class='forced'] { --class-color: var(--c-forced); }
+[data-class='inaccuracy'] { --class-color: var(--inaccuracy); }
+[data-class='mistake'] { --class-color: var(--mistake); }
+[data-class='miss'] { --class-color: var(--c-miss); }
+[data-class='blunder'] { --class-color: var(--blunder); }
+
+.analysis {
+  margin-bottom: 12px;
+}
+
+.analysis-input label {
+  display: block;
+  margin-bottom: 6px;
+  font-size: 0.9rem;
+}
+
+.analysis-input textarea {
+  width: 100%;
+  min-height: 6em;
+  resize: vertical;
+  padding: 6px 8px;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  background: var(--panel);
+  color: var(--text);
+  font: 0.85rem/1.4 ui-monospace, SFMono-Regular, Consolas, monospace;
+}
+
+.analysis-run {
+  margin: 8px 0;
+}
+
+.analysis-run progress {
+  width: 100%;
+  height: 10px;
+  accent-color: var(--accent);
+}
+
+.analysis-run .hint {
+  margin: 4px 0 6px;
+}
+
+.eval-graph {
+  position: relative;
+  height: 90px;
+  margin: 8px 0;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  overflow: hidden;
+  cursor: pointer;
+}
+
+.eval-graph-svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+.eval-graph-black {
+  fill: #3a3631;
+}
+
+.eval-graph-white {
+  fill: #f4f1ea;
+}
+
+.eval-graph-line {
+  fill: none;
+  stroke: #9b958b;
+  stroke-width: 1;
+  vector-effect: non-scaling-stroke;
+}
+
+.eval-graph-mid {
+  stroke: #8a847a;
+  stroke-dasharray: 4 4;
+  stroke-width: 1;
+  vector-effect: non-scaling-stroke;
+}
+
+.eval-graph-cursor {
+  stroke: var(--accent);
+  stroke-width: 2;
+  vector-effect: non-scaling-stroke;
+}
+
+.eval-graph-dot {
+  position: absolute;
+  width: 9px;
+  height: 9px;
+  margin: -4.5px 0 0 -4.5px;
+  border: 1px solid #fff;
+  border-radius: 50%;
+  background: var(--class-color);
+  pointer-events: none;
+}
+
+/* Round badge with the classification's mark. */
+.class-icon,
+.moves .move[data-icon]::before {
+  display: inline-grid;
+  place-items: center;
+  min-width: 1.35em;
+  height: 1.35em;
+  padding: 0 2px;
+  border-radius: 999px;
+  background: var(--class-color);
+  color: #fff;
+  font-size: 0.72rem;
+  font-weight: 700;
+  line-height: 1;
+  vertical-align: 0.1em;
+}
+
+.moves .move[data-icon]::before {
+  content: attr(data-icon);
+  margin-right: 4px;
+}
+
+.moves .move[data-class] {
+  white-space: nowrap;
+}
+
+.analysis-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.9rem;
+}
+
+.analysis-table th,
+.analysis-table td {
+  padding: 3px 6px;
+  text-align: center;
+  overflow-wrap: anywhere;
+}
+
+.analysis-table th[scope='row'] {
+  text-align: left;
+  font-weight: 400;
+  white-space: nowrap;
+}
+
+.analysis-table thead th {
+  font-weight: 600;
+}
+
+.analysis-table tbody tr + tr {
+  border-top: 1px solid var(--border);
+}
+
+.analysis-accuracy td {
+  font-size: 1.15rem;
+  font-weight: 700;
+}
+
+.analysis-table tbody tr[data-class] td {
+  color: var(--class-color);
+  font-weight: 600;
 }

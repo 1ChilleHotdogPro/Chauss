@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Chauss — Ponziani Opening Trainer</title>
+    <title>Chauss — opening trainer</title>
     <link
       rel="icon"
       href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E%E2%99%99%3C/text%3E%3C/svg%3E"
@@ -13,7 +13,7 @@
     <div id="app">
       <header class="site-header">
         <h1>Chauss</h1>
-        <p>Ponziani Opening Trainer</p>
+        <button id="open-picker" class="picker-button" type="button" title="Choose which opening to learn">Choose an opening ▾</button>
         <button id="open-settings" class="settings-button" type="button">Settings</button>
       </header>
 
@@ -40,6 +40,7 @@
             <button id="mode-explore" type="button" role="tab" aria-selected="true">Explore</button>
             <button id="mode-drill" type="button" role="tab" aria-selected="false">Drill</button>
             <button id="mode-play" type="button" role="tab" aria-selected="false">Play</button>
+            <button id="mode-analysis" type="button" role="tab" aria-selected="false">Analyse</button>
           </div>
 
           <p id="status" class="status" role="status" aria-live="polite"></p>
@@ -74,6 +75,32 @@
             <p id="play-last" class="drill-feedback" data-kind="none" role="status" aria-live="polite" hidden></p>
             <div class="controls">
               <button id="play-new" type="button">New game</button>
+              <button id="play-analyse" type="button" hidden>Analyse this game</button>
+            </div>
+          </section>
+
+          <!-- Analyse mode: a whole game reviewed by Stockfish, move by move. -->
+          <section id="analysis" class="analysis analysis-only" aria-label="Game analysis">
+            <div id="analysis-input" class="analysis-input">
+              <label for="analysis-pgn">Paste a game (PGN from Lichess, chess.com, or moves like <code>1.e4 e5 2.Nf3</code>)</label>
+              <textarea id="analysis-pgn" rows="5" spellcheck="false" autocomplete="off"></textarea>
+              <div class="controls">
+                <button id="analysis-start" type="button">Analyse</button>
+              </div>
+              <p class="hint">Or play a game in the Play tab and press <b>Analyse this game</b>.</p>
+            </div>
+            <p id="analysis-error" class="test-result" data-status="error" role="alert" hidden></p>
+            <div id="analysis-run" class="analysis-run" hidden>
+              <progress id="analysis-progress" max="1" value="0"></progress>
+              <p id="analysis-progress-text" class="hint" role="status" aria-live="polite"></p>
+              <button id="analysis-cancel" type="button">Cancel</button>
+            </div>
+            <div id="analysis-result" class="analysis-result" hidden>
+              <div id="analysis-graph" class="eval-graph" role="img" aria-label="Evaluation graph: White's winning chances over the game. Click to jump to a move."></div>
+              <div id="analysis-summary"></div>
+            </div>
+            <div class="controls">
+              <button id="analysis-another" type="button" hidden>Analyse another game</button>
             </div>
           </section>
 
@@ -93,8 +120,8 @@
           </section>
 
           <div class="controls">
-            <button id="prev" class="explore-only" type="button" title="Previous move (Left arrow)" aria-label="Previous move">&#9664;</button>
-            <button id="next" class="explore-only" type="button" title="Next move (Right arrow)" aria-label="Next move">&#9654;</button>
+            <button id="prev" class="nav-only" type="button" title="Previous move (Left arrow)" aria-label="Previous move">&#9664;</button>
+            <button id="next" class="nav-only" type="button" title="Next move (Right arrow)" aria-label="Next move">&#9654;</button>
             <button id="flip" type="button" title="Flip board (F)">Flip board</button>
             <button id="undo" class="explore-only" type="button" title="Take back the last move">Undo</button>
             <button id="reset" class="explore-only" type="button" title="Start a new game">New game</button>
@@ -140,6 +167,17 @@
         <div id="traps-body"><p class="hint">Loading…</p></div>
         <div class="settings-footer">
           <button id="traps-close" type="button">Close</button>
+        </div>
+      </div>
+    </dialog>
+
+    <dialog id="opening-picker" class="settings" aria-labelledby="opening-title">
+      <div class="settings-body">
+        <h2 id="opening-title">Which opening do you want to learn?</h2>
+        <p class="hint">Your progress is kept separately for each opening. You can switch at any time.</p>
+        <div id="opening-list" class="opening-list"></div>
+        <div class="settings-footer">
+          <button id="opening-close" type="button">Close</button>
         </div>
       </div>
     </dialog>
@@ -227,6 +265,14 @@
           <h3>Connection</h3>
           <button id="explorer-test" type="button">Test connection</button>
           <p id="explorer-test-result" class="test-result" role="status" hidden></p>
+        </section>
+
+        <section>
+          <h3>Game analysis</h3>
+          <label class="oob-strength"
+            >How long Stockfish looks at each move <select id="analysis-limit"></select
+          ></label>
+          <p class="hint">Deeper is more accurate but slower: a 40-move game has 80 positions to look at.</p>
         </section>
 
         <section>
