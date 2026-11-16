@@ -1,5 +1,16 @@
 import type { KeyValueStorage } from '../explorer/cache';
 
+/** Whole-site looks: colours, type and surfaces. Dark Academia is the base in src/theme.css; the others are
+    overrides in src/site-themes.css, keyed by these ids. `swatch` is page, panel, heading and accent, for the
+    Settings tile (and index.html's early script reads the stored id, so keep the ids stable). */
+export const SITE_THEMES = [
+  { id: 'academia', name: 'Dark Academia', blurb: 'Candlelit study, walnut and gold', swatch: ['#1a1511', '#2a2119', '#e6c27a', '#93b97a'] },
+  { id: 'parchment', name: 'Parchment', blurb: 'A light page from an old chess book', swatch: ['#efe5cf', '#fbf6ea', '#7a2e22', '#2f6b3a'] },
+  { id: 'midnight', name: 'Midnight', blurb: 'Calm navy, clean modern type', swatch: ['#0e1320', '#172033', '#9cc0ff', '#4fd1b5'] },
+  { id: 'tournament', name: 'Tournament', blurb: 'Bright, flat and tidy, like a club hall', swatch: ['#eef1f4', '#ffffff', '#1f2933', '#2e7d4a'] },
+  { id: 'terminal', name: 'Terminal', blurb: 'Green phosphor on a black screen', swatch: ['#050805', '#0b120c', '#ffcf5a', '#6dff8e'] },
+] as const;
+
 /** Board looks. Colours live in CSS variables (src/appearance.css), keyed by these ids. */
 export const BOARD_STYLES = [
   { id: 'walnut', name: 'Walnut' },
@@ -29,10 +40,13 @@ export const PIECE_STYLES = [
   { id: 'cursed', name: 'CURSED CIRCUS', cursed: true },
 ] as const;
 
+export type SiteThemeId = (typeof SITE_THEMES)[number]['id'];
 export type BoardStyleId = (typeof BOARD_STYLES)[number]['id'];
 export type PieceStyleId = (typeof PIECE_STYLES)[number]['id'];
 
 export interface Appearance {
+  /** The look of the whole site. */
+  theme: SiteThemeId;
   board: BoardStyleId;
   pieces: PieceStyleId;
   /** How loud the cursed explosions are: 0 (silent) to MAX_EXPLOSION_VOLUME. */
@@ -41,7 +55,7 @@ export interface Appearance {
 
 export const APPEARANCE_KEY = 'chauss.appearance.v1';
 export const MAX_EXPLOSION_VOLUME = 3;
-export const DEFAULT_APPEARANCE: Appearance = { board: 'walnut', pieces: 'classic', explosionVolume: 1.5 };
+export const DEFAULT_APPEARANCE: Appearance = { theme: 'academia', board: 'walnut', pieces: 'classic', explosionVolume: 1.5 };
 
 /** The cursed board or the cursed pieces switch the capture sound to explosions. */
 export function isCursed(appearance: Pick<Appearance, 'board' | 'pieces'>): boolean {
@@ -57,6 +71,7 @@ export function parseAppearance(raw: unknown): Appearance {
   const value = typeof raw === 'object' && raw !== null ? (raw as Record<string, unknown>) : {};
   const volume = typeof value.explosionVolume === 'number' && Number.isFinite(value.explosionVolume) ? value.explosionVolume : DEFAULT_APPEARANCE.explosionVolume;
   return {
+    theme: pick(SITE_THEMES, value.theme, DEFAULT_APPEARANCE.theme) as SiteThemeId,
     board: pick(BOARD_STYLES, value.board, DEFAULT_APPEARANCE.board) as BoardStyleId,
     pieces: pick(PIECE_STYLES, value.pieces, DEFAULT_APPEARANCE.pieces) as PieceStyleId,
     explosionVolume: Math.min(MAX_EXPLOSION_VOLUME, Math.max(0, volume)),
