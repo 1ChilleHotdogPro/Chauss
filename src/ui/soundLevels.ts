@@ -13,6 +13,13 @@ import type { SoundSetId } from '../appearance/appearance';
  *   soft       -21.8 dB  -17.1 dB  -19.5 dB  0.79
  *   wooden     -26.3 dB  -24.5 dB  -25.4 dB  1.15 (capped: sharp clicks, would clip above this)
  */
+/**
+ * Level of the shared check, checkmate and stalemate sounds (public/sounds/game), measured the same
+ * way: the check ping (-12.7 dB) is brought to about a move's level (-24 dB), the checkmate gong
+ * (-18.6 dB) a little louder than a move (-21 dB), the stalemate hum (-16.6 dB) soft (-24 dB).
+ */
+export const GAME_SOUND_GAIN = { Check: 0.27, Checkmate: 0.76, Stalemate: 0.43 } as const;
+
 export const SOUND_SET_GAIN: Partial<Record<SoundSetId, number>> = {
   closeup: 0.56,
   room: 0.74,

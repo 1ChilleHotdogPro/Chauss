@@ -699,6 +699,7 @@ analysisPanel.another.addEventListener('click', () => {
   cancelAnalysis();
   analysisEditing = true;
   analysisError = null;
+  analysisPanel.pgn.value = ''; // a fresh, empty box for the next game
   renderEngine();
   analysisPanel.pgn.focus();
 });

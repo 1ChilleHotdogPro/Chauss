@@ -1,13 +1,14 @@
 import type { MoveSound } from '../game/moveSound';
 import { DEFAULT_APPEARANCE, type SoundSetId } from '../appearance/appearance';
-import { SOUND_SET_GAIN } from './soundLevels';
+import { GAME_SOUND_GAIN, SOUND_SET_GAIN } from './soundLevels';
 
 /**
- * Move sounds, played with the browser's Web Audio, in one of several sound sets chosen in Settings
- * (files in public/sounds, see CREDITS.md). 'sfx' (shown as "Original") sits in public/sounds itself
- * as mp3 files. The recorded sets are real chess pieces: public/sounds/<set>/Move.wav and Capture.wav.
- * They have no check, win or draw recordings: check is their move sound, and a win or draw uses the
- * Original set's tune. 'off' is silent.
+ * Move sounds, played with the browser's Web Audio (files in public/sounds, see CREDITS.md).
+ * The piece's own sound comes from the set chosen in Settings: 'sfx' (shown as "Original") is
+ * public/sounds/Move.mp3 and Capture.mp3; the recorded sets are real chess pieces,
+ * public/sounds/<set>/Move.wav and Capture.wav. 'off' is silent.
+ * Check, checkmate and stalemate (any draw) add one shared sound, the same in every set
+ * (public/sounds/game/): the piece lands, then the ping, gong or hum.
  * The cursed-mode explosion is its own file and plays whatever the set, even 'off'.
  * Browsers keep audio switched off until the page has been clicked or a key pressed, so the audio
  * context is only created then. A set's sounds are loaded the first time they are needed after that.
@@ -27,30 +28,44 @@ export interface MoveSounds {
 }
 
 type AudioContextType = typeof AudioContext;
-type SetSample = 'Move' | 'Capture' | 'Check' | 'Victory' | 'Draw';
+type SetSample = 'Move' | 'Capture';
 type LoadedSet = Exclude<SoundSetId, 'off'>;
+export type GameSound = 'Check' | 'Checkmate' | 'Stalemate';
 
-/** Which sample each sound uses. There is no castling sample: it is the move click, twice. */
-const FILE_FOR: Record<MoveSound | 'draw', SetSample> = {
+/** The piece's sound for each kind of move. There is no castling sample: it is the move click, twice. */
+const PIECE_FOR: Record<MoveSound | 'draw', SetSample> = {
   move: 'Move',
   castle: 'Move',
   capture: 'Capture',
-  check: 'Check',
-  checkmate: 'Victory',
-  draw: 'Draw',
+  check: 'Move',
+  checkmate: 'Move',
+  draw: 'Move',
 };
 
-const SET_SAMPLES: readonly SetSample[] = ['Move', 'Capture', 'Check', 'Victory', 'Draw'];
+/** The shared sound that follows the piece's, if any. */
+const GAME_SOUND_FOR: Partial<Record<MoveSound | 'draw', GameSound>> = {
+  check: 'Check',
+  checkmate: 'Checkmate',
+  draw: 'Stalemate',
+};
+
+/** How long after the piece lands the check, checkmate or stalemate sound starts (seconds). */
+const GAME_SOUND_DELAY = 0.12;
+
+const SET_SAMPLES: readonly SetSample[] = ['Move', 'Capture'];
+export const GAME_SOUNDS: readonly GameSound[] = ['Check', 'Checkmate', 'Stalemate'];
 
 /** The explosion is stored under this key; other samples under their file's path. */
 const EXPLOSION = 'Explosion.mp3';
 
-/** Which file a set uses for a sample, as a path inside public/sounds (also the buffer's key). */
+/** Which file a set uses for the piece's sound, as a path inside public/sounds (also the buffer's key). */
 export function sampleFile(set: LoadedSet, name: SetSample): string {
-  if (set === 'sfx') return `${name}.mp3`;
-  if (name === 'Move' || name === 'Capture') return `${set}/${name}.wav`;
-  if (name === 'Check') return `${set}/Move.wav`;
-  return `${name}.mp3`; // Victory, Draw: the Original set's tune
+  return set === 'sfx' ? `${name}.mp3` : `${set}/${name}.wav`;
+}
+
+/** The file of a shared check, checkmate or stalemate sound. */
+export function gameSoundFile(name: GameSound): string {
+  return `game/${name}.mp3`;
 }
 
 function fileUrl(file: string): string {
@@ -109,6 +124,7 @@ export function createMoveSounds(): MoveSounds {
       limiter.ratio.value = 20;
       explosionBus.connect(limiter).connect(ctx.destination);
       void loadFile(ctx, EXPLOSION);
+      for (const name of GAME_SOUNDS) void loadFile(ctx, gameSoundFile(name));
       void loadSet(ctx, soundSet);
     } catch {
       context = null;
@@ -148,9 +164,11 @@ export function createMoveSounds(): MoveSounds {
       explode(ctx);
       return;
     }
-    startSample(ctx, FILE_FOR[sound], 0);
+    if (soundSet === 'off') return;
+    startSample(ctx, PIECE_FOR[sound], 0);
     if (sound === 'castle') startSample(ctx, 'Move', 0.11, 0.8); // king, then rook
-    if (sound === 'checkmate') startSample(ctx, 'Check', 0);
+    const after = GAME_SOUND_FOR[sound];
+    if (after) start(ctx, gameSoundFile(after), GAME_SOUND_DELAY, ctx.destination, GAME_SOUND_GAIN[after]);
   }
 
   async function previewSet(): Promise<void> {
