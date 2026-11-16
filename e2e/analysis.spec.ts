@@ -108,6 +108,8 @@ test('a running analysis can be cancelled', async ({ page }) => {
   await expect(page.locator('#moves .move')).toHaveCount(7);
   await page.locator('#analysis-another').click();
   await expect(page.locator('#analysis-pgn')).toBeVisible();
+  // The box is empty again, ready for the next game.
+  await expect(page.locator('#analysis-pgn')).toHaveValue('');
 });
 
 test('a game that is not valid PGN gets a clear message', async ({ page }) => {

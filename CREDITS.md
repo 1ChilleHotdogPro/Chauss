@@ -21,8 +21,18 @@ preview, with a short fade-out and the level evened out; nothing else is changed
 | Club room | `public/sounds/room/` | [Chess Pieces Move (Far)](https://freesound.org/people/JJTaynos/sounds/733932/) | JJTaynos | 25.03 s | 14.34 s |
 | Soft | `public/sounds/soft/` | [Chess Pieces](https://freesound.org/people/MattyCauldron/sounds/765866/) | MattyCauldron | 11.78 s | 26.23 s |
 
-These recordings have no check, win or draw sounds: a check plays the set's move sound, and a win or
-draw plays the Original set's `Victory.mp3` / `Draw.mp3`. Castling plays the move sound twice.
+Castling plays the move sound twice.
+
+### Check, checkmate and stalemate (`public/sounds/game/`)
+
+Shared by every set: the piece's own sound plays, then one of these. All three are the public
+**CC0 1.0** previews from Freesound, unchanged (only the level is set in `src/ui/soundLevels.ts`).
+
+| File | Used for | Sound | Author |
+| --- | --- | --- | --- |
+| `Check.mp3` | a check | [soft electronic ping](https://freesound.org/people/Metrolynn/sounds/719210/) | Metrolynn |
+| `Checkmate.mp3` | checkmate | [Gong_Center_Clear.wav](https://freesound.org/people/Q.K./sounds/56240/) | Q.K. |
+| `Stalemate.mp3` | stalemate and other draws | [dhumm.ogg](https://freesound.org/people/klcisa/sounds/371752/) | klcisa |
 
 ### Original (`public/sounds/*.mp3`)
 
@@ -36,10 +46,9 @@ under "Exceptions (free)" in the Lichess repository's
 | --- | --- |
 | `Move.mp3` | a normal move; castling plays it twice (king, then rook) |
 | `Capture.mp3` | a capture |
-| `Check.mp3` | a check |
-| `Victory.mp3` | checkmate (played together with the check sound), in every set |
-| `Draw.mp3` | stalemate and other draws, in every set |
 | `Explosion.mp3` | **cursed set only**: every capture, at the volume chosen in Settings |
+
+(The set's own check, victory and draw sounds were replaced by the shared ones above.)
 
 Not used on purpose: Lichess's other sets that are not free ("standard", "robot", "woodland",
 "instrument") or not GPL-compatible ("lisp", CC BY-NC-SA). PyChess's sounds were tried and left out:
