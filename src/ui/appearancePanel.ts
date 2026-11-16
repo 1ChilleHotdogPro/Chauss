@@ -3,8 +3,33 @@ import {
   MAX_EXPLOSION_VOLUME,
   PIECE_STYLES,
   SITE_THEMES,
+  SOUND_SETS,
   type Appearance,
+  type SoundSetId,
 } from '../appearance/appearance';
+
+const SVG_NS = 'http://www.w3.org/2000/svg';
+
+/** A small speaker icon; muted (with a cross) for the "off" set. */
+function speakerIcon(muted: boolean): SVGSVGElement {
+  const svg = document.createElementNS(SVG_NS, 'svg');
+  svg.setAttribute('viewBox', '0 0 24 24');
+  svg.setAttribute('fill', 'none');
+  svg.setAttribute('stroke', 'currentColor');
+  svg.setAttribute('stroke-width', '2');
+  svg.setAttribute('stroke-linecap', 'round');
+  svg.setAttribute('stroke-linejoin', 'round');
+  svg.setAttribute('aria-hidden', 'true');
+  const paths = ['M4 9h4l5-4v14l-5-4H4z'];
+  if (muted) paths.push('M17 9l5 6', 'M22 9l-5 6');
+  else paths.push('M16.5 8.5a5 5 0 0 1 0 7', 'M19 6a8.5 8.5 0 0 1 0 12');
+  for (const d of paths) {
+    const path = document.createElementNS(SVG_NS, 'path');
+    path.setAttribute('d', d);
+    svg.append(path);
+  }
+  return svg;
+}
 
 export interface AppearancePanelOptions {
   dialog: HTMLDialogElement;
@@ -13,6 +38,8 @@ export interface AppearancePanelOptions {
   onChange(appearance: Appearance): boolean;
   /** Play one explosion at the current volume. */
   onPreviewExplosion(): void;
+  /** Play a sample move sound from this set (never called for 'off'). */
+  onPreviewSounds(set: SoundSetId): void;
 }
 
 function need<T extends Element>(root: ParentNode, selector: string): T {
@@ -32,13 +59,14 @@ function piece(role: string, colour: string): HTMLElement {
   return element('piece' as 'span', `${role} ${colour}`);
 }
 
-/** The Settings tiles for choosing the board and the pieces, and the explosion volume. */
+/** The Settings tiles for choosing the design, board, pieces and move sounds, and the explosion volume. */
 export function createAppearancePanel(options: AppearancePanelOptions): void {
   const { dialog } = options;
   let appearance: Appearance = { ...options.initial };
   const themeBox = need<HTMLElement>(dialog, '#site-themes');
   const boardBox = need<HTMLElement>(dialog, '#board-styles');
   const pieceBox = need<HTMLElement>(dialog, '#piece-styles');
+  const soundBox = need<HTMLElement>(dialog, '#sound-sets');
   const volume = need<HTMLInputElement>(dialog, '#explosion-volume');
   const volumeText = need<HTMLElement>(dialog, '#explosion-volume-text');
   const testButton = need<HTMLButtonElement>(dialog, '#explosion-test');
@@ -92,6 +120,22 @@ export function createAppearancePanel(options: AppearancePanelOptions): void {
         swatch.append(piece('knight', 'white'), piece('queen', 'black'));
         preview.append(swatch);
         return tile(style.name, style.id === appearance.pieces, preview, () => choose({ pieces: style.id }));
+      }),
+    );
+    soundBox.replaceChildren(
+      ...SOUND_SETS.map((set) => {
+        const preview = element('span', 'sound-preview');
+        preview.append(speakerIcon(set.id === 'off'));
+        const button = tile(set.name, set.id === appearance.sounds, preview, () => {
+          choose({ sounds: set.id });
+          if (set.id !== 'off') options.onPreviewSounds(set.id);
+        });
+        button.classList.add('sound-tile');
+        button.dataset.sounds = set.id;
+        const blurb = element('span', 'style-blurb');
+        blurb.textContent = set.blurb;
+        button.append(blurb);
+        return button;
       }),
     );
     volumeText.textContent = `${Math.round((appearance.explosionVolume / MAX_EXPLOSION_VOLUME) * 100)}%`;

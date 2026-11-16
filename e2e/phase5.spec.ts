@@ -125,7 +125,7 @@ test('a wrong answer shows the repertoire move and the reason, and is counted on
   await expect(page.locator('#fen')).toHaveText(card.fen);
   expect(await moveTexts(page)).toEqual(card.line);
   await expect(page.locator('#board')).toHaveAttribute('data-arrows', '1');
-  await expect(page.locator('.cg-wrap svg.cg-shapes g[cgHash]')).toHaveCount(1);
+  await expect(page.locator('.cg-wrap svg.cg-custom-svgs g[cgHash]')).toHaveCount(1);
   expect((await storedProgress(page))?.cards[card.key]).toMatchObject({ attempts: 1, errors: 1 });
   await page.screenshot({ path: 'test-results/phase5-wrong.png', fullPage: true });
 

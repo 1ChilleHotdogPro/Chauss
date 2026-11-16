@@ -48,14 +48,25 @@ describe('appearance', () => {
       board: 'walnut',
       pieces: 'merida',
       explosionVolume: MAX_EXPLOSION_VOLUME,
+      sounds: 'piano',
     });
     expect(parseAppearance('junk')).toEqual(DEFAULT_APPEARANCE);
     expect(parseAppearance({ explosionVolume: -4 }).explosionVolume).toBe(0);
   });
 
+  it('keeps a valid sound set and falls back to piano for unknown or missing ones', () => {
+    expect(DEFAULT_APPEARANCE.sounds).toBe('piano');
+    expect(parseAppearance({ sounds: 'futuristic' }).sounds).toBe('futuristic');
+    expect(parseAppearance({ sounds: 'off' }).sounds).toBe('off');
+    expect(parseAppearance({ sounds: 'kazoo' }).sounds).toBe('piano');
+    expect(parseAppearance({ theme: 'midnight', board: 'blue', pieces: 'merida', explosionVolume: 1 }).sounds).toBe('piano');
+    const older = memoryStorage({ [APPEARANCE_KEY]: JSON.stringify({ theme: 'parchment', board: 'ice', pieces: 'frost', explosionVolume: 1 }) });
+    expect(loadAppearance(older).sounds).toBe('piano');
+  });
+
   it('saves and loads, and survives bad stored text', () => {
     const storage = memoryStorage();
-    const saved = { theme: 'terminal', board: 'neon', pieces: 'pixel', explosionVolume: 2 } as const;
+    const saved = { theme: 'terminal', board: 'neon', pieces: 'pixel', explosionVolume: 2, sounds: 'nes' } as const;
     expect(saveAppearance(storage, saved)).toBe(true);
     expect(loadAppearance(storage)).toEqual(saved);
     expect(loadAppearance(memoryStorage({ [APPEARANCE_KEY]: '{oops' }))).toEqual(DEFAULT_APPEARANCE);

@@ -151,6 +151,7 @@ function applyAppearance(next: typeof appearance): void {
   board.setLook(next);
   moveSounds.setCursed(isCursed(next));
   moveSounds.setExplosionVolume(next.explosionVolume);
+  moveSounds.setSoundSet(next.sounds);
 }
 applyAppearance(appearance);
 createAppearancePanel({
@@ -161,6 +162,7 @@ createAppearancePanel({
     return saveAppearance(storage, next);
   },
   onPreviewExplosion: () => moveSounds.previewExplosion(),
+  onPreviewSounds: () => moveSounds.previewSet(),
 });
 
 // Hidden until asked for, so you think first.

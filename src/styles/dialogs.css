@@ -257,6 +257,40 @@
   color: var(--text);
 }
 
+/* ---- Sounds: a speaker icon, the name and a one-line blurb ---- */
+.settings .sound-grid {
+  grid-template-columns: repeat(auto-fill, minmax(118px, 1fr));
+}
+
+.settings .sound-tile {
+  align-content: start;
+  padding: var(--space-2) var(--space-2) var(--space-2);
+}
+
+.settings .sound-preview {
+  display: grid;
+  place-items: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: rgba(0, 0, 0, 0.18);
+  box-shadow: 0 0 0 1px var(--border-soft);
+  color: var(--heading);
+}
+
+.settings .sound-tile[aria-checked='true'] .sound-preview {
+  color: var(--accent);
+}
+
+.settings .sound-tile[data-sounds='off'] .sound-preview {
+  color: var(--muted);
+}
+
+.settings .sound-preview svg {
+  width: 20px;
+  height: 20px;
+}
+
 .settings .volume-row {
   margin-top: var(--space-3);
   font-size: var(--fs-sm);
@@ -492,6 +526,20 @@
   .settings .style-preview {
     width: 48px;
     height: 48px;
+  }
+
+  .settings .sound-grid {
+    grid-template-columns: repeat(auto-fill, minmax(96px, 1fr));
+  }
+
+  .settings .sound-preview {
+    width: 30px;
+    height: 30px;
+  }
+
+  .settings .sound-preview svg {
+    width: 17px;
+    height: 17px;
   }
 
   .settings .style-preview.wide {

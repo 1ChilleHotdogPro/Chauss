@@ -1,6 +1,8 @@
 import { Chessground } from '@lichess-org/chessground';
 import type { Key } from '@lichess-org/chessground/types';
+import type { DrawShape } from '@lichess-org/chessground/draw';
 import type { Game, Side } from '../game/game';
+import { ARROW_LOOKS, arrowSvg, screenDelta } from './arrowShape';
 
 export interface BoardView {
   /** Make the board show exactly what the game says: pieces, side to move, legal moves. */
@@ -47,32 +49,19 @@ export interface Arrow {
   opacity?: number;
 }
 
-/** Best move: thick forest green. Second: amber. Third: terracotta. Hex copies of --arrow-1..3 in src/theme.css (an SVG attribute cannot read CSS variables). */
-const ARROW_STYLES = [
-  { color: '#3b8a45', lineWidth: 12 },
-  { color: '#d39b3a', lineWidth: 8 },
-  { color: '#b8664a', lineWidth: 6 },
-] as const;
+/** Engine arrows: best (green), second (amber), third (terracotta). Hex, as an SVG attribute cannot read CSS variables. */
+const ARROW_COLOURS = ['#4caf50', '#f2b134', '#e07a52'] as const;
 
-/** Chessground insists on its four standard brushes (used for arrows the user draws with the mouse). Arrows the user draws: forest green, brick red, slate blue, candle gold. */
+/** Chessground insists on its four standard brushes (used for arrows the user draws with the mouse). */
 const DEFAULT_BRUSHES = {
-  green: { key: 'g', color: '#6f9a5a', opacity: 1, lineWidth: 10 },
-  red: { key: 'r', color: '#c4574a', opacity: 1, lineWidth: 10 },
-  blue: { key: 'b', color: '#6b8fb0', opacity: 1, lineWidth: 10 },
-  yellow: { key: 'y', color: '#e6c27a', opacity: 1, lineWidth: 10 },
+  green: { key: 'g', color: '#5fa04e', opacity: 1, lineWidth: 10 },
+  red: { key: 'r', color: '#d0503f', opacity: 1, lineWidth: 10 },
+  blue: { key: 'b', color: '#4f8fd0', opacity: 1, lineWidth: 10 },
+  yellow: { key: 'y', color: '#e6b74f', opacity: 1, lineWidth: 10 },
 };
 
-/** The board draws opacity in steps of a tenth, so each colour gets one brush per step. */
-const ARROW_BRUSHES: Record<string, { key: string; color: string; opacity: number; lineWidth: number }> = {};
-ARROW_STYLES.forEach((style, index) => {
-  for (let tenth = 1; tenth <= 10; tenth++) {
-    const key = arrowBrushKey(index, tenth / 10);
-    ARROW_BRUSHES[key] = { key, color: style.color, opacity: tenth / 10, lineWidth: style.lineWidth };
-  }
-});
-
-function arrowBrushKey(index: number, opacity: number): string {
-  return `arrow${index}-${Math.round(opacity * 10)}`;
+function clamp(value: number, min: number, max: number): number {
+  return Math.min(max, Math.max(min, value));
 }
 
 /**
@@ -98,7 +87,7 @@ export function createBoard(
     draggable: { showGhost: true },
     highlight: { lastMove: true, check: true },
     animation: { enabled: true, duration: 150 },
-    drawable: { brushes: { ...DEFAULT_BRUSHES, ...ARROW_BRUSHES } },
+    drawable: { brushes: DEFAULT_BRUSHES },
   });
 
   let interaction: BoardInteraction = 'side-to-move';
@@ -123,24 +112,32 @@ export function createBoard(
 
   sync();
 
+  let shownArrows: readonly Arrow[] = [];
   let drawnArrows = '';
   function setArrows(arrows: readonly Arrow[]): void {
-    const shown = arrows.slice(0, ARROW_STYLES.length);
-    const signature = shown.map((arrow) => `${arrow.from}${arrow.to}${arrow.opacity ?? 1}`).join(',');
-    element.dataset.arrows = String(shown.length);
+    shownArrows = arrows.slice(0, ARROW_COLOURS.length);
+    element.dataset.arrows = String(shownArrows.length);
+    drawArrows();
+  }
+
+  /** The arrow's shape depends on which way up the board is, so this runs again after a flip. */
+  function drawArrows(): void {
+    const orientation = ground.state.orientation;
+    const signature =
+      orientation + ':' + shownArrows.map((arrow) => `${arrow.from}${arrow.to}${arrow.opacity ?? 1}`).join(',');
     if (signature === drawnArrows) return; // nothing changed: do not redraw
     drawnArrows = signature;
-    ground.setAutoShapes(
-      shown.map((arrow, index) => {
-        const style = ARROW_STYLES[index]!;
-        return {
-          orig: arrow.from as Key,
-          dest: arrow.to as Key,
-          brush: arrowBrushKey(index, Math.min(1, Math.max(0.1, arrow.opacity ?? 1))),
-          modifiers: { lineWidth: style.lineWidth },
-        };
-      }),
-    );
+    const shapes: DrawShape[] = shownArrows.map((arrow, index) => {
+      const { dx, dy } = screenDelta(arrow.from, arrow.to, orientation);
+      return {
+        orig: arrow.from as Key,
+        customSvg: {
+          html: arrowSvg(dx, dy, ARROW_LOOKS[index]!, ARROW_COLOURS[index]!, clamp(arrow.opacity ?? 1, 0.1, 1)),
+          center: 'orig',
+        },
+      };
+    });
+    ground.setAutoShapes(shapes.reverse()); // best drawn last, so it is on top
   }
 
   let badge: MoveBadge | null = null;
@@ -184,6 +181,7 @@ export function createBoard(
     flip: () => {
       ground.toggleOrientation();
       placeBadge();
+      drawArrows();
     },
     orientation: () => ground.state.orientation,
     setInteraction: (who) => {
@@ -195,6 +193,7 @@ export function createBoard(
     setOrientation: (side) => {
       ground.set({ orientation: side });
       placeBadge();
+      drawArrows();
     },
     setArrows,
   };

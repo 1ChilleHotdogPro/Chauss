@@ -6,8 +6,8 @@ const BLUNDER_LINE = ['e2e4', 'e7e5', 'd1h5', 'b8c6', 'f1c4', 'g8f6'];
 
 const status = (page: Page) => page.locator('#engine-status');
 const evalBar = (page: Page) => page.locator('#evalbar');
-/** Arrows as chessground actually draws them (one SVG group per arrow). */
-const drawnArrows = (page: Page) => page.locator('.cg-wrap svg.cg-shapes g[cgHash]');
+/** Engine arrows as chessground actually draws them: one custom-SVG group per arrow (src/ui/arrowShape.ts). */
+const drawnArrows = (page: Page) => page.locator('.cg-wrap svg.cg-custom-svgs g[cgHash]');
 
 async function engineReady(page: Page): Promise<void> {
   await expect(status(page)).toHaveAttribute('data-state', 'ready', { timeout: 20_000 });
@@ -275,13 +275,16 @@ test('arrows are green, amber and terracotta, and a weaker move is drawn fainter
   await page.locator('#toggle-arrows').click();
   await expect(drawnArrows(page)).toHaveCount(3);
 
-  const arrows = await drawnArrows(page).evaluateAll((groups) =>
-    groups.map((group) => ({
-      opacity: Number(group.querySelector('line')?.getAttribute('opacity')),
-      stroke: group.querySelector('line')?.getAttribute('stroke') ?? '',
-    })),
-  );
-  expect(arrows.map((arrow) => arrow.stroke)).toEqual(['#3b8a45', '#d39b3a', '#b8664a']);
+  // The best arrow is drawn last (on top where arrows cross), so read them back to front.
+  const arrows = (
+    await drawnArrows(page).evaluateAll((groups) =>
+      groups.map((group) => ({
+        opacity: Number(group.querySelector('.engine-arrow')?.getAttribute('opacity')),
+        fill: group.querySelector('.engine-arrow path')?.getAttribute('fill') ?? '',
+      })),
+    )
+  ).reverse();
+  expect(arrows.map((arrow) => arrow.fill)).toEqual(['#4caf50', '#f2b134', '#e07a52']);
   expect(arrows[0]!.opacity).toBe(0.9);
   expect(arrows[1]!.opacity).toBeLessThanOrEqual(arrows[0]!.opacity);
   expect(arrows[2]!.opacity).toBeLessThanOrEqual(arrows[1]!.opacity);

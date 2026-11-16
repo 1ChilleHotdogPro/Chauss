@@ -7,9 +7,19 @@ repository's own [COPYING.md](https://github.com/lichess-org/lila/blob/master/CO
 
 ## Sounds (`public/sounds/`)
 
-Source: the "sfx" sound set in [lichess-org/lila](https://github.com/lichess-org/lila/tree/master/public/sound/sfx),
-by [Enigmahack](https://github.com/Enigmahack). Licence: **AGPL-3.0-or-later**
-(compatible with GPL-3.0, section 13 of the GPL).
+The sound set is chosen in Settings. Every recorded set comes unchanged from
+[lichess-org/lila](https://github.com/lichess-org/lila/tree/master/public/sound) (`public/sound/<set>/`).
+AGPL-3.0-or-later is compatible with GPL-3.0 (section 13 of the GPL).
+
+| Set in Settings | Folder | Lichess set | Author | Licence |
+| --- | --- | --- | --- | --- |
+| Original | `public/sounds/` | [sfx](https://github.com/lichess-org/lila/tree/master/public/sound/sfx) | [Enigmahack](https://github.com/Enigmahack) | AGPL-3.0-or-later |
+| Piano | `public/sounds/piano/` | [piano](https://github.com/lichess-org/lila/tree/master/public/sound/piano) | [Enigmahack](https://github.com/Enigmahack) | AGPL-3.0-or-later |
+| NES | `public/sounds/nes/` | [nes](https://github.com/lichess-org/lila/tree/master/public/sound/nes) | [Enigmahack](https://github.com/Enigmahack) | AGPL-3.0-or-later |
+| Futuristic | `public/sounds/futuristic/` | [futuristic](https://github.com/lichess-org/lila/tree/master/public/sound/futuristic) | [Enigmahack](https://github.com/Enigmahack) | AGPL-3.0-or-later |
+| Wood | none (generated in code, `src/ui/woodSound.ts`) | none | Chauss | GPL-3.0 |
+
+Each recorded set has the same five files:
 
 | File | Used for |
 | --- | --- |
@@ -18,11 +28,18 @@ by [Enigmahack](https://github.com/Enigmahack). Licence: **AGPL-3.0-or-later**
 | `Check.mp3` | a check |
 | `Victory.mp3` | checkmate (played together with `Check.mp3`) |
 | `Draw.mp3` | stalemate and other draws |
+
+Plus one extra file in the Original folder only:
+
+| File | Used for |
+| --- | --- |
 | `Explosion.mp3` | **cursed set only**: every capture, at the volume chosen in Settings |
 
-There is no separate castling recording in this set.
+None of these sets has a separate castling recording.
 
-Not used on purpose: Lichess's "standard" sounds. Lichess lists them under "Exceptions (non-free)".
+Not used on purpose:
+- "lisp": CC BY-NC-SA 4.0. That licence forbids commercial use, so it is not compatible with GPL-3.0.
+- "robot", "woodland", "instrument" and "standard": Lichess lists them under "Exceptions (non-free)".
 
 ## Pieces (`public/pieces/<set>/`)
 

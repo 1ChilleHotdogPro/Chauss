@@ -281,3 +281,9 @@ cg-board {
   background: radial-gradient(transparent 0%, transparent 80%, var(--move-dot) 80%);
 }
 #board:not([data-board='cursed']) cg-board square.current-premove { background-color: var(--hl-select); }
+/* ---- Arrows ----
+   Engine arrows are custom SVG shapes (src/ui/arrowShape.ts) in .cg-custom-svgs, which chessground already
+   keeps out of the mouse's way (pointer-events: none). A soft shadow lifts them off the squares. */
+.cg-wrap .engine-arrow { filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.45)); }
+/* The user's own right-click arrows: a bit more solid than chessground's 0.6. */
+.cg-wrap .cg-shapes { opacity: 0.8; }

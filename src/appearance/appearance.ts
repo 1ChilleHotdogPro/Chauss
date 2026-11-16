@@ -40,6 +40,17 @@ export const PIECE_STYLES = [
   { id: 'cursed', name: 'CURSED CIRCUS', cursed: true },
 ] as const;
 
+/** Move-sound sets. */
+export const SOUND_SETS = [
+  { id: 'piano', name: 'Piano', blurb: 'Soft piano notes' },
+  { id: 'wood', name: 'Wood', blurb: 'Wooden pieces on a wooden board' },
+  { id: 'nes', name: 'Retro', blurb: '8-bit game console' },
+  { id: 'futuristic', name: 'Futuristic', blurb: 'Sci-fi blips and swooshes' },
+  { id: 'sfx', name: 'Original', blurb: 'The sounds Chauss had before' },
+  { id: 'off', name: 'Off', blurb: 'No move sounds' },
+] as const;
+
+export type SoundSetId = (typeof SOUND_SETS)[number]['id'];
 export type SiteThemeId = (typeof SITE_THEMES)[number]['id'];
 export type BoardStyleId = (typeof BOARD_STYLES)[number]['id'];
 export type PieceStyleId = (typeof PIECE_STYLES)[number]['id'];
@@ -51,11 +62,13 @@ export interface Appearance {
   pieces: PieceStyleId;
   /** How loud the cursed explosions are: 0 (silent) to MAX_EXPLOSION_VOLUME. */
   explosionVolume: number;
+  /** Which move sounds play (the cursed explosions are separate). */
+  sounds: SoundSetId;
 }
 
 export const APPEARANCE_KEY = 'chauss.appearance.v1';
 export const MAX_EXPLOSION_VOLUME = 3;
-export const DEFAULT_APPEARANCE: Appearance = { theme: 'academia', board: 'walnut', pieces: 'classic', explosionVolume: 1.5 };
+export const DEFAULT_APPEARANCE: Appearance = { theme: 'academia', board: 'walnut', pieces: 'classic', explosionVolume: 1.5, sounds: 'piano' };
 
 /** The cursed board or the cursed pieces switch the capture sound to explosions. */
 export function isCursed(appearance: Pick<Appearance, 'board' | 'pieces'>): boolean {
@@ -75,6 +88,7 @@ export function parseAppearance(raw: unknown): Appearance {
     board: pick(BOARD_STYLES, value.board, DEFAULT_APPEARANCE.board) as BoardStyleId,
     pieces: pick(PIECE_STYLES, value.pieces, DEFAULT_APPEARANCE.pieces) as PieceStyleId,
     explosionVolume: Math.min(MAX_EXPLOSION_VOLUME, Math.max(0, volume)),
+    sounds: pick(SOUND_SETS, value.sounds, DEFAULT_APPEARANCE.sounds) as SoundSetId,
   };
 }
 

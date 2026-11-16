@@ -91,10 +91,10 @@
   --hl-select: rgba(147, 185, 122, 0.5);
   --hl-check: rgba(240, 128, 110, 0.75);
   --move-dot: rgba(29, 21, 15, 0.38);
-  /* Arrows must read on light and dark squares alike: forest green, amber, terracotta. */
-  --arrow-1: #3b8a45;
-  --arrow-2: #d39b3a;
-  --arrow-3: #b8664a;
+  /* Arrows must read on light and dark squares alike: green, amber, terracotta. Hex copies live in src/ui/board.ts (SVG attributes cannot read CSS variables). */
+  --arrow-1: #4caf50;
+  --arrow-2: #f2b134;
+  --arrow-3: #e07a52;
   --evalbar-light: #efe2c6;
   --evalbar-dark: #211912;
 
