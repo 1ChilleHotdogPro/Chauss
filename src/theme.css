@@ -50,6 +50,7 @@
   --shadow-button: 0 1px 2px rgba(0, 0, 0, 0.4);
   --inset-light: inset 0 1px 0 rgba(255, 233, 190, 0.07);
   --backdrop: rgba(10, 6, 3, 0.68);
+  --scroll-shade: rgba(0, 0, 0, 0.4); /* the shade at the edge of a list that scrolls */
 
   /* ---- Design tokens for the redesign (docs/design-plan.md). Defined here first, used as screens move over. ---- */
 
@@ -82,6 +83,8 @@
   --btn-ghost-border: transparent;
   --btn-ghost-text: var(--muted);
   --btn-ghost-hover: rgba(255, 233, 190, 0.06);
+  /* A switch that is on: the knob must stand out from the --accent-deep track. */
+  --switch-knob-on: var(--accent);
 
   /* Keyboard focus: one candle-gold ring everywhere. */
   --focus-ring: var(--heading);

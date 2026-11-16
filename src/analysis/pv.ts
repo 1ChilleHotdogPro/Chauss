@@ -72,3 +72,24 @@ export function numberedLine(fen: string, sans: readonly string[]): string {
   });
   return parts.join(' ');
 }
+
+/**
+ * Split a numbered line into the pieces that must stay on one line when it wraps: each move, with its
+ * move number when it has one. "3... Nf6 4. O-O-O d5" -> ["3... Nf6", "4. O-O-O", "d5"].
+ * Joining the pieces with spaces gives the line back.
+ */
+export function sanGroups(line: string): string[] {
+  const tokens = line.split(' ').filter((token) => token !== '');
+  const groups: string[] = [];
+  for (let i = 0; i < tokens.length; i++) {
+    const token = tokens[i]!;
+    const next = tokens[i + 1];
+    if (/^\d+\.+$/.test(token) && next !== undefined) {
+      groups.push(`${token} ${next}`);
+      i += 1;
+    } else {
+      groups.push(token);
+    }
+  }
+  return groups;
+}

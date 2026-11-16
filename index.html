@@ -172,19 +172,27 @@
 
           <div class="not-drill">
             <h2>Engine</h2>
-            <div class="controls switches">
-              <button id="toggle-eval" class="switch" type="button" aria-pressed="false" title="Show or hide the evaluation (E)">Eval bar</button>
-              <button id="toggle-arrows" class="switch" type="button" aria-pressed="false" title="Show or hide best-move arrows (A)">Best-move arrows</button>
+            <!-- The switches and the engine's status share one row; the status drops below when narrow. -->
+            <div class="engine-row">
+              <div class="controls switches">
+                <button id="toggle-eval" class="switch" type="button" aria-pressed="false" title="Show or hide the evaluation (E)">Eval bar</button>
+                <button id="toggle-arrows" class="switch" type="button" aria-pressed="false" title="Show or hide best-move arrows (A)">Best-move arrows</button>
+              </div>
+              <p id="engine-status" class="hint engine-status" data-state="loading">Engine: loading Stockfish…</p>
             </div>
-            <p id="engine-status" class="hint engine-status" data-state="loading">Engine: loading Stockfish…</p>
             <ol id="engine-lines" class="engine-lines" hidden></ol>
           </div>
 
+          <!-- On wide screens the heading stays put and only the explorer's body scrolls. -->
           <div class="explore-only explorer-block">
             <h2>Opening explorer</h2>
-            <div id="explore" class="explore" data-status="loading"></div>
-            <div class="controls explore-actions">
-              <button id="open-traps" type="button">Common mistakes in this opening</button>
+            <div class="explorer-scroll">
+              <div id="explore" class="explore" data-status="loading"></div>
+              <div class="controls explore-actions">
+                <button id="open-traps" class="btn-ghost btn-icon explore-tool" type="button">
+                  <svg class="icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M10.3 4.2L2.4 18a2 2 0 001.7 3h15.8a2 2 0 001.7-3L13.7 4.2a2 2 0 00-3.4 0z" /><path d="M12 9v4M12 17h.01" /></svg><span class="btn-label">Common mistakes in this opening</span>
+                </button>
+              </div>
             </div>
           </div>
 

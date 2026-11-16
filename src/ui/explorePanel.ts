@@ -4,6 +4,7 @@ import type { ExploreMove, MoveFlag, MoveStats } from '../explore/position';
 import type { RankedMove } from '../explore/ranking';
 import { isSectionOpen, setSectionOpen, type SectionId } from '../explore/sectionState';
 import type { ExploreView } from '../explore/source';
+import { setSanLine } from './enginePanel';
 
 /** Everything the panel shows about the refutation of one bad move. */
 export interface RefutationModel {
@@ -63,8 +64,9 @@ function el<K extends keyof HTMLElementTagNameMap>(
   return element;
 }
 
-/** 908 -> "908", 12,345 -> "12.3K", 3,092,272 -> "3.1M". */
+/** 908 -> "908", 12,345 -> "12.3K", 3,092,272 -> "3.1M", 1,162,400,000 -> "1.2B". */
 export function compactNumber(n: number): string {
+  if (n >= 1_000_000_000) return `${(n / 1_000_000_000).toFixed(1)}B`;
   if (n >= 1_000_000) return `${(n / 1_000_000).toFixed(1)}M`;
   if (n >= 10_000) return `${(n / 1_000).toFixed(1)}K`;
   return n.toLocaleString('en-US');
@@ -107,8 +109,20 @@ function moveTable(
   const table = el('table', 'explore-table');
   table.id = id;
   const head = el('tr');
-  for (const title of ['Move', 'Played', 'Games', 'Results', ...(model.evalShown ? ['Eval'] : []), '']) {
-    head.append(el('th', undefined, title));
+  // Each header names its column (data-col), so CSS lines it up with the cells (numbers right-aligned)
+  // and hides it with them (Games, in a narrow panel). The cells' own classes stay on the cells only.
+  const columns: [string, string][] = [
+    ['Move', 'move'],
+    ['Played', 'share'],
+    ['Games', 'games'],
+    ['Results', 'results'],
+    ...(model.evalShown ? ([['Eval', 'eval']] as [string, string][]) : []),
+    ['', 'flag'],
+  ];
+  for (const [title, column] of columns) {
+    const th = el('th', undefined, title);
+    th.dataset.col = column;
+    head.append(th);
   }
   const thead = el('thead');
   thead.append(head);
@@ -131,11 +145,13 @@ function moveTable(
     if (move.uci === recommended) {
       const star = el('span', 'explore-recommended', '★');
       star.title = 'The move this trainer recommends (your repertoire move)';
+      star.setAttribute('role', 'img');
+      star.setAttribute('aria-label', 'Recommended');
       moveCell.append(star);
     }
 
     const scoreCell = el('td', 'explore-eval', move.eval ? formatScore(move.eval) : '');
-    const flagCell = el('td');
+    const flagCell = el('td', 'explore-flag');
     if (move.flag !== 'none') {
       const flag = el('button', 'flag', verdictSymbol(move.flag));
       flag.type = 'button';
@@ -147,11 +163,14 @@ function moveTable(
       flagCell.append(flag);
     }
 
-    const resultsCell = el('td');
+    const resultsCell = el('td', 'explore-results');
     resultsCell.append(resultsBar(stats));
+    // The game count also sits on the share, for a narrow panel where the Games column is hidden.
+    const shareCell = el('td', 'explore-share', sharePercent(stats.share));
+    shareCell.title = `${stats.games.toLocaleString('en-US')} games`;
     row.append(
       moveCell,
-      el('td', 'explore-share', sharePercent(stats.share)),
+      shareCell,
       el('td', 'explore-games', compactNumber(stats.games)),
       resultsCell,
       ...(model.evalShown ? [scoreCell] : []),
@@ -169,12 +188,20 @@ function refutationBox(refutation: RefutationModel, handlers: ExplorePanelHandle
   box.dataset.flag = refutation.flag;
   box.dataset.state = refutation.result ? 'ready' : 'pending';
 
+  // Close sits in the top corner, like the dialogs' ✕.
+  const close = el('button', 'refutation-close btn-ghost btn-icon icon-only');
+  close.type = 'button';
+  close.title = 'Close the explanation';
+  close.setAttribute('aria-label', 'Close');
+  close.append(lineIcon(['M6 6l12 12', 'M18 6L6 18']));
+  close.addEventListener('click', () => handlers.onExplain(null));
+
   const title = el('p', 'refutation-title');
   title.append(
     el('strong', undefined, `${refutation.san}${flagSymbol(refutation.flag)} — ${FLAG_NAMES[refutation.flag].toLowerCase()}.`),
     document.createTextNode(` ${refutation.playedText}`),
   );
-  box.append(title);
+  box.append(close, title);
 
   if (!refutation.result) {
     box.append(el('p', 'hint', 'Stockfish is looking for the best reply…'));
@@ -183,20 +210,22 @@ function refutationBox(refutation: RefutationModel, handlers: ExplorePanelHandle
     const reply = el('p');
     reply.append(document.createTextNode('Best reply: '), el('strong', 'refutation-reply', bestReply), document.createTextNode(`. ${why}`));
     const lineP = el('p', 'refutation-line');
-    lineP.append(el('span', 'line-score', score), document.createTextNode(' '), el('span', 'line-moves', line));
+    const moves = el('span', 'line-moves');
+    setSanLine(moves, line);
+    lineP.append(el('span', 'line-score', score), document.createTextNode(' '), moves);
     box.append(reply, lineP);
   }
-
-  const close = el('button', 'refutation-close btn-ghost', 'Close');
-  close.type = 'button';
-  close.addEventListener('click', () => handlers.onExplain(null));
-  box.append(close);
   return box;
 }
 
 function rankingSection(model: ExplorePanelModel, handlers: ExplorePanelHandlers): HTMLElement {
   const section = el('div', 'ranking');
-  const toggle = el('button', 'btn-ghost', model.ranking.state === 'off' ? 'Rank every legal move' : 'Hide the ranking');
+  const toggle = el('button', 'btn-ghost btn-icon explore-tool');
+  // Bars getting shorter: moves from best to worst.
+  toggle.append(
+    lineIcon(['M4 6h16', 'M4 12h11', 'M4 18h6']),
+    el('span', undefined, model.ranking.state === 'off' ? 'Rank every legal move' : 'Hide the ranking'),
+  );
   toggle.id = 'toggle-ranking';
   toggle.type = 'button';
   toggle.setAttribute('aria-pressed', String(model.ranking.state !== 'off'));
@@ -238,12 +267,14 @@ const SOURCE_ICONS: Record<SectionId, string[]> = {
   ],
 };
 
-function sourceIcon(id: SectionId): SVGSVGElement {
+/** A line icon in the app's style (24×24, drawn with the stroke), hidden from screen readers. */
+function lineIcon(paths: readonly string[], extraClass = ''): SVGSVGElement {
   const svg = document.createElementNS(SVG_NS, 'svg');
-  svg.setAttribute('class', 'icon source-icon');
+  svg.setAttribute('class', `icon ${extraClass}`.trim());
   svg.setAttribute('viewBox', '0 0 24 24');
   svg.setAttribute('aria-hidden', 'true');
-  for (const d of SOURCE_ICONS[id]) {
+  svg.setAttribute('focusable', 'false');
+  for (const d of paths) {
     const path = document.createElementNS(SVG_NS, 'path');
     path.setAttribute('d', d);
     svg.append(path);
@@ -259,8 +290,13 @@ function collapsible(id: SectionId, title: string, ...content: HTMLElement[]): H
   details.open = isSectionOpen(id);
   details.addEventListener('toggle', () => setSectionOpen(id, details.open));
   // The quiet source tag ("Masters" / "Players") is drawn by CSS, so the summary text stays the title.
+  // The chevron turns down when the section is open, so it is clear the header folds it.
   const summary = el('summary');
-  summary.append(sourceIcon(id), el('span', 'explore-title', title));
+  summary.append(
+    lineIcon(['M9 6l6 6-6 6'], 'section-chevron'),
+    lineIcon(SOURCE_ICONS[id], 'source-icon'),
+    el('span', 'explore-title', title),
+  );
   details.append(summary, ...content);
   return details;
 }

@@ -7,8 +7,10 @@
   padding: 14px;
 }
 
+/* Twice as much room above a heading as below it, and no more: on a laptop screen every pixel above the
+   explorer is a pixel less for it. */
 .panel h2 {
-  margin: var(--space-5) 0 var(--space-2);
+  margin: var(--space-4) 0 var(--space-2);
   font-size: 0.85rem;
   text-transform: uppercase;
   letter-spacing: 0.05em;
@@ -44,13 +46,34 @@
     flex: none;
   }
 
+  /* The explorer's heading stays put; only its body scrolls. Scroll shadows: a soft shade at the top or
+     bottom edge only while there is more to scroll that way; the two panel-coloured covers scroll with
+     the content and hide the shades at the ends. (The covers match the panel because the explorer sits
+     below the panel's top sheen.) */
   .panel > .explorer-block {
     flex: 1 1 0;
-    min-height: 150px;
+    min-height: 180px;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .explorer-block > h2 {
+    flex: none;
+  }
+
+  .explorer-scroll {
+    flex: 1 1 0;
+    min-height: 0;
     overflow-y: auto;
     overscroll-behavior: contain;
     margin-right: -8px;
     padding-right: 8px;
+    padding-bottom: var(--space-1);
+    background:
+      linear-gradient(var(--panel) 40%, transparent) center top / 100% 24px no-repeat local,
+      linear-gradient(transparent, var(--panel) 60%) center bottom / 100% 24px no-repeat local,
+      linear-gradient(var(--scroll-shade), transparent) center top / 100% 10px no-repeat scroll,
+      linear-gradient(transparent, var(--scroll-shade)) center bottom / 100% 10px no-repeat scroll;
   }
 
   body:not([data-mode='explore']) .panel > .moves {
@@ -103,8 +126,23 @@
   border-left-color: var(--blunder);
 }
 
+/* The two switches on the left, the engine's name and depth on the right; on a narrow panel the status
+   wraps to its own line and starts at the left. */
+.engine-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-1) var(--space-3);
+}
+
+.engine-row .switches {
+  margin-left: -6px; /* the switch track lines up with the text edge */
+}
+
 .engine-status {
-  margin-top: 8px;
+  margin: 0;
+  font-size: var(--fs-sm);
 }
 
 .engine-status[data-state='failed'] {
@@ -146,6 +184,11 @@
   color: var(--text);
   font-family: var(--font-data);
   overflow-wrap: anywhere;
+}
+
+/* A move and its number never split across lines (so "O-O-O" stays whole). */
+.san-group {
+  white-space: nowrap;
 }
 
 .hint {

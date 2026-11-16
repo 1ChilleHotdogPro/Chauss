@@ -109,7 +109,9 @@ export function createTrapsDialog(options: TrapsDialogOptions): TrapsDialog {
     setTraps(file) {
       const exploit = file.traps.filter((trap) => trap.kind === 'exploit');
       const avoid = file.traps.filter((trap) => trap.kind === 'avoid');
-      openButton.textContent = `Common mistakes in this opening (${file.traps.length})`;
+      // The button may carry an icon; only its label changes.
+      const label = openButton.querySelector<HTMLElement>('.btn-label') ?? openButton;
+      label.textContent = `Common mistakes in this opening (${file.traps.length})`;
       openButton.dataset.count = String(file.traps.length);
 
       const parts: HTMLElement[] = [];

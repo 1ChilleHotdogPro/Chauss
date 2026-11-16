@@ -113,10 +113,12 @@
   --shadow-button: 0 1px 1px rgba(80, 55, 25, 0.14);
   --inset-light: inset 0 1px 0 rgba(255, 255, 255, 0.6);
   --backdrop: rgba(60, 40, 20, 0.45);
+  --scroll-shade: rgba(80, 55, 25, 0.16);
 
   --btn-primary-text: #fbf6ea;
   --btn-primary-hover: #245730;
   --btn-ghost-hover: rgba(122, 46, 34, 0.07);
+  --switch-knob-on: #fbf6ea; /* the track is the accent itself here */
 
   --focus-ring: #7a2e22;
   --hl-select: rgba(47, 107, 58, 0.45);
@@ -212,10 +214,12 @@
   --shadow-button: none;
   --inset-light: inset 0 0 0 transparent;
   --backdrop: rgba(16, 24, 40, 0.45);
+  --scroll-shade: rgba(16, 24, 40, 0.1);
 
   --btn-primary-text: #ffffff;
   --btn-primary-hover: #25683c;
   --btn-ghost-hover: rgba(16, 24, 40, 0.05);
+  --switch-knob-on: #ffffff; /* the track is the accent itself here */
 
   --focus-ring: #2a62a8;
   --hl-select: rgba(46, 125, 74, 0.45);

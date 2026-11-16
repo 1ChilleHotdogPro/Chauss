@@ -1,0 +1,26 @@
+{
+  "detector": {
+    "ignoreRules": [],
+    "ignoreFiles": [],
+    "ignoreValues": [
+      {
+        "rule": "side-tab",
+        "value": "*",
+        "files": [
+          "src/styles/panel.css"
+        ],
+        "createdAt": "2026-11-16T21:38:43.604Z",
+        "reason": "Claude, polish pass: incumbent design kept on purpose; the left rule's colour carries the verdict severity (inaccuracy/mistake/blunder) and the idea/note kind, predates this session (design plan Waves 2b-2c)"
+      },
+      {
+        "rule": "side-tab",
+        "value": "*",
+        "files": [
+          "src/styles/explorer.css"
+        ],
+        "createdAt": "2026-11-16T21:38:46.210Z",
+        "reason": "Claude, polish pass: incumbent design kept on purpose; the left rule's colour carries the verdict severity (inaccuracy/mistake/blunder) and the idea/note kind, predates this session (design plan Waves 2b-2c)"
+      }
+    ]
+  }
+}

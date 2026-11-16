@@ -1,6 +1,6 @@
 import { moveNumber } from './pv';
 import { describe, expect, it } from 'vitest';
-import { numberedLine, parseUciMove, pvToSan, toUci } from './pv';
+import { numberedLine, parseUciMove, pvToSan, sanGroups, toUci } from './pv';
 
 const START = 'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1';
 
@@ -69,6 +69,22 @@ describe('numberedLine', () => {
 
   it('returns an empty string for no moves', () => {
     expect(numberedLine(START, [])).toBe('');
+  });
+});
+
+describe('sanGroups', () => {
+  it('keeps each move with its number, and castling in one piece', () => {
+    expect(sanGroups('3... Nf6 4. O-O-O d5 5. exd5')).toEqual(['3... Nf6', '4. O-O-O', 'd5', '5. exd5']);
+  });
+
+  it('gives the line back when the pieces are joined with spaces', () => {
+    const line = '1. e4 e5 2. Nf3 Nc6 3. c3';
+    expect(sanGroups(line).join(' ')).toBe(line);
+  });
+
+  it('handles an empty line and a number with no move after it', () => {
+    expect(sanGroups('')).toEqual([]);
+    expect(sanGroups('7. Qh5+ g6 8.')).toEqual(['7. Qh5+', 'g6', '8.']);
   });
 });
 

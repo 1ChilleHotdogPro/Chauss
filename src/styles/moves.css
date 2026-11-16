@@ -10,9 +10,11 @@
   font-variant-numeric: tabular-nums;
 }
 
+/* The two move columns are capped, so White's and Black's moves read as a pair in a wide panel and the
+   current move's fill stays a cell, not a bar. */
 .moves li {
   display: grid;
-  grid-template-columns: 2.4em minmax(0, 1fr) minmax(0, 1fr);
+  grid-template-columns: 2.4em repeat(2, minmax(0, 7.5em));
   align-items: center;
   gap: var(--space-1);
   padding: 1px 0;

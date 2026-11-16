@@ -1,6 +1,6 @@
 import type { PositionEval } from '../analysis/analysis';
 import { formatScore, type Verdict } from '../analysis/eval';
-import { numberedLine, pvToSan } from '../analysis/pv';
+import { numberedLine, pvToSan, sanGroups } from '../analysis/pv';
 import type { EngineState } from '../engine/engine';
 
 export interface EnginePanelElements {
@@ -24,6 +24,23 @@ export interface EnginePanelModel {
 
 /** How many half-moves of each engine line to show. */
 const LINE_LENGTH = 8;
+
+/**
+ * Fill `target` with a line like "3... Nf6 4. d4 Nxe4" so that it only wraps between moves: each move
+ * (with its number) is a span that CSS keeps on one line, so "O-O-O" never splits at a hyphen.
+ * The text stays exactly the same.
+ */
+export function setSanLine(target: HTMLElement, line: string): void {
+  const nodes: Node[] = [];
+  for (const text of sanGroups(line)) {
+    if (nodes.length > 0) nodes.push(document.createTextNode(' '));
+    const group = document.createElement('span');
+    group.className = 'san-group';
+    group.textContent = text;
+    nodes.push(group);
+  }
+  target.replaceChildren(...nodes);
+}
 
 function statusText(model: EnginePanelModel): string {
   if (model.engineState === 'loading') return 'Engine: loading Stockfish…';
@@ -70,7 +87,7 @@ export function renderEnginePanel(elements: EnginePanelElements, model: EnginePa
         score.textContent = row.score;
         const moves = document.createElement('span');
         moves.className = 'line-moves';
-        moves.textContent = row.moves;
+        setSanLine(moves, row.moves);
         item.append(score, moves);
         return item;
       }),
