@@ -52,7 +52,7 @@
 
 .eval-graph {
   position: relative;
-  height: 90px;
+  height: 76px;
   margin: 8px 0;
   border: 1px solid var(--border);
   border-radius: 6px;
@@ -158,9 +158,162 @@
   border-top: 1px solid var(--border);
 }
 
-.analysis-accuracy td {
-  font-size: 1.15rem;
+/* ---- The result: one tile per player, the graph, then the counts folded away ---- */
+.accuracy-tiles {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-2);
+  margin: var(--space-1) 0 var(--space-2);
+}
+
+.accuracy-tile {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  grid-template-areas:
+    'name  label'
+    'value errors';
+  align-items: center;
+  column-gap: var(--space-2);
+  min-width: 0;
+  padding: var(--space-2) var(--space-3);
+  border: 1px solid var(--border-soft);
+  border-left: 4px solid var(--side-color);
+  border-radius: var(--radius-sm, 6px);
+  background: var(--panel-raised);
+}
+
+.accuracy-tile[data-side='white'] {
+  --side-color: #efe6d2;
+}
+
+.accuracy-tile[data-side='black'] {
+  --side-color: #3a3631;
+}
+
+.accuracy-name {
+  grid-area: name;
+  overflow: hidden;
+  color: var(--muted);
+  font-size: var(--fs-sm);
+  font-weight: 600;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.accuracy-value {
+  grid-area: value;
+  color: var(--heading);
+  font-family: var(--font-data);
+  font-size: 1.6rem;
+  font-variant-numeric: tabular-nums;
   font-weight: 700;
+  line-height: 1.15;
+}
+
+.accuracy-label {
+  grid-area: label;
+  justify-self: end;
+  color: var(--muted);
+  font-size: var(--fs-xs);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.accuracy-errors {
+  grid-area: errors;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 2px 8px;
+  color: var(--muted);
+  font-size: var(--fs-xs);
+}
+
+.accuracy-error {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  color: var(--class-color);
+  font-size: var(--fs-sm);
+  font-weight: 700;
+}
+
+.analysis-note {
+  font-size: var(--fs-xs);
+}
+
+.analysis-breakdown {
+  margin-top: var(--space-2);
+  font-size: var(--fs-sm);
+}
+
+.analysis-breakdown summary {
+  width: fit-content;
+  color: var(--muted);
+  cursor: pointer;
+}
+
+.analysis-breakdown summary:hover {
+  color: var(--text);
+}
+
+.analysis-breakdown .analysis-table {
+  margin-top: var(--space-1);
+}
+
+/* "Move counts" on the left, "Analyse another game" on the right, on one line under the graph. */
+.analysis {
+  position: relative;
+}
+
+.analysis-another {
+  position: absolute;
+  right: 0;
+  bottom: -4px;
+  padding: 2px var(--space-2);
+  font-size: var(--fs-sm);
+}
+
+.analysis-another[hidden] {
+  display: none;
+}
+
+/* With the counts open or no result yet, it gets a line of its own. */
+.analysis-result:has(.analysis-breakdown[open]) ~ .analysis-another,
+.analysis-result[hidden] ~ .analysis-another {
+  position: static;
+  margin-top: var(--space-2);
+}
+
+/* In Analyse the move list gets the room: smaller gaps around it, and the engine switches as one quiet
+   line under it (the engine's name only shows if it fails). */
+body[data-mode='analysis'] .panel > h2 {
+  margin-top: var(--space-3);
+}
+
+body[data-mode='analysis'] .panel > .not-drill {
+  margin-top: var(--space-2);
+  padding-top: var(--space-2);
+  border-top: 1px solid var(--border-soft);
+}
+
+body[data-mode='analysis'] .not-drill > h2,
+body[data-mode='analysis'] .engine-status:not([data-state='failed']) {
+  display: none;
+}
+
+/* The move list in Analyse: bigger, striped rows, room for the icons. */
+body[data-mode='analysis'] .moves li {
+  grid-template-columns: 2.6em minmax(0, 1fr) minmax(0, 1fr);
+  padding: 2px 0;
+}
+
+body[data-mode='analysis'] .moves li:nth-child(even) {
+  background: rgba(255, 255, 255, 0.03);
+}
+
+body[data-mode='analysis'] .moves .move {
+  padding: 3px var(--space-2);
 }
 
 .analysis-table tbody tr[data-class] td {

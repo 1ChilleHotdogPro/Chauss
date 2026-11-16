@@ -480,13 +480,17 @@ function drillMove(from: string, to: string, piece?: PromotionPiece): void {
   else render();
 }
 
+/** The move of the analysed game the user was looking at, so coming back to Analyse resumes there. */
+let analysisPly = 0;
+
 function setMode(next: Mode): void {
   if (next !== 'drill') {
     setHubOpen(false);
     stopEndgame();
   }
   if (next === mode) return;
-  if (mode === 'analysis') cancelAnalysis();
+  // A running analysis keeps going in the background while the user is elsewhere (it has its own engine).
+  if (mode === 'analysis') analysisPly = game.currentPly();
   stopOpponent();
   mode = next;
   document.body.dataset.mode = next;
@@ -505,6 +509,7 @@ function setMode(next: Mode): void {
   } else if (next === 'analysis') {
     showAnalysedGame();
   } else {
+    // Explore takes over whatever is on the board, to look into it (the analysed game's or the drill's position).
     render();
   }
 }
@@ -566,6 +571,8 @@ const analysisPanel = {
   progressText: byId<HTMLElement>('analysis-progress-text'),
   cancel: byId<HTMLButtonElement>('analysis-cancel'),
   result: byId<HTMLElement>('analysis-result'),
+  accuracy: byId<HTMLElement>('analysis-accuracy'),
+  note: byId<HTMLElement>('analysis-note'),
   summary: byId<HTMLElement>('analysis-summary'),
   another: byId<HTMLButtonElement>('analysis-another'),
 };
@@ -609,10 +616,10 @@ function ensureAnalysisEngine(): Engine {
   return analysisEngine;
 }
 
-/** Put the analysed game (or an empty board) on the board, at the start. */
+/** Put the analysed game (or an empty board) on the board, at the move the user last looked at. */
 function showAnalysedGame(): void {
   if (!analysedGame || !game.loadLine(analysedGame.sans, analysedGame.startFen)) game.reset();
-  game.goTo(0);
+  game.goTo(analysedGame ? analysisPly : 0);
   render();
 }
 
@@ -626,6 +633,7 @@ async function startAnalysis(next: AnalysedGame): Promise<void> {
   }
   const runId = ++analysisRunId;
   analysedGame = next;
+  analysisPly = 0; // a new game starts at its first position
   analysisReport = null;
   analysisError = null;
   analysisEditing = false;

@@ -118,12 +118,15 @@
               <button id="analysis-cancel" type="button">Cancel</button>
             </div>
             <div id="analysis-result" class="analysis-result" hidden>
+              <div id="analysis-accuracy" class="accuracy-tiles"></div>
               <div id="analysis-graph" class="eval-graph" role="img" aria-label="Evaluation graph: White's winning chances over the game. Click to jump to a move."></div>
-              <div id="analysis-summary"></div>
+              <p id="analysis-note" class="hint analysis-note" hidden></p>
+              <details class="analysis-breakdown">
+                <summary>Move counts</summary>
+                <div id="analysis-summary"></div>
+              </details>
             </div>
-            <div class="controls">
-              <button id="analysis-another" type="button" hidden>Analyse another game</button>
-            </div>
+            <button id="analysis-another" class="analysis-another btn-ghost" type="button" hidden>Analyse another game</button>
           </section>
 
           <!-- Drill: the game has left the opening data. -->
@@ -177,7 +180,7 @@
             <ol id="engine-lines" class="engine-lines" hidden></ol>
           </div>
 
-          <div class="explore-only">
+          <div class="explore-only explorer-block">
             <h2>Opening explorer</h2>
             <div id="explore" class="explore" data-status="loading"></div>
             <div class="controls explore-actions">

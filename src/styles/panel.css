@@ -31,6 +31,38 @@
     top: -14px;
     z-index: 2;
   }
+
+  /* The panel is a column as tall as the board. Everything keeps its natural height except one part that
+     takes the space left over and scrolls by itself: the explorer in Explore, the move list elsewhere.
+     So the controls never slide out of view. (If even that is not enough, the panel itself scrolls.) */
+  .panel {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .panel > * {
+    flex: none;
+  }
+
+  .panel > .explorer-block {
+    flex: 1 1 0;
+    min-height: 150px;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    margin-right: -8px;
+    padding-right: 8px;
+  }
+
+  body:not([data-mode='explore']) .panel > .moves {
+    flex: 1 1 0;
+    min-height: 7.5em;
+    max-height: none;
+  }
+
+  /* With the move list stretched, the FEN folds to the bottom edge. */
+  body:not([data-mode='explore']) .panel > .fen {
+    margin-top: var(--space-3);
+  }
 }
 
 .status {
