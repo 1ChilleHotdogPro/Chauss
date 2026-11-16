@@ -40,12 +40,12 @@ export const PIECE_STYLES = [
   { id: 'cursed', name: 'CURSED CIRCUS', cursed: true },
 ] as const;
 
-/** Move-sound sets. */
+/** Move-sound sets. The first four are recordings of real chess pieces (see CREDITS.md). */
 export const SOUND_SETS = [
-  { id: 'piano', name: 'Piano', blurb: 'Soft piano notes' },
-  { id: 'wood', name: 'Wood', blurb: 'Wooden pieces on a wooden board' },
-  { id: 'nes', name: 'Retro', blurb: '8-bit game console' },
-  { id: 'futuristic', name: 'Futuristic', blurb: 'Sci-fi blips and swooshes' },
+  { id: 'closeup', name: 'Close-up', blurb: 'Wooden pieces, recorded up close' },
+  { id: 'wooden', name: 'Wooden board', blurb: 'A crisp click on a wooden board' },
+  { id: 'room', name: 'Club room', blurb: 'Pieces with a little room echo' },
+  { id: 'soft', name: 'Soft', blurb: 'Quiet, gentle taps' },
   { id: 'sfx', name: 'Original', blurb: 'The sounds Chauss had before' },
   { id: 'off', name: 'Off', blurb: 'No move sounds' },
 ] as const;
@@ -68,7 +68,7 @@ export interface Appearance {
 
 export const APPEARANCE_KEY = 'chauss.appearance.v1';
 export const MAX_EXPLOSION_VOLUME = 3;
-export const DEFAULT_APPEARANCE: Appearance = { theme: 'academia', board: 'walnut', pieces: 'classic', explosionVolume: 1.5, sounds: 'piano' };
+export const DEFAULT_APPEARANCE: Appearance = { theme: 'academia', board: 'walnut', pieces: 'classic', explosionVolume: 1.5, sounds: 'closeup' };
 
 /** The cursed board or the cursed pieces switch the capture sound to explosions. */
 export function isCursed(appearance: Pick<Appearance, 'board' | 'pieces'>): boolean {

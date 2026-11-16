@@ -69,37 +69,41 @@ test('the sound set is chosen in Settings, saved, and only loads the files it ne
   await openApp(page);
   await page.locator('#open-settings').click();
 
-  // One tile per set, piano chosen by default.
-  for (const id of ['piano', 'wood', 'nes', 'futuristic', 'sfx', 'off']) {
+  // One tile per set, Close-up chosen by default.
+  for (const id of ['closeup', 'wooden', 'room', 'soft', 'sfx', 'off']) {
     await expect(tile(id)).toHaveAttribute('role', 'radio');
   }
-  await expect(tile('piano')).toHaveAttribute('aria-checked', 'true');
-  await expect(tile('nes')).toHaveAttribute('aria-checked', 'false');
+  await expect(tile('closeup')).toHaveAttribute('aria-checked', 'true');
+  await expect(tile('room')).toHaveAttribute('aria-checked', 'false');
 
-  // Retro: its files are fetched (the click is also the audio unlock), and the choice is saved.
-  await tile('nes').click();
-  await expect(tile('nes')).toHaveAttribute('aria-checked', 'true');
-  await expect(tile('piano')).toHaveAttribute('aria-checked', 'false');
-  await expect.poll(() => requested('sounds/nes/Move.mp3')).toBe(true);
-  await expect.poll(() => requested('sounds/nes/Capture.mp3')).toBe(true);
-  expect(await savedSounds()).toBe('nes');
+  // Club room: its files are fetched (the click is also the audio unlock), and the choice is saved.
+  await tile('room').click();
+  await expect(tile('room')).toHaveAttribute('aria-checked', 'true');
+  await expect(tile('closeup')).toHaveAttribute('aria-checked', 'false');
+  await expect.poll(() => requested('sounds/room/Move.wav')).toBe(true);
+  await expect.poll(() => requested('sounds/room/Capture.wav')).toBe(true);
+  expect(await savedSounds()).toBe('room');
+  // The other recorded sets are not fetched until they are picked.
+  expect(requested('sounds/soft/')).toBe(false);
 
-  // The choice survives a reload. (Let the downloads finish first: a reload would cancel them, and a
-  // cancelled request counts as a failure.)
+  // The choice survives a reload. (Let every download finish first, sounds, Stockfish and the Settings
+  // piece pictures: a reload would cancel them, and a cancelled request counts as a failure.)
   await expect.poll(() => soundsPending).toBe(0);
+  await expect(page.locator('#engine-status')).toHaveAttribute('data-state', 'ready', { timeout: 20_000 });
+  await page.waitForLoadState('networkidle');
+  const beforeReload = soundRequests.length;
   await page.reload();
   await expect(page.locator('cg-board piece')).toHaveCount(32);
   await page.locator('#open-settings').click();
-  await expect(tile('nes')).toHaveAttribute('aria-checked', 'true');
-  await expect(tile('piano')).toHaveAttribute('aria-checked', 'false');
+  await expect(tile('room')).toHaveAttribute('aria-checked', 'true');
+  await expect(tile('closeup')).toHaveAttribute('aria-checked', 'false');
 
-  // Wood is made in code: choosing it fetches nothing.
-  await tile('wood').click();
-  await expect(tile('wood')).toHaveAttribute('aria-checked', 'true');
-  await expect.poll(savedSounds).toBe('wood');
-  // Give a stray fetch time to show up before checking that none was made.
-  await page.waitForTimeout(500);
-  expect(soundRequests.filter((path) => path.includes('sounds/wood/'))).toEqual([]);
+  // After the reload only the saved set is fetched, and choosing Off fetches no other set. (The first
+  // click unlocks audio, which loads the saved set and the cursed explosion.)
+  await tile('off').click();
+  await expect.poll(savedSounds).toBe('off');
+  await expect.poll(() => soundsPending).toBe(0);
+  expect(soundRequests.slice(beforeReload).filter((path) => /sounds\/(closeup|wooden|soft)\//.test(path))).toEqual([]);
 
   await page.locator('#settings-close').click();
 });

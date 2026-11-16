@@ -120,6 +120,7 @@ export function createBoard(
     drawArrows();
   }
 
+  let drawCount = 0;
   /** The arrow's shape depends on which way up the board is, so this runs again after a flip. */
   function drawArrows(): void {
     const orientation = ground.state.orientation;
@@ -127,14 +128,16 @@ export function createBoard(
       orientation + ':' + shownArrows.map((arrow) => `${arrow.from}${arrow.to}${arrow.opacity ?? 1}`).join(',');
     if (signature === drawnArrows) return; // nothing changed: do not redraw
     drawnArrows = signature;
+    // Chessground keeps a shape that did not change and only adds the changed ones after it, which would
+    // put a new weaker arrow over an unchanged best one. Marking every arrow with this draw's number makes
+    // all of them new, so they are always stacked in order.
+    drawCount += 1;
     const shapes: DrawShape[] = shownArrows.map((arrow, index) => {
       const { dx, dy } = screenDelta(arrow.from, arrow.to, orientation);
+      const svg = arrowSvg(dx, dy, ARROW_LOOKS[index]!, ARROW_COLOURS[index]!, clamp(arrow.opacity ?? 1, 0.1, 1));
       return {
         orig: arrow.from as Key,
-        customSvg: {
-          html: arrowSvg(dx, dy, ARROW_LOOKS[index]!, ARROW_COLOURS[index]!, clamp(arrow.opacity ?? 1, 0.1, 1)),
-          center: 'orig',
-        },
+        customSvg: { html: `<g data-draw="${drawCount}">${svg}</g>`, center: 'orig' },
       };
     });
     ground.setAutoShapes(shapes.reverse()); // best drawn last, so it is on top

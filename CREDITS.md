@@ -1,45 +1,49 @@
 # Credits
 
 Third-party assets bundled with Chauss. Chauss itself is GPL-3.0. Everything below is free to use,
-copy and redistribute under the licence listed. Licence information was read from the Lichess
-repository's own [COPYING.md](https://github.com/lichess-org/lila/blob/master/COPYING.md), section
-"Exceptions (free)".
+copy and redistribute under the licence listed.
 
 ## Sounds (`public/sounds/`)
 
-The sound set is chosen in Settings. Every recorded set comes unchanged from
-[lichess-org/lila](https://github.com/lichess-org/lila/tree/master/public/sound) (`public/sound/<set>/`).
-AGPL-3.0-or-later is compatible with GPL-3.0 (section 13 of the GPL).
+The sound set is chosen in Settings.
 
-| Set in Settings | Folder | Lichess set | Author | Licence |
-| --- | --- | --- | --- | --- |
-| Original | `public/sounds/` | [sfx](https://github.com/lichess-org/lila/tree/master/public/sound/sfx) | [Enigmahack](https://github.com/Enigmahack) | AGPL-3.0-or-later |
-| Piano | `public/sounds/piano/` | [piano](https://github.com/lichess-org/lila/tree/master/public/sound/piano) | [Enigmahack](https://github.com/Enigmahack) | AGPL-3.0-or-later |
-| NES | `public/sounds/nes/` | [nes](https://github.com/lichess-org/lila/tree/master/public/sound/nes) | [Enigmahack](https://github.com/Enigmahack) | AGPL-3.0-or-later |
-| Futuristic | `public/sounds/futuristic/` | [futuristic](https://github.com/lichess-org/lila/tree/master/public/sound/futuristic) | [Enigmahack](https://github.com/Enigmahack) | AGPL-3.0-or-later |
-| Wood | none (generated in code, `src/ui/woodSound.ts`) | none | Chauss | GPL-3.0 |
+### Recorded chess pieces (Close-up, Wooden board, Club room, Soft)
 
-Each recorded set has the same five files:
+Single piece hits cut from recordings of real chess pieces on [Freesound](https://freesound.org/), all
+released under **CC0 1.0** (public domain; no permission or credit needed, credited here anyway). Each
+folder has `Move.wav` (a softer hit) and `Capture.wav` (a harder hit), cut from the recording's public
+preview, with a short fade-out and the level evened out; nothing else is changed.
+
+| Set in Settings | Folder | Recording | Author | Move at | Capture at |
+| --- | --- | --- | --- | --- | --- |
+| Close-up | `public/sounds/closeup/` | [Chess Pieces Move (Close)](https://freesound.org/people/JJTaynos/sounds/733927/) | JJTaynos | 24.36 s | 38.36 s |
+| Wooden board | `public/sounds/wooden/` | [chess pieces.wav](https://freesound.org/people/simone_ds/sounds/366065/) | simone_ds | 14.45 s | 18.68 s |
+| Club room | `public/sounds/room/` | [Chess Pieces Move (Far)](https://freesound.org/people/JJTaynos/sounds/733932/) | JJTaynos | 25.03 s | 14.34 s |
+| Soft | `public/sounds/soft/` | [Chess Pieces](https://freesound.org/people/MattyCauldron/sounds/765866/) | MattyCauldron | 11.78 s | 26.23 s |
+
+These recordings have no check, win or draw sounds: a check plays the set's move sound, and a win or
+draw plays the Original set's `Victory.mp3` / `Draw.mp3`. Castling plays the move sound twice.
+
+### Original (`public/sounds/*.mp3`)
+
+The "sfx" set from [lichess-org/lila](https://github.com/lichess-org/lila/tree/master/public/sound/sfx),
+by [Enigmahack](https://github.com/Enigmahack), unchanged. Licence: **AGPL-3.0-or-later**, as listed
+under "Exceptions (free)" in the Lichess repository's
+[COPYING.md](https://github.com/lichess-org/lila/blob/master/COPYING.md); compatible with GPL-3.0
+(section 13 of the GPL).
 
 | File | Used for |
 | --- | --- |
 | `Move.mp3` | a normal move; castling plays it twice (king, then rook) |
 | `Capture.mp3` | a capture |
 | `Check.mp3` | a check |
-| `Victory.mp3` | checkmate (played together with `Check.mp3`) |
-| `Draw.mp3` | stalemate and other draws |
-
-Plus one extra file in the Original folder only:
-
-| File | Used for |
-| --- | --- |
+| `Victory.mp3` | checkmate (played together with the check sound), in every set |
+| `Draw.mp3` | stalemate and other draws, in every set |
 | `Explosion.mp3` | **cursed set only**: every capture, at the volume chosen in Settings |
 
-None of these sets has a separate castling recording.
-
-Not used on purpose:
-- "lisp": CC BY-NC-SA 4.0. That licence forbids commercial use, so it is not compatible with GPL-3.0.
-- "robot", "woodland", "instrument" and "standard": Lichess lists them under "Exceptions (non-free)".
+Not used on purpose: Lichess's other sets that are not free ("standard", "robot", "woodland",
+"instrument") or not GPL-compatible ("lisp", CC BY-NC-SA). PyChess's sounds were tried and left out:
+its move and capture sounds are 15–30 ms ticks.
 
 ## Pieces (`public/pieces/<set>/`)
 
