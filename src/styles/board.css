@@ -83,7 +83,12 @@
   text-shadow: 0 0 1px rgba(255, 255, 255, 0.7), 0 0 2px rgba(255, 255, 255, 0.5);
 }
 
+/* As tall as the piece glyphs (the strip's 1.4rem, line-height 1) and centred in that height, so "+N"
+   sits level with the pieces whether the line hangs from the top or rests on the bottom. */
 .captured-lead {
+  display: flex;
+  align-items: center;
+  height: 1.4rem;
   font-size: 0.85rem;
   font-weight: 700;
   color: var(--muted, #6b655a);

@@ -147,15 +147,8 @@
           <ol id="moves" class="moves"></ol>
           <p id="moves-empty" class="hint">No moves yet. Click or drag a white piece to start.</p>
 
-          <div class="not-drill engine-block">
-            <!-- Click the heading, or swipe it down, to fold the engine away and give the moves more room. -->
-            <h2 class="engine-head">
-              <button id="engine-toggle" class="collapse-toggle" type="button" aria-expanded="true" aria-controls="engine-body" title="Fold the engine away (or swipe down)">
-                <span>Engine</span>
-                <svg class="icon collapse-chevron" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M6 9l6 6 6-6" /></svg>
-              </button>
-            </h2>
-            <div id="engine-body" class="engine-body">
+          <div class="not-drill">
+            <h2>Engine</h2>
             <!-- The switches and the engine's status share one row; the status drops below when narrow. -->
             <div class="engine-row">
               <div class="controls switches">
@@ -165,7 +158,6 @@
               <p id="engine-status" class="hint engine-status" data-state="loading">Engine: loading Stockfish…</p>
             </div>
             <ol id="engine-lines" class="engine-lines" hidden></ol>
-            </div>
           </div>
 
           <!-- On wide screens the heading stays put and only the explorer's body scrolls. -->
@@ -180,6 +172,15 @@
             <summary title="FEN: a one-line text description of the position">Position code (FEN)</summary>
             <code id="fen"></code>
           </details>
+          <!-- Explore: the position code of the board, and a place to paste one to set up any position. -->
+          <form id="fen-form" class="fen-form explore-only" novalidate>
+            <div class="fen-row">
+              <label for="fen-input" title="Position code: a one-line text description of the position. Paste one and press Load to set it up.">FEN</label>
+              <input id="fen-input" type="text" spellcheck="false" autocomplete="off" aria-describedby="fen-error" />
+              <button id="fen-load" type="submit" title="Set up the position from this code">Load</button>
+            </div>
+            <p id="fen-error" class="test-result" data-status="error" role="alert" hidden></p>
+          </form>
           <div class="toolbar" role="toolbar" aria-label="Board">
             <button id="prev" class="nav-only btn-ghost btn-icon icon-only" type="button" title="Previous move (Left arrow)" aria-label="Previous move">
               <svg class="icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M15 5l-7 7 7 7" /></svg>

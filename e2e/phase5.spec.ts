@@ -6,7 +6,7 @@ import { importProgress, PROGRESS_STORAGE_KEY, type Progress } from '../src/dril
 import { pickTarget } from '../src/drill/select';
 import { buildRepertoire, type Card } from '../src/repertoire/repertoire';
 import { positionKey, type Snapshot } from '../src/snapshot/format';
-import { enterDrill, expect, moveTexts, openApp, test, tryMove } from './helpers';
+import { drawnPieces, enterDrill, expect, moveTexts, openApp, test, tryMove } from './helpers';
 
 // The tests work out the repertoire from the bundled data the same way the app does, so they
 // keep working after the data is rebuilt.
@@ -329,4 +329,32 @@ test('Drill mode fits a phone-sized screen', async ({ page }) => {
   // Every column of the table is in view, without scrolling sideways.
   expect(await page.locator('.stats-scroll').evaluate((el) => el.scrollWidth <= el.clientWidth)).toBe(true);
   await page.screenshot({ path: 'test-results/phase5-narrow.png' });
+});
+
+test('several premoves can be queued while Black is about to reply, and a premoved piece can move again', async ({ page }) => {
+  // The page's clock is held while the premoves are made, so Black's reply (after a short pause) cannot
+  // come in between, however slow the test machine is.
+  await page.clock.install();
+  await startDrill(page);
+  const card = await currentCard(page);
+  const tick = () => page.clock.runFor(40);
+  await page.clock.pauseAt((await page.evaluate(() => Date.now())) + 10);
+  await play(page, card.move.uci);
+  await tick();
+  await expect(page.locator('#board')).toHaveAttribute('data-your-turn', 'false');
+  test.skip((await prompt(page).getAttribute('data-state')) === 'finished', 'the line ended with our move');
+  // Two premoves with the same pawn: the second starts from where the first left it.
+  await play(page, 'a2a3');
+  await tick();
+  await play(page, 'a3a4');
+  await tick();
+  await expect(page.locator('#board')).toHaveAttribute('data-premoves', '2');
+  const drawn = await drawnPieces(page);
+  expect(drawn.a4).toBe('white pawn');
+  expect(drawn.a3).toBeUndefined();
+  expect(drawn.a2).toBeUndefined();
+  // After Black's reply the first premove is played; a move off the repertoire is wrong, which drops the rest.
+  await page.clock.resume();
+  await expect(page.locator('#board')).toHaveAttribute('data-premoves', '0');
+  await expect(feedback(page)).toHaveAttribute('data-kind', 'wrong');
 });
