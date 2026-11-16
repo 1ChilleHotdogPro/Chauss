@@ -15,6 +15,7 @@ import './styles/dialogs.css';
 import './styles/drill.css';
 import './styles/analysis.css';
 import './theme.css';
+import './site-themes.css';
 import './appearance.css';
 import { Chess } from 'chess.js';
 import { Analysis } from './analysis/analysis';
@@ -146,6 +147,7 @@ const evalBar = createEvalBar(byId('evalbar'));
 let appearance = loadAppearance(storage);
 function applyAppearance(next: typeof appearance): void {
   appearance = next;
+  document.documentElement.dataset.siteTheme = next.theme;
   board.setLook(next);
   moveSounds.setCursed(isCursed(next));
   moveSounds.setExplosionVolume(next.explosionVolume);

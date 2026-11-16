@@ -2,6 +2,7 @@ import {
   BOARD_STYLES,
   MAX_EXPLOSION_VOLUME,
   PIECE_STYLES,
+  SITE_THEMES,
   type Appearance,
 } from '../appearance/appearance';
 
@@ -35,6 +36,7 @@ function piece(role: string, colour: string): HTMLElement {
 export function createAppearancePanel(options: AppearancePanelOptions): void {
   const { dialog } = options;
   let appearance: Appearance = { ...options.initial };
+  const themeBox = need<HTMLElement>(dialog, '#site-themes');
   const boardBox = need<HTMLElement>(dialog, '#board-styles');
   const pieceBox = need<HTMLElement>(dialog, '#piece-styles');
   const volume = need<HTMLInputElement>(dialog, '#explosion-volume');
@@ -54,6 +56,25 @@ export function createAppearancePanel(options: AppearancePanelOptions): void {
   }
 
   function render(): void {
+    themeBox.replaceChildren(
+      ...SITE_THEMES.map((theme) => {
+        // A tiny page: background, a panel with a heading line and an accent button.
+        const [page, panel, heading, accent] = theme.swatch;
+        const preview = element('span', 'theme-preview');
+        preview.style.setProperty('--tp-page', page);
+        preview.style.setProperty('--tp-panel', panel);
+        preview.style.setProperty('--tp-heading', heading);
+        preview.style.setProperty('--tp-accent', accent);
+        preview.append(element('span', 'tp-panel'), element('span', 'tp-heading'), element('span', 'tp-accent'));
+        const button = tile(theme.name, theme.id === appearance.theme, preview, () => choose({ theme: theme.id }));
+        button.classList.add('theme-tile');
+        button.dataset.theme = theme.id;
+        const blurb = element('span', 'style-blurb');
+        blurb.textContent = theme.blurb;
+        button.append(blurb);
+        return button;
+      }),
+    );
     boardBox.replaceChildren(
       ...BOARD_STYLES.map((style) => {
         const preview = element('span', 'style-preview');

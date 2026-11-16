@@ -5,6 +5,7 @@ import {
   DEFAULT_APPEARANCE,
   MAX_EXPLOSION_VOLUME,
   PIECE_STYLES,
+  SITE_THEMES,
   isCursed,
   loadAppearance,
   parseAppearance,
@@ -28,6 +29,13 @@ describe('appearance', () => {
     expect(PIECE_STYLES.filter((style) => 'cursed' in style)).toHaveLength(1);
   });
 
+  it('offers five site designs, Dark Academia by default, and repairs unknown ones', () => {
+    expect(SITE_THEMES.map((theme) => theme.id)).toEqual(['academia', 'parchment', 'midnight', 'tournament', 'terminal']);
+    expect(DEFAULT_APPEARANCE.theme).toBe('academia');
+    expect(parseAppearance({ theme: 'midnight' }).theme).toBe('midnight');
+    expect(parseAppearance({ theme: 'vaporwave' }).theme).toBe('academia');
+  });
+
   it('is cursed when either the cursed board or the cursed pieces are equipped', () => {
     expect(isCursed(DEFAULT_APPEARANCE)).toBe(false);
     expect(isCursed({ board: 'cursed', pieces: 'classic' })).toBe(true);
@@ -36,6 +44,7 @@ describe('appearance', () => {
 
   it('repairs unknown values field by field and clamps the volume', () => {
     expect(parseAppearance({ board: 'nope', pieces: 'merida', explosionVolume: 99 })).toEqual({
+      theme: 'academia',
       board: 'walnut',
       pieces: 'merida',
       explosionVolume: MAX_EXPLOSION_VOLUME,
@@ -46,8 +55,9 @@ describe('appearance', () => {
 
   it('saves and loads, and survives bad stored text', () => {
     const storage = memoryStorage();
-    expect(saveAppearance(storage, { board: 'neon', pieces: 'pixel', explosionVolume: 2 })).toBe(true);
-    expect(loadAppearance(storage)).toEqual({ board: 'neon', pieces: 'pixel', explosionVolume: 2 });
+    const saved = { theme: 'terminal', board: 'neon', pieces: 'pixel', explosionVolume: 2 } as const;
+    expect(saveAppearance(storage, saved)).toBe(true);
+    expect(loadAppearance(storage)).toEqual(saved);
     expect(loadAppearance(memoryStorage({ [APPEARANCE_KEY]: '{oops' }))).toEqual(DEFAULT_APPEARANCE);
     expect(saveAppearance(undefined, DEFAULT_APPEARANCE)).toBe(false);
   });

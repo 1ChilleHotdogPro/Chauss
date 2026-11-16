@@ -44,10 +44,10 @@ async function openSettings(page: Page): Promise<void> {
   await expect(page.locator('#token')).toBeVisible();
 }
 
-test('Settings starts with Board & pieces; the token is folded away under Advanced', async ({ page }) => {
+test('Settings starts with the look (website design, then board & pieces); the token is folded away under Advanced', async ({ page }) => {
   await openApp(page);
   await page.locator('#open-settings').click();
-  await expect(page.locator('#settings h3')).toHaveText(['Board & pieces', 'Your level', 'Game analysis']);
+  await expect(page.locator('#settings h3')).toHaveText(['Website design', 'Board & pieces', 'Your level', 'Game analysis']);
   await expect(page.locator('#settings .settings-advanced')).not.toHaveAttribute('open', '');
   await expect(page.locator('#token')).toBeHidden();
   await page.locator('#settings .settings-advanced summary').click();
