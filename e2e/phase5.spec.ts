@@ -338,7 +338,9 @@ test('several premoves can be queued while Black is about to reply, and a premov
   await startDrill(page);
   const card = await currentCard(page);
   const tick = () => page.clock.runFor(40);
-  await page.clock.pauseAt((await page.evaluate(() => Date.now())) + 10);
+  // Pause a little ahead (a slow machine may pass a nearer moment before the call arrives); nothing is
+  // waiting on a timer before our move, so jumping ahead changes nothing.
+  await page.clock.pauseAt((await page.evaluate(() => Date.now())) + 1000);
   await play(page, card.move.uci);
   await tick();
   await expect(page.locator('#board')).toHaveAttribute('data-your-turn', 'false');
