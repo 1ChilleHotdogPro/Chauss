@@ -4,7 +4,7 @@
 .layout {
   --bar: 18px;
   --gap: 8px;
-  --strip: 28px; /* the captured-pieces line above and below the board */
+  --strip: 29px; /* the captured-pieces line above and below the board */
 }
 
 /* The eval bar and the board side by side. On a wide screen the board area is sized in layout.css;
@@ -47,6 +47,16 @@
   font-size: 1.4rem;
   line-height: 1;
   white-space: nowrap;
+}
+
+/* The board's wooden frame sticks out a few pixels, so each line keeps clear of it: the top line sits at
+   the top of its strip, the bottom line at the bottom of its strip. */
+#captured-top {
+  align-items: flex-start;
+}
+
+#captured-bottom {
+  align-items: flex-end;
 }
 
 .captured-pieces {

@@ -425,91 +425,6 @@
   gap: var(--space-3);
 }
 
-/* ---- Common mistakes ---- */
-.traps #traps-body > .hint:first-child {
-  margin-bottom: var(--space-2);
-}
-
-.traps h3 {
-  margin-top: var(--space-5);
-}
-
-.trap-list {
-  display: grid;
-  gap: var(--space-2);
-  margin: var(--space-2) 0 0;
-  padding: 0;
-  list-style: none;
-  counter-reset: trap;
-}
-
-.trap {
-  position: relative;
-  padding: var(--space-3) var(--space-3) var(--space-3) 44px;
-  border: 1px solid var(--border-soft);
-  border-left: 4px solid var(--trap-colour, var(--border));
-  border-radius: var(--radius-sm);
-  background: rgba(0, 0, 0, 0.14);
-  counter-increment: trap;
-}
-
-.trap[data-kind='exploit'] {
-  --trap-colour: var(--accent);
-}
-
-.trap[data-kind='avoid'] {
-  --trap-colour: var(--mistake);
-}
-
-/* The number, in a small disc. */
-.trap::before {
-  content: counter(trap);
-  position: absolute;
-  left: 12px;
-  top: var(--space-3);
-  width: 22px;
-  height: 22px;
-  border-radius: 50%;
-  background: var(--panel-raised);
-  border: 1px solid var(--trap-colour, var(--border));
-  color: var(--text);
-  font-size: var(--fs-xs);
-  line-height: 20px;
-  text-align: center;
-  font-variant-numeric: tabular-nums;
-}
-
-.trap p {
-  margin: 0 0 var(--space-1);
-}
-
-.trap-title {
-  font-size: var(--fs-md);
-}
-
-/* The bad move, in its verdict's colour (the left rule says whose mistake it is). */
-.trap-title strong {
-  color: var(--mistake);
-}
-
-.trap[data-verdict='blunder'] .trap-title strong {
-  color: var(--blunder);
-}
-
-.trap-lead {
-  color: var(--muted);
-}
-
-.trap-punish {
-  font-size: var(--fs-sm);
-}
-
-.trap-show {
-  margin-top: var(--space-1);
-  padding: 3px 10px;
-  font-size: var(--fs-xs);
-}
-
 @media (max-width: 520px) {
   .dialog-head {
     padding: var(--space-3) var(--space-3) var(--space-2) var(--space-4);
@@ -551,13 +466,7 @@
     grid-template-columns: repeat(auto-fill, minmax(110px, 1fr));
   }
 
-  .trap {
-    padding-left: 40px;
-  }
 
-  .trap::before {
-    left: 9px;
-  }
 }
 
 @media (prefers-reduced-motion: reduce) {

@@ -12,12 +12,15 @@ export interface BoardView {
   /**
    * Who may move pieces with the mouse:
    *  - 'side-to-move': whoever's turn it is (exploring);
-   *  - 'player-only': the user's colour (see setPlayerSide) on its turn, nobody on the opponent's
+   *  - 'player-only': the user's colour (see setPlayerSide) on its turn; on the opponent's turn the
+   *    user may premove, and the premove is played as soon as it is the user's turn again
    *    (drills and games, where the app plays the other colour);
    *  - 'none': nobody (while the app is showing something).
    * Takes effect at the next sync().
    */
   setInteraction(who: BoardInteraction): void;
+  /** Drop a queued premove (e.g. the move it was made after was taken back). */
+  cancelPremove(): void;
   /** The colour the user plays: who 'player-only' lets move. Takes effect at the next sync(). */
   setPlayerSide(side: Side): void;
   /** Put this colour at the bottom (Flip still turns the board afterwards). */
@@ -83,7 +86,7 @@ export function createBoard(
         after: (from: Key, to: Key) => onUserMove(from, to),
       },
     },
-    premovable: { enabled: false },
+    premovable: { enabled: false, showDests: true, castle: true },
     draggable: { showGhost: true },
     highlight: { lastMove: true, check: true },
     animation: { enabled: true, duration: 150 },
@@ -97,17 +100,26 @@ export function createBoard(
     const last = game.lastMove();
     const turn = game.turn();
     const mayMove = interaction === 'side-to-move' || (interaction === 'player-only' && turn === playerSide);
+    // On the opponent's turn the user may queue a move (a premove), as on Lichess.
+    const mayPremove = interaction === 'player-only' && turn !== playerSide;
     ground.set({
       fen: game.fen(),
       turnColor: turn,
       check: game.inCheck(),
       lastMove: last ? [last.from, last.to] : undefined,
       movable: {
-        color: mayMove ? turn : undefined,
+        color: mayMove ? turn : mayPremove ? playerSide : undefined,
         dests: mayMove ? game.dests() : new Map(),
       },
+      premovable: { enabled: interaction === 'player-only' },
     });
     element.dataset.interaction = interaction;
+    // Whether a move now is a real move (not a premove); the browser tests wait for it.
+    element.dataset.yourTurn = String(mayMove);
+    if (interaction !== 'player-only') ground.cancelPremove();
+    // The user's turn has come: play the queued premove, if it is legal here (chessground checks the
+    // move against the legal moves and hands it to onUserMove like a normal move).
+    else if (mayMove) ground.playPremove();
   }
 
   sync();
@@ -177,6 +189,7 @@ export function createBoard(
   return {
     sync,
     setBadge,
+    cancelPremove: () => ground.cancelPremove(),
     setLook: (look) => {
       element.dataset.board = look.board;
       element.dataset.pieces = look.pieces;

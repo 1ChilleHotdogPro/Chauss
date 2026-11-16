@@ -302,17 +302,17 @@ body[data-mode='analysis'] .engine-status:not([data-state='failed']) {
   display: none;
 }
 
-/* The move list in Analyse: bigger, striped rows, room for the icons. */
-body[data-mode='analysis'] .moves li {
+/* The move list (every mode): bigger, striped rows, room for the icons in Analyse. */
+.moves li {
   grid-template-columns: 2.6em minmax(0, 1fr) minmax(0, 1fr);
   padding: 2px 0;
 }
 
-body[data-mode='analysis'] .moves li:nth-child(even) {
+.moves li:nth-child(even) {
   background: rgba(255, 255, 255, 0.03);
 }
 
-body[data-mode='analysis'] .moves .move {
+.moves .move {
   padding: 3px var(--space-2);
 }
 

@@ -24,19 +24,6 @@ for (const size of sizes) {
       expect(wide, "the page should not scroll sideways").toBeLessThanOrEqual(0);
     });
 
-    test('picker', async ({ page }) => {
-      await page.addInitScript(() => {
-        try {
-          localStorage.removeItem('chauss.opening.v1');
-        } catch {
-          // storage blocked: the picker shows anyway
-        }
-      });
-      await page.goto('./');
-      await expect(page.locator('#opening-picker')).toBeVisible();
-      await page.screenshot(shot('picker'));
-    });
-
     test('explore', async ({ page }) => {
       await openApp(page);
       await playMoves(page, ['e2e4']);

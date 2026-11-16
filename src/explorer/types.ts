@@ -7,7 +7,7 @@
 export const RATING_BANDS = [0, 1000, 1200, 1400, 1600, 1800, 2000, 2200, 2500] as const;
 export type RatingBand = (typeof RATING_BANDS)[number];
 
-export const SPEEDS = ['ultraBullet', 'bullet', 'blitz', 'rapid', 'classical', 'correspondence'] as const;
+export const SPEEDS = ['ultraBullet', 'bullet', 'blitz', 'rapid', 'classical'] as const;
 export type Speed = (typeof SPEEDS)[number];
 
 /** "masters" = the book (over-the-board master games). "lichess" = games played on Lichess. */

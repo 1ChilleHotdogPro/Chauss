@@ -3,7 +3,7 @@ import { test as base, expect, type Page } from '@playwright/test';
 export { expect };
 
 /**
- * The opening every page starts with, so the first-time picker does not cover the board. It is only
+ * The opening every page starts with (the one the Drill hub opens). It is only
  * stored when nothing is stored yet, so a test that switches opening keeps its choice across reloads.
  * Set `test.use({ openingSeed: null })` to see the app as a first-time visitor.
  */
@@ -15,7 +15,7 @@ const seeded = base.extend<{ openingSeed: string | null }>({
         try {
           if (!localStorage.getItem('chauss.opening.v1')) localStorage.setItem('chauss.opening.v1', id);
         } catch {
-          // storage blocked: the picker will show, which is what such a browser gets
+          // storage blocked: the default opening is used, which is what such a browser gets
         }
       }, openingSeed);
     }
@@ -141,7 +141,7 @@ export async function drawnPieces(page: Page): Promise<Record<string, string>> {
  * page unless `openingId` is given). Choosing another opening reloads the page straight into its drill.
  */
 export async function enterDrill(page: Page, openingId?: string): Promise<void> {
-  const id = openingId ?? (await page.evaluate(() => localStorage.getItem('chauss.opening.v1')));
+  const id = openingId ?? (await page.evaluate(() => localStorage.getItem('chauss.opening.v1'))) ?? 'ponziani';
   await page.locator('#mode-drill').click();
   await page.locator('#drill-hub [data-category="openings"]').click();
   await page.locator(`#drill-hub [data-entry="${id}"]`).click();

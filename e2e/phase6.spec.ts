@@ -23,7 +23,8 @@ test('a drill that runs out of data asks what to do, and can be played on', asyn
       .poll(async () => {
         const state = await drillPrompt.getAttribute('data-state');
         const interaction = await page.locator('#board').getAttribute('data-interaction');
-        return state === 'finished' || (state === 'asking' && interaction === 'player-only');
+        const yourTurn = await page.locator('#board').getAttribute('data-your-turn');
+        return state === 'finished' || (state === 'asking' && interaction === 'player-only' && yourTurn === 'true');
       })
       .toBe(true);
     if ((await drillPrompt.getAttribute('data-state')) !== 'asking') break;
