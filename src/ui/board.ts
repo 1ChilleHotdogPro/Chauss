@@ -3,6 +3,8 @@ import type { Key } from '@lichess-org/chessground/types';
 import type { DrawShape } from '@lichess-org/chessground/draw';
 import type { Game, Side } from '../game/game';
 import { ARROW_LOOKS, arrowSvg, screenDelta } from './arrowShape';
+import { read as readFen, write as writeFen } from '@lichess-org/chessground/fen';
+import { applyPremoves, normalisePremove, queuedSquares, type QueuedMove } from './premoveQueue';
 
 export interface BoardView {
   /** Make the board show exactly what the game says: pieces, side to move, legal moves. */
@@ -13,13 +15,14 @@ export interface BoardView {
    * Who may move pieces with the mouse:
    *  - 'side-to-move': whoever's turn it is (exploring);
    *  - 'player-only': the user's colour (see setPlayerSide) on its turn; on the opponent's turn the
-   *    user may premove, and the premove is played as soon as it is the user's turn again
+   *    user may premove several moves in a row (a premoved piece stands on its new square and can be
+   *    premoved again); one queued move is played each time it is the user's turn again
    *    (drills and games, where the app plays the other colour);
    *  - 'none': nobody (while the app is showing something).
    * Takes effect at the next sync().
    */
   setInteraction(who: BoardInteraction): void;
-  /** Drop a queued premove (e.g. the move it was made after was taken back). */
+  /** Drop every queued premove (e.g. the move they were made after was taken back). */
   cancelPremove(): void;
   /** The colour the user plays: who 'player-only' lets move. Takes effect at the next sync(). */
   setPlayerSide(side: Side): void;
@@ -74,7 +77,8 @@ function clamp(value: number, min: number, max: number): number {
 export function createBoard(
   element: HTMLElement,
   game: Game,
-  onUserMove: (from: string, to: string) => void,
+  /** `premove` is true for a queued move played on the user's turn (a promotion then becomes a queen). */
+  onUserMove: (from: string, to: string, premove: boolean) => void,
 ): BoardView {
   const ground = Chessground(element, {
     coordinates: true,
@@ -83,10 +87,16 @@ export function createBoard(
       showDests: true,
       rookCastle: false, // castle by moving the king two squares
       events: {
-        after: (from: Key, to: Key) => onUserMove(from, to),
+        after: (from: Key, to: Key) => onUserMove(from, to, false),
       },
     },
-    premovable: { enabled: false, showDests: true, castle: true },
+    // Chessground holds one premove; it goes into the queue at once and the board is redrawn with it.
+    premovable: {
+      enabled: false,
+      showDests: true,
+      castle: true,
+      events: { set: () => takeOverPremove() && sync() },
+    },
     draggable: { showGhost: true },
     highlight: { lastMove: true, check: true },
     animation: { enabled: true, duration: 150 },
@@ -95,15 +105,50 @@ export function createBoard(
 
   let interaction: BoardInteraction = 'side-to-move';
   let playerSide: Side = 'white';
+  /** The premoves waiting for the user's turn, in order. */
+  let queue: QueuedMove[] = [];
+  /** A queued move handed to onUserMove on the next tick; until then nobody may move. */
+  let inFlight: QueuedMove | null = null;
+
+  /** Move chessground's single premove (if any) to the end of the queue. */
+  function takeOverPremove(): boolean {
+    const current = ground.state.premovable.current;
+    if (!current) return false;
+    ground.cancelPremove();
+    if (interaction !== 'player-only') return false;
+    queue.push(normalisePremove(ground.state.pieces, current[0], current[1]));
+    return true;
+  }
 
   function sync(): void {
+    takeOverPremove();
+    if (interaction !== 'player-only') queue = [];
     const last = game.lastMove();
     const turn = game.turn();
-    const mayMove = interaction === 'side-to-move' || (interaction === 'player-only' && turn === playerSide);
-    // On the opponent's turn the user may queue a move (a premove), as on Lichess.
-    const mayPremove = interaction === 'player-only' && turn !== playerSide;
+    let mayMove =
+      !inFlight && (interaction === 'side-to-move' || (interaction === 'player-only' && turn === playerSide));
+    // The user's turn has come: play the first queued move if it is legal here; if not, drop the queue.
+    if (mayMove && queue.length > 0) {
+      const next = queue[0]!;
+      if (game.dests().get(next.from as never)?.includes(next.to as never)) {
+        queue.shift();
+        inFlight = next;
+        mayMove = false;
+        // The board already shows the move; the app plays it right after this redraw.
+        window.setTimeout(() => {
+          inFlight = null;
+          onUserMove(next.from, next.to, true);
+        }, 0);
+      } else {
+        queue = [];
+      }
+    }
+    // On the opponent's turn the user may queue moves (premoves). They are shown as if played, so a
+    // premoved piece can be premoved again from its new square.
+    const mayPremove = interaction === 'player-only' && turn !== playerSide && !inFlight;
+    const shown = inFlight ? [inFlight, ...queue] : queue;
     ground.set({
-      fen: game.fen(),
+      fen: shown.length > 0 ? writeFen(applyPremoves(readFen(game.fen()), shown)) : game.fen(),
       turnColor: turn,
       check: game.inCheck(),
       lastMove: last ? [last.from, last.to] : undefined,
@@ -112,15 +157,26 @@ export function createBoard(
         dests: mayMove ? game.dests() : new Map(),
       },
       premovable: { enabled: interaction === 'player-only' },
+      highlight: { custom: queuedSquares(queue) },
     });
     element.dataset.interaction = interaction;
     // Whether a move now is a real move (not a premove); the browser tests wait for it.
     element.dataset.yourTurn = String(mayMove);
-    if (interaction !== 'player-only') ground.cancelPremove();
-    // The user's turn has come: play the queued premove, if it is legal here (chessground checks the
-    // move against the legal moves and hands it to onUserMove like a normal move).
-    else if (mayMove) ground.playPremove();
+    element.dataset.premoves = String(queue.length);
   }
+
+  /** Drop every queued premove and show the real position again. */
+  function cancelPremoves(): void {
+    ground.cancelPremove();
+    if (queue.length === 0) return;
+    queue = [];
+    sync();
+  }
+
+  // A right-click on the board drops the queued premoves (as on chess.com).
+  element.addEventListener('pointerdown', (event) => {
+    if (event.button === 2 && queue.length > 0) cancelPremoves();
+  });
 
   sync();
 
@@ -189,7 +245,7 @@ export function createBoard(
   return {
     sync,
     setBadge,
-    cancelPremove: () => ground.cancelPremove(),
+    cancelPremove: cancelPremoves,
     setLook: (look) => {
       element.dataset.board = look.board;
       element.dataset.pieces = look.pieces;

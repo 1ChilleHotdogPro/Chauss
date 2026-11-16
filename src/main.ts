@@ -70,6 +70,7 @@ import { describeSnapshot, loadSnapshot } from './snapshot/load';
 import { renderCapturedPieces } from './ui/capturedPieces';
 import type { Side } from './game/game';
 import { createBoard, type Arrow, type BoardInteraction } from './ui/board';
+import { parseFenInput } from './game/fenInput';
 import { renderDrillPanel } from './ui/drillPanel';
 import { renderEndgamePanel } from './ui/endgamePanel';
 import { renderEnginePanel, type EnginePanelModel } from './ui/enginePanel';
@@ -86,7 +87,6 @@ import { createEvalGraph } from './ui/evalGraph';
 import { renderMoveList, updateMoveClasses, updateMoveMarks } from './ui/moveList';
 import { fillStrengthOptions, renderOutOfBook, type OutOfBookModel } from './ui/outOfBookPanel';
 import { createDrillHub } from './ui/drillHub';
-import { createFoldable } from './ui/foldable';
 import { createPromotionPicker } from './ui/promotion';
 import { createMoveSounds } from './ui/sound';
 import { isCursed, loadAppearance, saveAppearance } from './appearance/appearance';
@@ -105,6 +105,8 @@ function byId<T extends HTMLElement>(id: string): T {
 
 const statusEl = byId<HTMLParagraphElement>('status');
 const fenEl = byId<HTMLElement>('fen');
+const fenInput = byId<HTMLInputElement>('fen-input');
+const fenError = byId<HTMLElement>('fen-error');
 const movesEl = byId<HTMLOListElement>('moves');
 const movesEmptyEl = byId<HTMLParagraphElement>('moves-empty');
 const prevBtn = byId<HTMLButtonElement>('prev');
@@ -1104,8 +1106,13 @@ function renderExplore(): void {
 }
 
 /** Called by the board after the user dropped a piece on a legal square. */
-function handleUserMove(from: string, to: string): void {
+function handleUserMove(from: string, to: string, premove = false): void {
   if (game.needsPromotion(from, to)) {
+    // A premove cannot stop to ask: it becomes a queen (the board showed it as one).
+    if (premove) {
+      dispatchMove(from, to, 'q');
+      return;
+    }
     promotion.open(game.turn(), (piece) => {
       if (piece) dispatchMove(from, to, piece);
       else render(); // puts the pawn back
@@ -1191,6 +1198,11 @@ function render(): void {
 
   statusEl.textContent = statusText();
   fenEl.textContent = game.fen();
+  // The box shows the board's code, unless the user is typing or pasting one.
+  if (document.activeElement !== fenInput) {
+    fenInput.value = game.fen();
+    fenError.hidden = true;
+  }
 
   prevBtn.disabled = ply === 0;
   nextBtn.disabled = ply === moves.length;
@@ -1317,15 +1329,6 @@ function toggleArrows(): void {
   renderEngine();
 }
 
-createFoldable({
-  toggle: byId<HTMLButtonElement>('engine-toggle'),
-  storage,
-  storageKey: 'chauss.engineFolded.v1',
-  onChange: (folded) => {
-    document.body.dataset.engine = folded ? 'folded' : '';
-  },
-});
-
 prevBtn.addEventListener('click', () => goTo(game.currentPly() - 1));
 nextBtn.addEventListener('click', () => goTo(game.currentPly() + 1));
 flipBtn.addEventListener('click', flip);
@@ -1339,6 +1342,21 @@ undoBtn.addEventListener('click', () => {
 resetBtn.addEventListener('click', () => {
   promotion.cancel();
   game.reset();
+  render();
+});
+
+// Explore: set up any position from its code. The moves start from there; New game goes back to the start.
+byId<HTMLFormElement>('fen-form').addEventListener('submit', (event) => {
+  event.preventDefault();
+  const result = parseFenInput(fenInput.value);
+  if (!result.ok) {
+    fenError.textContent = result.error;
+    fenError.hidden = false;
+    return;
+  }
+  promotion.cancel();
+  game.loadLine([], result.fen);
+  fenInput.blur();
   render();
 });
 
