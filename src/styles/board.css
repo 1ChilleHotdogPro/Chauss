@@ -1,15 +1,26 @@
 /* Board area: eval bar, captured pieces, the board, coordinates, promotion picker. */
 
-/* The eval bar and the board side by side; together they fit the column and the window height. */
-.board-row {
+/* Sizes the layout uses to work out how big the board can be (layout.css). */
+.layout {
   --bar: 18px;
   --gap: 8px;
   --strip: 28px; /* the captured-pieces line above and below the board */
+}
+
+/* The eval bar and the board side by side. On a wide screen the board area is sized in layout.css;
+   on a phone the row is as wide as the screen, but never taller than it. */
+.board-row {
   display: flex;
   gap: var(--gap);
   align-items: stretch;
-  width: min(100%, calc(100vh - 110px - 2 * var(--strip) + var(--bar) + var(--gap)));
+  width: min(100%, calc(100svh - 110px - 2 * var(--strip) + var(--bar) + var(--gap)));
   margin: 0 auto;
+}
+
+@media (min-width: 761px) {
+  .board-row {
+    width: 100%;
+  }
 }
 
 /* Captured pieces, the board, captured pieces: one column next to the eval bar. */

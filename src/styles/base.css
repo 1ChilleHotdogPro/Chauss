@@ -11,9 +11,15 @@ body {
 }
 
 #app {
-  max-width: 1100px;
+  max-width: 1800px;
   margin: 0 auto;
   padding: 16px;
+}
+
+@media (min-width: 761px) {
+  #app {
+    padding: 12px 24px 16px;
+  }
 }
 
 /* Keyboard focus on anything that has no ring of its own (buttons, inputs and cards set theirs). */

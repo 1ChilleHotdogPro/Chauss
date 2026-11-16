@@ -13,6 +13,8 @@ export interface AnalysisPanelElements {
   progressText: HTMLElement;
   cancel: HTMLButtonElement;
   result: HTMLElement;
+  accuracy: HTMLElement;
+  note: HTMLElement;
   summary: HTMLElement;
   another: HTMLButtonElement;
 }
@@ -47,6 +49,47 @@ function formatAccuracy(value: number | undefined): string {
   return value === undefined ? '–' : value.toFixed(1);
 }
 
+/** The kinds of error counted on each player's tile. */
+const ERRORS: readonly Classification[] = ['inaccuracy', 'mistake', 'miss', 'blunder'];
+
+/** One tile per player: the name, the accuracy as a big number, and how many errors they made. */
+function accuracyTiles(model: AnalysisPanelModel, summary: Record<Side, SideSummary>): HTMLElement[] {
+  return (['white', 'black'] as const).map((side) => {
+    const tile = document.createElement('div');
+    tile.className = 'accuracy-tile';
+    tile.dataset.side = side;
+
+    const name = document.createElement('span');
+    name.className = 'accuracy-name';
+    name.textContent = model.players[side];
+    name.title = model.players[side];
+
+    const value = document.createElement('span');
+    value.className = 'accuracy-value';
+    value.textContent = formatAccuracy(summary[side].accuracy);
+    const label = document.createElement('span');
+    label.className = 'accuracy-label';
+    label.textContent = 'accuracy';
+
+    const errors = document.createElement('span');
+    errors.className = 'accuracy-errors';
+    for (const classification of ERRORS) {
+      const count = summary[side].counts[classification];
+      if (count === 0) continue;
+      const chip = document.createElement('span');
+      chip.className = 'accuracy-error';
+      chip.dataset.class = classification;
+      chip.title = `${count} × ${CLASSIFICATION_INFO[classification].name}`;
+      chip.append(classificationIcon(classification), String(count));
+      errors.append(chip);
+    }
+    if (!errors.hasChildNodes()) errors.textContent = 'No errors';
+
+    tile.append(name, value, label, errors);
+    return tile;
+  });
+}
+
 function summaryTable(model: AnalysisPanelModel, summary: Record<Side, SideSummary>): HTMLTableElement {
   const table = document.createElement('table');
   table.className = 'analysis-table';
@@ -59,19 +102,9 @@ function summaryTable(model: AnalysisPanelModel, summary: Record<Side, SideSumma
   }
 
   const body = table.createTBody();
-  const accuracy = body.insertRow();
-  accuracy.className = 'analysis-accuracy';
-  const label = document.createElement('th');
-  label.scope = 'row';
-  label.textContent = 'Accuracy';
-  accuracy.append(label);
-  for (const side of ['white', 'black'] as const) {
-    const cell = accuracy.insertCell();
-    cell.dataset.side = side;
-    cell.textContent = formatAccuracy(summary[side].accuracy);
-  }
-
   for (const classification of CLASSIFICATIONS) {
+    // Kinds of move neither player made are left out, so the table stays short.
+    if (summary.white.counts[classification] === 0 && summary.black.counts[classification] === 0) continue;
     const row = body.insertRow();
     row.dataset.class = classification;
     const name = document.createElement('th');
@@ -107,13 +140,15 @@ export function renderAnalysisPanel(elements: AnalysisPanelElements, model: Anal
   elements.result.hidden = summary === null;
   elements.another.hidden = model.showInput;
   if (summary) {
-    const note = document.createElement('p');
-    note.className = 'hint';
-    note.textContent = model.partial
+    elements.accuracy.replaceChildren(...accuracyTiles(model, summary));
+    // Only a note when the numbers are not final; the finished result speaks for itself.
+    const note = model.partial
       ? 'Stopped early: the numbers cover only the moves analysed so far.'
       : progress
         ? 'The numbers fill in as the analysis goes on.'
-        : `Analysed with Stockfish (${model.limitLabel}). Click a move or the graph to see it on the board.`;
-    elements.summary.replaceChildren(summaryTable(model, summary), note);
+        : '';
+    elements.note.textContent = note;
+    elements.note.hidden = note === '';
+    elements.summary.replaceChildren(summaryTable(model, summary));
   }
 }

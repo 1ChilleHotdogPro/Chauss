@@ -1,20 +1,16 @@
 /* Layout: the board column next to the side panel, and which parts show in which mode. */
 
+/* Phones: one column, the page scrolls as a whole. */
 .layout {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) 400px;
+  grid-template-columns: minmax(0, 1fr);
   gap: 20px;
   align-items: start;
 }
 
-@media (max-width: 760px) {
-  .layout {
-    grid-template-columns: minmax(0, 1fr);
-  }
-}
-
-/* On a wide screen the app is a fixed frame: header on top, the board stays put, and only the side panel
-   (or the drill hub) scrolls. On phones the page scrolls as a whole. */
+/* Wide screens: a fixed frame. The header on top; below it the board as large as the height allows,
+   and the side panel taking the rest of the width, exactly as tall as the board area. The page never
+   scrolls; inside the panel one part (the move list, or the explorer) scrolls on its own. */
 @media (min-width: 761px) {
   #app {
     height: 100vh;
@@ -28,12 +24,32 @@
   }
 
   .layout {
+    --panel-min: 340px;
+    --panel-max: 600px;
     flex: 1 1 auto;
     min-height: 0;
-    grid-template-rows: minmax(0, 1fr);
+    display: flex;
+    justify-content: center;
+    align-items: stretch;
+    gap: 20px;
+    /* The board's size is worked out from this box's height and width (cqh / cqw below). */
+    container-type: size;
+  }
+
+  .board-area {
+    flex: none;
+    /* The board row is a square board plus the eval bar beside it; the board's height is the box's height
+       minus the captured-pieces lines above and below it. */
+    width: min(
+      calc(100cqh - 2 * var(--strip) + var(--bar) + var(--gap)),
+      calc(100cqw - var(--panel-min) - 20px)
+    );
   }
 
   .panel {
+    flex: 1 1 var(--panel-min);
+    min-width: var(--panel-min);
+    max-width: var(--panel-max);
     max-height: 100%;
     overflow-y: auto;
     overscroll-behavior: contain;

@@ -43,7 +43,7 @@ test('a pasted game is analysed: icons, accuracy, graph and stepping through it'
   await expect(page.locator('.analysis-table thead')).toContainText('Alice');
   await expect(page.locator('.analysis-table thead')).toContainText('Bob');
   for (const side of ['white', 'black']) {
-    await expect(page.locator(`.analysis-accuracy td[data-side="${side}"]`)).toHaveText(/^\d+\.\d$/);
+    await expect(page.locator(`.accuracy-tile[data-side="${side}"] .accuracy-value`)).toHaveText(/^\d+\.\d$/);
   }
   await expect(page.locator('.analysis-table tr[data-class="blunder"] td[data-side="black"]')).toHaveText('1');
 
@@ -63,6 +63,38 @@ test('a pasted game is analysed: icons, accuracy, graph and stepping through it'
   await expect(page.locator('.eval-graph-dot[data-class="blunder"]')).toHaveCount(1);
 
   await page.screenshot({ path: 'test-results/analysis-desktop.png', fullPage: true });
+});
+
+test('leaving Analyse and coming back keeps the move you were looking at', async ({ page }) => {
+  await useLimit(page, 'd10');
+  await openApp(page);
+  await analyse(page, SCHOLAR);
+  await expect(page.locator('#analysis-run')).toBeHidden({ timeout: 60_000 });
+
+  await moveButton(page, 'Nf6').click();
+  const fen = await page.locator('#fen').textContent();
+  await page.locator('#mode-explore').click();
+  await page.locator('#mode-analysis').click();
+  await expect(page.locator('#fen')).toHaveText(fen!);
+  await expect(page.locator('#moves .move.current')).toHaveText('Nf6');
+  await expect(page.locator('.accuracy-tile')).toHaveCount(2);
+});
+
+test('the board fills the window height and the page does not scroll', async ({ page }) => {
+  await useLimit(page, 'd10');
+  await page.setViewportSize({ width: 1280, height: 720 });
+  await openApp(page);
+  await analyse(page, SCHOLAR);
+  await expect(page.locator('#analysis-run')).toBeHidden({ timeout: 60_000 });
+  const sizes = await page.evaluate(() => ({
+    page: document.documentElement.scrollHeight,
+    board: document.querySelector('#board')!.getBoundingClientRect().height,
+    panelOverflow: document.querySelector('.panel')!.scrollHeight - document.querySelector('.panel')!.clientHeight,
+  }));
+  expect(sizes.page).toBeLessThanOrEqual(720);
+  expect(sizes.board).toBeGreaterThan(560);
+  expect(sizes.panelOverflow).toBeLessThanOrEqual(1);
+  await expect(page.locator('#moves .move').last()).toBeInViewport();
 });
 
 test('a running analysis can be cancelled', async ({ page }) => {
