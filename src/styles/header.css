@@ -74,41 +74,13 @@
   border-color: var(--border);
 }
 
-/* ---- The opening switcher: a book-label chip, not a tab ---- */
-.picker-button {
-  display: inline-flex;
-  align-items: center;
-  gap: var(--space-2);
-  margin-left: auto;
-  padding: 5px var(--space-3) 5px 10px;
-  border-radius: 999px;
-  border-color: var(--border);
-  background: transparent;
-  color: var(--text);
-  font-size: var(--fs-sm);
-}
-
-/* A small book, drawn with a mask so the button's text can be replaced freely. */
-.picker-button::before {
-  content: '';
-  width: 16px;
-  height: 16px;
-  flex: none;
-  background: var(--heading);
-  -webkit-mask: var(--icon-book) center / contain no-repeat;
-  mask: var(--icon-book) center / contain no-repeat;
-}
-
-.picker-button {
-  --icon-book: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M5 4.5A1.5 1.5 0 0 1 6.5 3H19v15H6.5A1.5 1.5 0 0 0 5 19.5z'/%3E%3Cpath d='M5 19.5A1.5 1.5 0 0 0 6.5 21H19'/%3E%3Cpath d='M9 7.5h6'/%3E%3C/svg%3E");
-}
-
 /* ---- Settings: a gear, with its word on wide screens ---- */
 .settings-button {
+  margin-left: auto;
   font-size: var(--fs-sm);
 }
 
-/* Phones: two rows. Logo and opening chip on top; the tabs fill the second row, with the gear at its end. */
+/* Phones: the logo on top; the tabs fill the second row, with the gear at its end. */
 @media (max-width: 760px) {
   .site-header {
     gap: var(--space-2);
@@ -121,11 +93,6 @@
   .crest {
     width: 28px;
     height: 28px;
-  }
-
-  .picker-button {
-    order: 1;
-    margin-left: auto;
   }
 
   .mode-tabs {

@@ -179,36 +179,6 @@ test('every legal move can be ranked by Stockfish', async ({ page }) => {
   await expect(page.locator('#toggle-ranking')).toHaveAttribute('aria-pressed', 'false');
 });
 
-test('the list of common mistakes opens, and "Show on the board" jumps to the position', async ({ page }) => {
-  await openApp(page);
-  const button = page.locator('#open-traps');
-  await expect(button).toHaveText(`Common mistakes in this opening (${trapFile.traps.length})`);
-  await button.click();
-  await expect(page.locator('#traps')).toBeVisible();
-  await expect(page.locator('#traps .trap')).toHaveCount(trapFile.traps.length);
-
-  const exploit = trapFile.traps.filter((t) => t.kind === 'exploit');
-  const avoid = trapFile.traps.filter((t) => t.kind === 'avoid');
-  await expect(page.locator('#traps-exploit .trap')).toHaveCount(exploit.length);
-  await expect(page.locator('#traps-avoid .trap')).toHaveCount(avoid.length);
-
-  const trap = trapFile.traps[0];
-  test.skip(!trap, 'the bundled data has no traps');
-  if (!trap) return;
-  const item = page.locator(`#traps .trap[data-id="${trap.id}"]`);
-  await expect(item.locator('.trap-title')).toContainText(trap.move.san);
-  await expect(item.locator('.trap-punish')).toContainText(trap.refutation.why);
-  await expect(item.locator('.trap-punish')).toContainText(trap.refutation.san[0]!);
-  await page.screenshot({ path: 'test-results/phase4-traps.png' });
-
-  await item.locator('.trap-show').click();
-  await expect(page.locator('#traps')).toBeHidden();
-  expect(await moveTexts(page)).toEqual(trap.line);
-  await expect(page.locator('#fen')).toHaveText(trap.fen);
-  // The bad move's explanation is opened straight away.
-  await expect(page.locator('#refutation .refutation-title')).toContainText(trap.move.san);
-});
-
 test('outside the bundled data, without a token, the panel says what to do', async ({ page }) => {
   const requests: Request[] = [];
   await page.route('https://explorer.lichess.org/**', (route) => {
@@ -261,7 +231,8 @@ test('outside the bundled data, with a token, the panel shows live data', async 
   await expect(explore(page)).toHaveAttribute('data-origin', 'snapshot');
   expect(requests).toHaveLength(0);
 
-  await playMoves(page, ['d2d4']);
+  // 1.g3: in neither opening's data (1.d4 and 1.c4 are Caro-Kann sidelines).
+  await playMoves(page, ['g2g3']);
   await expect(explore(page)).toHaveAttribute('data-origin', 'live');
   await expect(page.locator('#opening-name')).toContainText("Queen's Pawn Game");
   expect(await rows(page, 'popular').locator('.explore-move').allTextContents()).toEqual(['d5', 'Nf6']);
@@ -308,8 +279,8 @@ test('Settings describes the bundled data', async ({ page }) => {
   await expect(info).toContainText('Lichess games rated 1000-1399');
   await expect(info).toContainText(`Scores by ${snapshot.meta.engine.name} at depth ${snapshot.meta.engine.depth}`);
 
-  // Both data files are served from under /Chauss/ as files of their own.
-  expect(assets.length).toBeGreaterThanOrEqual(2);
+  // The data file is served from under /Chauss/ as a file of its own.
+  expect(assets.length).toBeGreaterThanOrEqual(1);
   for (const asset of assets) {
     expect(asset.status).toBe(200);
     expect(new URL(asset.url).pathname).toMatch(/^\/Chauss\/assets\/ponziani(\.traps)?-.+\.json$/);

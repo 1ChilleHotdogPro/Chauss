@@ -3,7 +3,7 @@ import { fileURLToPath } from 'node:url';
 import type { Page } from '@playwright/test';
 import { buildRepertoire } from '../src/repertoire/repertoire';
 import type { Snapshot } from '../src/snapshot/format';
-import { enterDrill, expect, moveTexts, openApp, test, tryMove } from './helpers';
+import { enterDrill, expect, moveTexts, openApp, playMoves, test, tryMove } from './helpers';
 
 const dataFile = (name: string): string => fileURLToPath(new URL(`../src/data/openings/${name}`, import.meta.url));
 const readSnapshot = (name: string): Snapshot => JSON.parse(readFileSync(dataFile(name), 'utf8')) as Snapshot;
@@ -12,74 +12,38 @@ const ponziani = readSnapshot('ponziani.json');
 const ponzianiRepertoire = buildRepertoire(ponziani);
 const OPENING_KEY = 'chauss.opening.v1';
 
-const picker = (page: Page) => page.locator('#opening-picker');
-const header = (page: Page) => page.locator('#open-picker');
-/** Choosing reloads the page: let Stockfish finish loading first, so the reload does not cut its download short. */
-const choose = async (page: Page, id: string): Promise<void> => {
-  await expect(page.locator('#engine-status')).toHaveAttribute('data-state', 'ready', { timeout: 20_000 });
-  await picker(page).locator(`.opening-choice[data-opening="${id}"]`).click();
-};
 const storedOpening = (page: Page) => page.evaluate((key) => localStorage.getItem(key), OPENING_KEY);
 
 test.describe('first visit', () => {
   test.use({ openingSeed: null });
 
-  test('the picker asks which opening to learn, and nothing loads until you choose', async ({ page }) => {
-    const dataRequests: string[] = [];
-    page.on('request', (request) => {
-      if (/\/assets\/.*\.json/.test(request.url())) dataRequests.push(request.url());
-    });
-    await page.goto('./');
-    await expect(picker(page)).toBeVisible();
-    await expect(picker(page).locator('.opening-choice')).toHaveCount(2);
-    await expect(picker(page).locator('.opening-choice[data-opening="ponziani"]')).toContainText('You play White');
-    await expect(picker(page).locator('.opening-choice[data-opening="ponziani"]')).toContainText('1.e4 e5 2.Nf3 Nc6 3.c3');
-    await expect(picker(page).locator('.opening-choice[data-opening="caro-kann"]')).toContainText('You play Black');
-    await expect(picker(page).locator('.opening-choice[data-opening="caro-kann"]')).toBeEnabled(); // its data is built
-    await expect(picker(page)).not.toContainText('Coming soon');
-    await expect(picker(page).locator('.opening-choice[data-opening="caro-kann"]')).toContainText('1.e4 c6');
-    await expect(header(page)).toHaveText('Choose an opening ▾');
-    await expect(picker(page).locator('#opening-close')).toBeHidden();
-    await page.screenshot({ path: 'test-results/openings-picker.png' });
-
-    // It cannot be dismissed with Escape, and the board hotkeys are off while it is open.
-    await page.keyboard.press('Escape');
-    await expect(picker(page)).toBeVisible();
-    await page.keyboard.press('f');
-    await expect(page.locator('.cg-wrap')).toHaveClass(/orientation-white/);
-    expect(dataRequests).toEqual([]);
-
-    // Choosing stores the opening and loads its data.
-    await choose(page, 'ponziani');
-    await expect(page.locator('cg-board piece')).toHaveCount(32);
-    await expect(picker(page)).toBeHidden();
-    await expect(header(page)).toHaveText('Ponziani · White ▾');
-    expect(await storedOpening(page)).toBe('ponziani');
+  test('no opening has to be chosen: the board, Explore and the data are there straight away', async ({ page }) => {
+    await openApp(page);
+    await expect(page.locator('#opening-picker')).toHaveCount(0);
+    await expect(page.locator('#open-picker')).toHaveCount(0);
     await expect(page.locator('#snapshot-info')).toHaveAttribute('data-state', 'ready');
     await expect(page.locator('.cg-wrap')).toHaveClass(/orientation-white/);
+    expect(await storedOpening(page)).toBeNull();
+
+    // Choosing an opening in the Drill hub stores it.
+    await enterDrill(page, 'ponziani');
+    expect(await storedOpening(page)).toBe('ponziani');
   });
 
   test('an unknown stored opening is treated as no choice', async ({ page }) => {
     await page.addInitScript((key) => localStorage.setItem(key, 'sicilian'), OPENING_KEY);
-    await page.goto('./');
-    await expect(picker(page)).toBeVisible();
+    await openApp(page);
+    await expect(page.locator('#snapshot-info')).toHaveAttribute('data-state', 'ready');
   });
 });
 
-test('the header button shows the opening and switches to another', async ({ page }) => {
+test('Explore uses the data of every opening, whichever one is drilled', async ({ page }) => {
   await openApp(page);
-  await expect(header(page)).toHaveText('Ponziani · White ▾');
-  await expect(picker(page)).toBeHidden();
-
-  await header(page).click();
-  await expect(picker(page)).toBeVisible();
-  await expect(picker(page).locator('.opening-choice[data-opening="ponziani"]')).toHaveAttribute('aria-current', 'true');
-  // Choosing the opening you are already in just closes the picker.
-  await choose(page, 'ponziani');
-  await expect(picker(page)).toBeHidden();
-  await header(page).click();
-  await picker(page).locator('#opening-close').click();
-  await expect(picker(page)).toBeHidden();
+  await expect(page.locator('#snapshot-info')).toHaveAttribute('data-state', 'ready');
+  // 1.e4 c6 is only a sideline of the Ponziani, but the root of the Caro-Kann data.
+  await playMoves(page, ['e2e4', 'c7c6']);
+  await expect(page.locator('#opening-name')).toContainText('Caro-Kann');
+  await expect(page.locator('#explore')).toHaveAttribute('data-status', 'ready');
 });
 
 test('progress saved by the old version shows up under the Ponziani', async ({ page }) => {
@@ -141,8 +105,8 @@ test.describe('Caro-Kann (playing Black)', () => {
 
   test('the board turns to Black and the drill plays 1.e4, then asks for 1...c6', async ({ page }) => {
     await openApp(page);
-    await expect(header(page)).toHaveText('Caro-Kann · Black ▾');
-    await expect(page.locator('.cg-wrap')).toHaveClass(/orientation-black/);
+    // Explore is not tied to an opening: White at the bottom.
+    await expect(page.locator('.cg-wrap')).toHaveClass(/orientation-white/);
     await expect(page.locator('#snapshot-info')).toHaveAttribute('data-state', 'ready');
     await page.screenshot({ path: 'test-results/openings-caro-kann-explore.png', fullPage: true });
 
@@ -163,6 +127,7 @@ test.describe('Caro-Kann (playing Black)', () => {
     await expect(page.locator('#drill-prompt')).toHaveAttribute('data-state', 'asking');
     // The drill may aim at a deeper line; the first move is always 1.e4 and then 1...c6 is asked.
     await expect(page.locator('#moves .move')).toHaveCount(1);
+    await expect(page.locator('#board')).toHaveAttribute('data-your-turn', 'true');
 
     // A wrong move first.
     await tryMove(page, 'b7', 'b6');
@@ -176,14 +141,19 @@ test.describe('Caro-Kann (playing Black)', () => {
 
   test('switching back to the Ponziani turns the board and keeps each opening separate', async ({ page }) => {
     await openApp(page);
-    await header(page).click();
-    await choose(page, 'ponziani');
-    await expect(page.locator('cg-board piece')).toHaveCount(32);
-    await expect(header(page)).toHaveText('Ponziani · White ▾');
+    // Switching is done in the Drill hub; it reloads the page straight into the Ponziani drill.
+    // (Let everything finish loading first — Stockfish, the hub's little boards — so the reload cuts
+    // no download short.)
+    await expect(page.locator('#engine-status')).toHaveAttribute('data-state', 'ready', { timeout: 20_000 });
+    await page.locator('#mode-drill').click();
+    await page.locator('#drill-hub [data-category="openings"]').click();
+    await page.waitForLoadState('networkidle');
+    await page.locator('#drill-hub [data-entry="ponziani"]').click();
+    await expect(page.locator('#mode-drill')).toHaveAttribute('aria-selected', 'true');
+    await expect(page.locator('cg-board piece')).not.toHaveCount(0);
     await expect(page.locator('.cg-wrap')).toHaveClass(/orientation-white/);
     expect(await storedOpening(page)).toBe('ponziani');
     await expect(page.locator('#snapshot-info')).toHaveAttribute('data-state', 'ready');
-    await enterDrill(page);
     await page.locator('#open-stats').click();
     await expect(page.locator('#stats-table tbody tr')).toHaveCount(ponzianiRepertoire.cards.size);
   });

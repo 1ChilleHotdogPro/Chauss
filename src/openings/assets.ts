@@ -7,19 +7,16 @@ import type { Idea } from '../explore/ideas';
  */
 export interface OpeningAssets {
   snapshotUrl: string;
-  trapsUrl: string;
   ideas: () => Promise<readonly Idea[]>;
 }
 
 export const OPENING_ASSETS: Record<string, OpeningAssets> = {
   ponziani: {
     snapshotUrl: new URL('../data/openings/ponziani.json', import.meta.url).href,
-    trapsUrl: new URL('../data/openings/ponziani.traps.json', import.meta.url).href,
     ideas: () => import('../explore/ideas/ponziani').then((module) => module.IDEAS),
   },
   'caro-kann': {
     snapshotUrl: new URL('../data/openings/caro-kann.json', import.meta.url).href,
-    trapsUrl: new URL('../data/openings/caro-kann.traps.json', import.meta.url).href,
     ideas: () => import('../explore/ideas/caro-kann').then((module) => module.IDEAS),
   },
 };

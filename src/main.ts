@@ -52,13 +52,12 @@ import { describeResult } from './explorer/describe';
 import { describeRatings, loadSettings, saveSettings } from './explorer/settings';
 import type { RatingBand } from './explorer/types';
 import { ideaFor, latestIdea, type Idea } from './explore/ideas';
-import { loadTraps } from './explore/loadTraps';
 import type { ExploreMove } from './explore/position';
+import { combineSnapshots } from './explore/combine';
 import { needsScores, withRanking } from './explore/ranked';
 import { buildRanking } from './explore/ranking';
 import { explainRefutation } from './explore/refutation';
 import { ExploreSource } from './explore/source';
-import type { Trap } from './explore/traps';
 import { Game, type PromotionPiece } from './game/game';
 import { materialFromFen } from './game/material';
 import { moveSoundFor } from './game/moveSound';
@@ -66,7 +65,7 @@ import { buildRepertoire, type Repertoire } from './repertoire/repertoire';
 import { positionKey, type Snapshot } from './snapshot/format';
 import { assetsFor, hasOpeningData, OPENING_ASSETS } from './openings/assets';
 import { loadChosenOpening, saveChosenOpening } from './openings/choice';
-import { DEFAULT_OPENING_ID, getOpening, OPENINGS } from './openings/registry';
+import { DEFAULT_OPENING_ID, getOpening } from './openings/registry';
 import { describeSnapshot, loadSnapshot } from './snapshot/load';
 import { renderCapturedPieces } from './ui/capturedPieces';
 import type { Side } from './game/game';
@@ -87,14 +86,13 @@ import { createEvalGraph } from './ui/evalGraph';
 import { renderMoveList, updateMoveClasses, updateMoveMarks } from './ui/moveList';
 import { fillStrengthOptions, renderOutOfBook, type OutOfBookModel } from './ui/outOfBookPanel';
 import { createDrillHub } from './ui/drillHub';
-import { createOpeningPicker } from './ui/openingPicker';
+import { createFoldable } from './ui/foldable';
 import { createPromotionPicker } from './ui/promotion';
 import { createMoveSounds } from './ui/sound';
 import { isCursed, loadAppearance, saveAppearance } from './appearance/appearance';
 import { createAppearancePanel } from './ui/appearancePanel';
 import { createSettingsPanel } from './ui/settingsPanel';
 import { createStatsDialog } from './ui/statsDialog';
-import { createTrapsDialog } from './ui/trapsDialog';
 
 /** The engine reports its three best moves (used for the arrows and the lines list). */
 const MULTI_PV = 3;
@@ -124,11 +122,11 @@ const enginePanel = {
   toggleArrows: byId<HTMLButtonElement>('toggle-arrows'),
 };
 
-/** The opening being taught (the picker that chooses it comes later). */
+/** The opening drilled (chosen in the Drill hub); Explore and Analyse are not tied to one opening. */
 const storage = browserStorage();
 // An opening counts as chosen only once its data files exist (the registry may list it earlier).
 const chosenOpening = loadChosenOpening(storage, hasOpeningData);
-/** Until a choice is made the picker is on top and no opening data is loaded. */
+/** Until one is chosen in the Drill hub, the default opening's data is used. */
 const OPENING_ID = chosenOpening ?? DEFAULT_OPENING_ID;
 /** The colour the user plays in it, and the colour of the app's side of the board. */
 const SIDE: Side = getOpening(OPENING_ID).side;
@@ -140,7 +138,8 @@ const moveSounds = createMoveSounds();
 let renderedPly = 0;
 const board = createBoard(byId('board'), game, handleUserMove);
 board.setPlayerSide(SIDE);
-board.setOrientation(SIDE);
+// Explore and Analyse start with White at the bottom; a drill turns the board to the user's side.
+board.setOrientation('white');
 const evalBar = createEvalBar(byId('evalbar'));
 
 /** Board and piece looks (Settings). The cursed ones also turn captures into explosions. */
@@ -214,14 +213,11 @@ const explorer = new ExplorerClient({
 /** The short remarks of that opening, loaded together with its data. */
 let IDEAS: readonly Idea[] = [];
 
-/** Stands in for the data while the first-time picker is open: it never resolves, the page reloads on a choice. */
-const WAIT_FOR_CHOICE = new Promise<never>(() => {});
-
 // The bundled opening data: works offline and needs no token.
 // undefined = still loading, null = could not be loaded.
 let snapshot: Snapshot | null | undefined;
 const snapshotInfo = byId<HTMLElement>('snapshot-info');
-(chosenOpening ? Promise.all([loadSnapshot(OPENING_ID), assetsFor(OPENING_ID).ideas()]) : WAIT_FOR_CHOICE).then(
+Promise.all([loadSnapshot(OPENING_ID), assetsFor(OPENING_ID).ideas()]).then(
   ([loaded, loadedIdeas]) => {
     IDEAS = loadedIdeas;
     snapshot = loaded;
@@ -244,6 +240,7 @@ const snapshotInfo = byId<HTMLElement>('snapshot-info');
     if (mode === 'drill' && !hubOpen && !endgame) startDrillLine();
     else if (mode === 'explore') renderExplore();
     renderDrill();
+    loadExploreData();
   },
   (error: unknown) => {
     snapshot = null;
@@ -253,6 +250,52 @@ const snapshotInfo = byId<HTMLElement>('snapshot-info');
     renderDrill();
   },
 );
+
+/** One opening's data as Explore uses it: positions, remarks, and the user's move in each position. */
+interface ExploreOpening {
+  snapshot: Snapshot;
+  ideas: readonly Idea[];
+  repertoire: Repertoire;
+}
+/** Every opening's data in one, for Explore (which is not tied to one opening). Null until all are loaded. */
+let exploreData: { snapshot: Snapshot; owner: Record<string, number>; openings: ExploreOpening[] } | null = null;
+
+/** Load the other openings' data too (the drilled one first, so it wins where they are equal). */
+function loadExploreData(): void {
+  const ids = [OPENING_ID, ...Object.keys(OPENING_ASSETS).filter((id) => id !== OPENING_ID)];
+  void Promise.allSettled(
+    ids.map((id) =>
+      Promise.all([loadSnapshot(id), assetsFor(id).ideas()]).then(([loaded, ideas]) => ({
+        snapshot: loaded,
+        ideas,
+        repertoire: buildRepertoire(loaded, getOpening(id).side),
+      })),
+    ),
+  ).then((results) => {
+    const openings = results.flatMap((result) => (result.status === 'fulfilled' ? [result.value] : []));
+    if (openings.length === 0) return;
+    const combined = combineSnapshots(openings.map((opening) => opening.snapshot));
+    exploreData = { snapshot: combined.snapshot, owner: combined.owner, openings };
+    if (mode === 'explore') renderExplore();
+  });
+}
+
+/** The opening whose data Explore shows for a position, if any. */
+function exploreOpeningAt(fen: string): ExploreOpening | null {
+  if (!exploreData) return null;
+  const index = exploreData.owner[positionKey(fen)];
+  return index === undefined ? null : (exploreData.openings[index] ?? null);
+}
+
+/** A remark on this position, from whichever opening has one. */
+function exploreIdea(fen: string): string | null {
+  if (!exploreData) return snapshot ? ideaFor(snapshot, IDEAS, fen) : null;
+  for (const opening of exploreData.openings) {
+    const idea = ideaFor(opening.snapshot, opening.ideas, fen);
+    if (idea) return idea;
+  }
+  return null;
+}
 
 // ---- Modes: Explore (look things up), Drill (the app plays the opponent, you find your move) and
 // Analyse (a whole game reviewed by Stockfish) ----
@@ -282,7 +325,7 @@ const drillPanel = {
 let hubOpen = false;
 const drillHub = createDrillHub({
   root: byId('drill-hub'),
-  currentOpening: chosenOpening,
+  currentOpening: OPENING_ID,
   onChoose: (category, entry) => drillStarters[category]?.(entry),
   // For the progress on the cards ("3 due now · 12 of 71 learned"); only the open opening's positions are known.
   openingProgress: () => withProgress(loadStore(storage), OPENING_ID, progress),
@@ -294,14 +337,15 @@ const drillHub = createDrillHub({
 const drillStarters: Record<string, (entryId: string) => void> = {
   openings: (id) => {
     stopEndgame();
-    if (id !== chosenOpening) {
+    saveChosenOpening(storage, id);
+    if (id !== OPENING_ID) {
       // All state is rebuilt from the chosen opening's data, so start the page afresh, straight into the drill.
-      saveChosenOpening(storage, id);
       location.hash = DRILL_HASH;
       location.reload();
       return;
     }
     setHubOpen(false);
+    board.setOrientation(SIDE);
     if (drill) startDrillLine();
     else render();
   },
@@ -390,6 +434,8 @@ function stopEndgame(): void {
 function syncEndgame(): void {
   if (!endgame) return;
   const view = endgame.view();
+  // A wrong move is taken back, so a premove made after it no longer fits the position.
+  if (view.feedback.kind === 'wrong') board.cancelPremove();
   board.setPlayerSide(view.side);
   // A new position starts with the user's side at the bottom (Flip still works during it).
   if (view.sans.length === 0 && game.startFen !== view.startFen) board.setOrientation(view.side);
@@ -506,6 +552,7 @@ function setMode(next: Mode): void {
     arrowsShown = false;
   }
   if (next === 'drill') {
+    if (!endgame) board.setOrientation(SIDE);
     if (drill && !hubOpen && !endgame) startDrillLine();
     else render();
   } else if (next === 'analysis') {
@@ -518,15 +565,19 @@ function setMode(next: Mode): void {
 
 /** Who may move pieces on the board right now. */
 function interaction(): BoardInteraction {
-  if (mode === 'explore') return 'side-to-move';
-  if (mode === 'analysis') return 'none'; // a finished game, to step through
-  if (endgame) return endgame.view().state === 'your-move' ? 'player-only' : 'none';
+  // Explore, and Analyse (a move off the game's path switches to Explore).
+  if (mode === 'explore' || mode === 'analysis') return 'side-to-move';
+  // In a drill the user may premove while the opponent (or Stockfish) is about to reply.
+  if (endgame) {
+    const state = endgame.view().state;
+    return state === 'your-move' || state === 'judging' || state === 'opponent' ? 'player-only' : 'none';
+  }
   const after = currentAfter();
   if (after?.kind === 'engine') {
-    // Playing on against Stockfish: the user's turn, once it has moved.
-    return game.status() === 'playing' && !opponentThinking() ? 'player-only' : 'none';
+    // Playing on against Stockfish: the user's turn, or a premove while it thinks.
+    return game.status() === 'playing' ? 'player-only' : 'none';
   }
-  return drill?.view().card && !drillShowing ? 'player-only' : 'none';
+  return drill?.view().card ? 'player-only' : 'none';
 }
 
 modeButtons.explore.addEventListener('click', () => setMode('explore'));
@@ -794,10 +845,6 @@ function setAfter(after: After | null): void {
   if (mode === 'drill') drillAfter = after;
 }
 
-function opponentThinking(): boolean {
-  return engineThinking;
-}
-
 /** Cancel whatever the opponent was about to play. */
 function stopOpponent(): void {
   if (engineThinking) playEngine?.stop();
@@ -932,7 +979,7 @@ oobPanel.strength.addEventListener('change', () => changeStrength(oobPanel.stren
 
 const exploreEl = byId<HTMLElement>('explore');
 const exploreSource = new ExploreSource({
-  snapshot: () => snapshot,
+  snapshot: () => exploreData?.snapshot ?? snapshot,
   settings: () => settingsPanel.settings(),
   client: explorer,
   onUpdate: () => {
@@ -945,40 +992,6 @@ const exploreSource = new ExploreSource({
 let explained: { fen: string; uci: string } | null = null;
 /** The position whose every legal move is being ranked. */
 let rankingFen: string | null = null;
-
-const trapsDialog = createTrapsDialog({
-  side: SIDE,
-  dialog: byId<HTMLDialogElement>('traps'),
-  openButton: byId<HTMLButtonElement>('open-traps'),
-  onShow: showTrap,
-});
-(chosenOpening ? loadTraps(OPENING_ID) : WAIT_FOR_CHOICE).then(
-  (file) => trapsDialog.setTraps(file),
-  (error: unknown) => trapsDialog.setFailed(error instanceof Error ? error.message : String(error)),
-);
-
-const openingPicker = createOpeningPicker({
-  dialog: byId<HTMLDialogElement>('opening-picker'),
-  button: byId<HTMLButtonElement>('open-picker'),
-  openings: OPENINGS,
-  current: chosenOpening,
-  isAvailable: hasOpeningData,
-  progress: () => withProgress(loadStore(storage), OPENING_ID, progress),
-  onChoose: (id) => {
-    // All state is rebuilt from the chosen opening's data, so start the page afresh.
-    saveChosenOpening(storage, id);
-    location.reload();
-  },
-});
-if (chosenOpening === null) openingPicker.show();
-
-/** Put a trap's position on the board and open the explanation of its bad move. */
-function showTrap(trap: Trap): void {
-  promotion.cancel();
-  if (!game.loadLine(trap.line)) return;
-  explained = { fen: game.fen(), uci: trap.move.uci };
-  render();
-}
 
 /** The position after a move given in engine spelling, or null if the move is not legal. */
 function fenAfter(fen: string, uci: string): string | null {
@@ -1024,13 +1037,14 @@ function renderExplore(): void {
   let view = exploreSource.view(fen);
   // Mark the repertoire move (the one the drills ask for) where the repertoire reaches this position.
   if (view.status === 'ready' && !view.position.recommended) {
-    const card = repertoire?.cards.get(positionKey(fen));
+    const card = (exploreOpeningAt(fen)?.repertoire ?? repertoire)?.cards.get(positionKey(fen));
     if (card) view.position.recommended = card.move.uci;
   }
   const settings = settingsPanel.settings();
+  const bundled = exploreData?.snapshot ?? snapshot;
   const ratings =
-    view.status === 'ready' && view.origin === 'snapshot' && snapshot
-      ? (snapshot.meta.lichess.ratings as RatingBand[])
+    view.status === 'ready' && view.origin === 'snapshot' && bundled
+      ? (bundled.meta.lichess.ratings as RatingBand[])
       : settings.ratings;
 
   let refutation: RefutationModel | null = null;
@@ -1063,7 +1077,7 @@ function renderExplore(): void {
       view,
       ratingsLabel: describeRatings(ratings),
       evalShown,
-      idea: snapshot ? ideaFor(snapshot, IDEAS, fen) : null,
+      idea: exploreIdea(fen),
       selectedUci: refutation ? (explained?.uci ?? null) : null,
       refutation,
       ranking,
@@ -1103,7 +1117,9 @@ function handleUserMove(from: string, to: string): void {
 
 /** A move made on the board, handled the way the current mode wants. */
 function dispatchMove(from: string, to: string, piece?: PromotionPiece): void {
-  if (mode === 'explore') {
+  if (mode === 'analysis') {
+    analysisMove(from, to, piece);
+  } else if (mode === 'explore') {
     game.play(from, to, piece);
     render();
   } else if (endgame) {
@@ -1116,6 +1132,23 @@ function dispatchMove(from: string, to: string, piece?: PromotionPiece): void {
   } else {
     freeMove(from, to, piece);
   }
+}
+
+/**
+ * A move on the board in Analyse: the game's own next move just steps forward; any other move leaves
+ * the game, so Explore takes the position over (coming back to Analyse returns to the game).
+ */
+function analysisMove(from: string, to: string, piece?: PromotionPiece): void {
+  const ply = game.currentPly();
+  const gameMove = analysedGame ? game.history()[ply] : undefined;
+  const uci = `${from}${to}${piece ?? ''}`;
+  if (gameMove && toUci(gameMove) === uci) {
+    goTo(ply + 1);
+    return;
+  }
+  setMode('explore'); // remembers this move of the game, for coming back
+  game.play(from, to, piece);
+  render();
 }
 
 function statusText(): string {
@@ -1284,6 +1317,15 @@ function toggleArrows(): void {
   renderEngine();
 }
 
+createFoldable({
+  toggle: byId<HTMLButtonElement>('engine-toggle'),
+  storage,
+  storageKey: 'chauss.engineFolded.v1',
+  onChange: (folded) => {
+    document.body.dataset.engine = folded ? 'folded' : '';
+  },
+});
+
 prevBtn.addEventListener('click', () => goTo(game.currentPly() - 1));
 nextBtn.addEventListener('click', () => goTo(game.currentPly() + 1));
 flipBtn.addEventListener('click', flip);
@@ -1304,7 +1346,7 @@ document.addEventListener('keydown', (event) => {
   if (event.ctrlKey || event.metaKey || event.altKey) return;
   const target = event.target;
   if (target instanceof HTMLInputElement || target instanceof HTMLTextAreaElement) return;
-  if (settingsPanel.isOpen() || trapsDialog.isOpen() || statsDialog.isOpen() || openingPicker.isOpen()) return; // no board hotkeys while a dialog is open
+  if (settingsPanel.isOpen() || statsDialog.isOpen()) return; // no board hotkeys while a dialog is open
 
   if (mode === 'drill' && hubOpen) return;
 

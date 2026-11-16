@@ -23,7 +23,6 @@ const SPEED_NAMES: Record<Speed, string> = {
   blitz: 'Blitz',
   rapid: 'Rapid',
   classical: 'Classical',
-  correspondence: 'Correspondence',
 };
 
 function bandLabel(band: RatingBand): string {

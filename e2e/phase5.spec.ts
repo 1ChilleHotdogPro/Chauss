@@ -32,6 +32,7 @@ async function startDrill(page: Page): Promise<void> {
 /** Wait until it is the user's turn in the drill. */
 async function ready(page: Page): Promise<void> {
   await expect(page.locator('#board')).toHaveAttribute('data-interaction', 'player-only');
+  await expect(page.locator('#board')).toHaveAttribute('data-your-turn', 'true');
   await expect(prompt(page)).toHaveAttribute('data-state', 'asking');
 }
 
@@ -73,7 +74,7 @@ test('Drill mode sets up the first line and hides the answers', async ({ page })
   await expect(feedback(page)).toBeHidden();
 
   // Nothing that gives the answer away is on screen.
-  for (const hidden of ['#explore', '#toggle-eval', '#toggle-arrows', '#engine-status', '#open-traps', '#undo', '#reset', '#prev', '#next']) {
+  for (const hidden of ['#explore', '#toggle-eval', '#toggle-arrows', '#engine-status', '#undo', '#reset', '#prev', '#next']) {
     await expect(page.locator(hidden)).toBeHidden();
   }
   await expect(page.locator('#evalbar')).toBeHidden();
@@ -168,7 +169,8 @@ test('a line can be played to its end, and Enter starts the next one', async ({ 
       .poll(async () => {
         const state = await prompt(page).getAttribute('data-state');
         const interaction = await page.locator('#board').getAttribute('data-interaction');
-        return state === 'finished' || (state === 'asking' && interaction === 'player-only');
+        const yourTurn = await page.locator('#board').getAttribute('data-your-turn');
+        return state === 'finished' || (state === 'asking' && interaction === 'player-only' && yourTurn === 'true');
       })
       .toBe(true);
   }

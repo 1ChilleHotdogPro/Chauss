@@ -222,3 +222,51 @@
 .panel > .toolbar {
   margin-top: var(--space-3);
 }
+
+/* ---- The Engine heading folds the engine away (click, or swipe down), to give the moves more room ---- */
+.panel .collapse-toggle,
+.panel .collapse-toggle:hover:not(:disabled),
+.panel .collapse-toggle:active:not(:disabled) {
+  display: flex;
+  align-items: center;
+  gap: var(--space-1);
+  width: 100%;
+  margin: 0;
+  padding: 2px 0;
+  border: 0;
+  background: none;
+  box-shadow: none;
+  transform: none;
+  color: inherit;
+  font: inherit;
+  letter-spacing: inherit;
+  text-transform: inherit;
+  text-align: left;
+  /* A vertical swipe on the heading folds the section instead of scrolling the page. */
+  touch-action: none;
+  user-select: none;
+}
+
+.panel .collapse-toggle:hover:not(:disabled) {
+  color: var(--text);
+}
+
+.collapse-chevron {
+  width: 14px;
+  height: 14px;
+  transition: transform 150ms ease;
+}
+
+body[data-engine='folded'] .collapse-chevron {
+  transform: rotate(-90deg);
+}
+
+/* Analyse shows the switches without the heading, so there they never fold away. */
+body[data-engine='folded']:not([data-mode='analysis']) .engine-body {
+  display: none;
+}
+
+/* With the engine folded away, the move list in Explore takes its room. */
+body[data-engine='folded'][data-mode='explore'] .moves {
+  max-height: 248px;
+}
