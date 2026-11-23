@@ -45,7 +45,12 @@ export function renderEndgamePanel(
 
   const best = records[position.id];
   const bestText = best && best.attempts > 0 ? ` Your best: ${starText(best.bestStars)}.` : '';
-  const goal = drill.goal === 'mate' ? `Best play mates in ${position.par}.` : `Hold it for ${position.par} moves.`;
+  const goal =
+    drill.goal === 'mate'
+      ? `Best play mates in ${position.par}.`
+      : drill.goal === 'win'
+        ? `Keep the win for ${position.par} moves.`
+        : `Hold the draw for ${position.par} moves.`;
 
   prompt.dataset.state = view.state;
   switch (view.state) {
