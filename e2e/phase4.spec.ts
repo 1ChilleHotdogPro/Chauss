@@ -186,7 +186,7 @@ test('outside the bundled data, without a token, the panel says what to do', asy
     return route.abort();
   });
   await openApp(page);
-  await playMoves(page, ['d2d4', 'd7d5', 'c2c4']);
+  await playMoves(page, ['e2e4', 'e7e5', 'g2g3']);
   await expect(explore(page)).toHaveAttribute('data-status', 'unavailable');
   await expect(page.locator('#explore-unavailable')).toHaveText(
     /outside the bundled opening data\. Add a Lichess token in Settings/,
@@ -347,7 +347,7 @@ test('outside the bundled data, Stockfish adds the mistake icons to the popular 
   });
 
   await openApp(page);
-  await playMoves(page, ['e2e4', 'e7e5', 'b1c3']);
+  await playMoves(page, ['e2e4', 'e7e5', 'g2g3']);
   await expect(page.locator('#popular-moves tr[data-uci="d8h4"]')).toHaveCount(1, { timeout: 20_000 });
   // No "Rank every legal move" needed: Stockfish scores the listed moves by itself.
   await expect(page.locator('#popular-moves tr[data-uci="d8h4"]')).toHaveAttribute('data-flag', /^(inaccuracy|mistake|blunder)$/, {
