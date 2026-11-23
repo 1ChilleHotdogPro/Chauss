@@ -1,0 +1,224 @@
+{
+ "meta": {
+  "formatVersion": 1,
+  "side": "white",
+  "createdAt": "2026-11-23T19:17:08.786Z",
+  "snapshotCreatedAt": "2026-11-23T19:16:28.994Z",
+  "engine": {
+   "name": "Stockfish 19 Lite WASM",
+   "depth": 22
+  },
+  "rule": {
+   "minShare": 0.05,
+   "minGames": 1000,
+   "minDrop": 20,
+   "maxCandidates": 60
+  }
+ },
+ "traps": [
+  {
+   "id": "r1bqkbnr/pp2pppp/2np4/8/2B1P3/2N2N2/PP3PPP/R1BQK2R b KQkq -|c8g4",
+   "line": [
+    "e4",
+    "c5",
+    "d4",
+    "cxd4",
+    "c3",
+    "dxc3",
+    "Nxc3",
+    "Nc6",
+    "Nf3",
+    "d6",
+    "Bc4"
+   ],
+   "fen": "r1bqkbnr/pp2pppp/2np4/8/2B1P3/2N2N2/PP3PPP/R1BQK2R b KQkq - 1 6",
+   "victim": "black",
+   "kind": "exploit",
+   "move": {
+    "uci": "c8g4",
+    "san": "Bg4"
+   },
+   "popular": {
+    "games": 6663,
+    "share": 0.12115206283979126
+   },
+   "book": {
+    "games": 0,
+    "share": 0
+   },
+   "scoreBefore": {
+    "type": "cp",
+    "value": -13
+   },
+   "scoreAfter": {
+    "type": "cp",
+    "value": 294
+   },
+   "drop": 25.9,
+   "verdict": "mistake",
+   "refutation": {
+    "uci": [
+     "c4f7",
+     "e8f7",
+     "f3g5",
+     "f7e8",
+     "d1g4",
+     "g8h6",
+     "g4g3",
+     "h6f7",
+     "e1g1",
+     "f7g5"
+    ],
+    "san": [
+     "Bxf7+",
+     "Kxf7",
+     "Ng5+",
+     "Ke8",
+     "Qxg4",
+     "Nh6",
+     "Qg3",
+     "Nf7",
+     "O-O",
+     "Nxg5"
+    ],
+    "why": "No immediate material win, but Stockfish rates the position +2.9. Black's winning chances fall from 51% to 25%."
+   },
+   "opening": "Sicilian Defense: Smith-Morra Gambit Accepted"
+  },
+  {
+   "id": "r1bqkb1r/pp1p1ppp/2n1p3/3nP3/3P4/5N2/PP3PPP/RNBQKB1R w KQkq -|f1b5",
+   "line": [
+    "e4",
+    "c5",
+    "d4",
+    "cxd4",
+    "c3",
+    "Nf6",
+    "e5",
+    "Nd5",
+    "cxd4",
+    "e6",
+    "Nf3",
+    "Nc6"
+   ],
+   "fen": "r1bqkb1r/pp1p1ppp/2n1p3/3nP3/3P4/5N2/PP3PPP/RNBQKB1R w KQkq - 1 7",
+   "victim": "white",
+   "kind": "avoid",
+   "move": {
+    "uci": "f1b5",
+    "san": "Bb5"
+   },
+   "popular": {
+    "games": 4465,
+    "share": 0.145605739442361
+   },
+   "book": {
+    "games": 0,
+    "share": 0
+   },
+   "scoreBefore": {
+    "type": "cp",
+    "value": 44
+   },
+   "scoreAfter": {
+    "type": "cp",
+    "value": -618
+   },
+   "drop": 44.7,
+   "verdict": "blunder",
+   "refutation": {
+    "uci": [
+     "d8a5",
+     "b1c3",
+     "d5c3",
+     "b2c3",
+     "a5b5",
+     "a2a4",
+     "b5c4",
+     "c1b2",
+     "d7d6",
+     "f3d2"
+    ],
+    "san": [
+     "Qa5+",
+     "Nc3",
+     "Nxc3",
+     "bxc3",
+     "Qxb5",
+     "a4",
+     "Qc4",
+     "Bb2",
+     "d6",
+     "Nd2"
+    ],
+    "why": "Black wins a bishop. Stockfish rates the position -6.2."
+   },
+   "opening": "Sicilian Defense: Alapin Variation, Smith-Morra Declined"
+  },
+  {
+   "id": "rnbqkb1r/pp1ppppp/5n2/4P3/3p4/2P5/PP3PPP/RNBQKBNR b KQkq -|f6e4",
+   "line": [
+    "e4",
+    "c5",
+    "d4",
+    "cxd4",
+    "c3",
+    "Nf6",
+    "e5"
+   ],
+   "fen": "rnbqkb1r/pp1ppppp/5n2/4P3/3p4/2P5/PP3PPP/RNBQKBNR b KQkq - 0 4",
+   "victim": "black",
+   "kind": "exploit",
+   "move": {
+    "uci": "f6e4",
+    "san": "Ne4"
+   },
+   "popular": {
+    "games": 1414,
+    "share": 0.12867412867412867
+   },
+   "book": {
+    "games": 0,
+    "share": 0
+   },
+   "scoreBefore": {
+    "type": "cp",
+    "value": -1
+   },
+   "scoreAfter": {
+    "type": "cp",
+    "value": 320
+   },
+   "drop": 26.6,
+   "verdict": "mistake",
+   "refutation": {
+    "uci": [
+     "d1d4",
+     "f7f5",
+     "f2f3",
+     "b8c6",
+     "d4e3",
+     "d7d5",
+     "f3e4",
+     "d5e4",
+     "e3g3",
+     "c8e6"
+    ],
+    "san": [
+     "Qxd4",
+     "f5",
+     "f3",
+     "Nc6",
+     "Qe3",
+     "d5",
+     "fxe4",
+     "dxe4",
+     "Qg3",
+     "Be6"
+    ],
+    "why": "White wins a knight."
+   },
+   "opening": "Sicilian Defense: Smith-Morra Gambit Declined, Alapin Formation"
+  }
+ ]
+}

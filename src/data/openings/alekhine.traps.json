@@ -1,0 +1,154 @@
+{
+ "meta": {
+  "formatVersion": 1,
+  "side": "black",
+  "createdAt": "2026-11-23T21:06:10.575Z",
+  "snapshotCreatedAt": "2026-11-23T21:05:48.398Z",
+  "engine": {
+   "name": "Stockfish 19 Lite WASM",
+   "depth": 22
+  },
+  "rule": {
+   "minShare": 0.05,
+   "minGames": 1000,
+   "minDrop": 20,
+   "maxCandidates": 60
+  }
+ },
+ "traps": [
+  {
+   "id": "rnbqkb1r/pppppppp/8/2PnP3/2B5/8/PP1P1PPP/RNBQK1NR b KQkq -|d5b4",
+   "line": [
+    "e4",
+    "Nf6",
+    "e5",
+    "Nd5",
+    "c4",
+    "Nb6",
+    "c5",
+    "Nd5",
+    "Bc4"
+   ],
+   "fen": "rnbqkb1r/pppppppp/8/2PnP3/2B5/8/PP1P1PPP/RNBQK1NR b KQkq - 2 5",
+   "victim": "black",
+   "kind": "avoid",
+   "move": {
+    "uci": "d5b4",
+    "san": "Nb4"
+   },
+   "popular": {
+    "games": 5687,
+    "share": 0.05298759864712514
+   },
+   "book": {
+    "games": 0,
+    "share": 0
+   },
+   "scoreBefore": {
+    "type": "cp",
+    "value": 23
+   },
+   "scoreAfter": {
+    "type": "cp",
+    "value": 392
+   },
+   "drop": 28.8,
+   "verdict": "mistake",
+   "refutation": {
+    "uci": [
+     "d1b3",
+     "e7e6",
+     "b3b4",
+     "d8g5",
+     "c4e2",
+     "g5e5",
+     "g1f3",
+     "e5c5",
+     "b4c5",
+     "f8c5"
+    ],
+    "san": [
+     "Qb3",
+     "e6",
+     "Qxb4",
+     "Qg5",
+     "Be2",
+     "Qxe5",
+     "Nf3",
+     "Qxc5",
+     "Qxc5",
+     "Bxc5"
+    ],
+    "why": "White wins a knight for two pawns. Stockfish rates the position +3.9."
+   },
+   "opening": "Alekhine Defense: Two Pawns Attack, Lasker Variation"
+  },
+  {
+   "id": "rnbqkb1r/ppp1pppp/8/3nN3/3P4/8/PPP2PPP/RNBQKB1R b KQkq -|f7f6",
+   "line": [
+    "e4",
+    "Nf6",
+    "e5",
+    "Nd5",
+    "d4",
+    "d6",
+    "Nf3",
+    "dxe5",
+    "Nxe5"
+   ],
+   "fen": "rnbqkb1r/ppp1pppp/8/3nN3/3P4/8/PPP2PPP/RNBQKB1R b KQkq - 0 5",
+   "victim": "black",
+   "kind": "avoid",
+   "move": {
+    "uci": "f7f6",
+    "san": "f6"
+   },
+   "popular": {
+    "games": 5240,
+    "share": 0.2728029987505206
+   },
+   "book": {
+    "games": 0,
+    "share": 0
+   },
+   "scoreBefore": {
+    "type": "cp",
+    "value": 52
+   },
+   "scoreAfter": {
+    "type": "cp",
+    "value": 424
+   },
+   "drop": 27.9,
+   "verdict": "mistake",
+   "refutation": {
+    "uci": [
+     "d1h5",
+     "g7g6",
+     "e5g6",
+     "h7g6",
+     "h5h8",
+     "d5b4",
+     "f1b5",
+     "c7c6",
+     "b5a4",
+     "c8f5"
+    ],
+    "san": [
+     "Qh5+",
+     "g6",
+     "Nxg6",
+     "hxg6",
+     "Qxh8",
+     "Nb4",
+     "Bb5+",
+     "c6",
+     "Ba4",
+     "Bf5"
+    ],
+    "why": "White wins a rook and a pawn for a knight."
+   },
+   "opening": "Alekhine Defense: Modern Variation, Larsen Variation"
+  }
+ ]
+}

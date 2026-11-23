@@ -1,0 +1,156 @@
+{
+ "meta": {
+  "formatVersion": 1,
+  "side": "black",
+  "createdAt": "2026-11-23T22:00:36.056Z",
+  "snapshotCreatedAt": "2026-11-23T22:00:13.747Z",
+  "engine": {
+   "name": "Stockfish 19 Lite WASM",
+   "depth": 22
+  },
+  "rule": {
+   "minShare": 0.05,
+   "minGames": 1000,
+   "minDrop": 20,
+   "maxCandidates": 60
+  }
+ },
+ "traps": [
+  {
+   "id": "rnbqk1nr/ppp2pbp/3p2p1/8/3NP3/2N1B3/PPP2PPP/R2QKB1R b KQkq -|c7c5",
+   "line": [
+    "e4",
+    "e5",
+    "Nf3",
+    "d6",
+    "d4",
+    "exd4",
+    "Nxd4",
+    "g6",
+    "Nc3",
+    "Bg7",
+    "Be3"
+   ],
+   "fen": "rnbqk1nr/ppp2pbp/3p2p1/8/3NP3/2N1B3/PPP2PPP/R2QKB1R b KQkq - 3 6",
+   "victim": "black",
+   "kind": "avoid",
+   "move": {
+    "uci": "c7c5",
+    "san": "c5"
+   },
+   "popular": {
+    "games": 3664,
+    "share": 0.174650841317508
+   },
+   "book": {
+    "games": 0,
+    "share": 0
+   },
+   "scoreBefore": {
+    "type": "cp",
+    "value": 107
+   },
+   "scoreAfter": {
+    "type": "cp",
+    "value": 559
+   },
+   "drop": 29,
+   "verdict": "mistake",
+   "refutation": {
+    "uci": [
+     "d4b5",
+     "g7f8",
+     "e3f4",
+     "c8e6",
+     "f4d6",
+     "b8a6",
+     "f1e2",
+     "f8d6",
+     "b5d6",
+     "e8f8"
+    ],
+    "san": [
+     "Ndb5",
+     "Bf8",
+     "Bf4",
+     "Be6",
+     "Bxd6",
+     "Na6",
+     "Be2",
+     "Bxd6",
+     "Nxd6+",
+     "Kf8"
+    ],
+    "why": "White wins a pawn. Stockfish rates the position +5.6."
+   },
+   "opening": "Philidor Defense: Larsen Variation"
+  },
+  {
+   "id": "r1bqkb1r/pppn1ppp/3p1n2/4p3/2BPP3/2N2N2/PPP2PPP/R1BQK2R b KQkq -|g7g6",
+   "line": [
+    "e4",
+    "e5",
+    "Nf3",
+    "d6",
+    "d4",
+    "Nf6",
+    "Nc3",
+    "Nbd7",
+    "Bc4"
+   ],
+   "fen": "r1bqkb1r/pppn1ppp/3p1n2/4p3/2BPP3/2N2N2/PPP2PPP/R1BQK2R b KQkq - 4 5",
+   "victim": "black",
+   "kind": "avoid",
+   "move": {
+    "uci": "g7g6",
+    "san": "g6"
+   },
+   "popular": {
+    "games": 1336,
+    "share": 0.061561146438116304
+   },
+   "book": {
+    "games": 0,
+    "share": 0
+   },
+   "scoreBefore": {
+    "type": "cp",
+    "value": 50
+   },
+   "scoreAfter": {
+    "type": "cp",
+    "value": 526
+   },
+   "drop": 32.8,
+   "verdict": "blunder",
+   "refutation": {
+    "uci": [
+     "f3g5",
+     "c7c6",
+     "c4f7",
+     "e8e7",
+     "f7b3",
+     "e5d4",
+     "d1d4",
+     "d8b6",
+     "d4d1",
+     "d7c5"
+    ],
+    "san": [
+     "Ng5",
+     "c6",
+     "Bxf7+",
+     "Ke7",
+     "Bb3",
+     "exd4",
+     "Qxd4",
+     "Qb6",
+     "Qd1",
+     "Nc5"
+    ],
+    "why": "White wins a pawn. Stockfish rates the position +5.3."
+   },
+   "opening": "Philidor Defense: Lion Variation"
+  }
+ ]
+}

@@ -1,0 +1,232 @@
+{
+ "meta": {
+  "formatVersion": 1,
+  "side": "white",
+  "createdAt": "2026-11-23T16:24:22.524Z",
+  "snapshotCreatedAt": "2026-11-23T16:23:28.388Z",
+  "engine": {
+   "name": "Stockfish 19 Lite WASM",
+   "depth": 22
+  },
+  "rule": {
+   "minShare": 0.05,
+   "minGames": 1000,
+   "minDrop": 20,
+   "maxCandidates": 60
+  }
+ },
+ "traps": [
+  {
+   "id": "r1bqk2r/pppp1ppp/2n2n2/2b5/2BPP3/5N2/PP3PPP/RNBQK2R b KQkq -|c6d4",
+   "line": [
+    "e4",
+    "e5",
+    "Nf3",
+    "Nc6",
+    "Bc4",
+    "Bc5",
+    "c3",
+    "Nf6",
+    "d4",
+    "exd4",
+    "cxd4"
+   ],
+   "fen": "r1bqk2r/pppp1ppp/2n2n2/2b5/2BPP3/5N2/PP3PPP/RNBQK2R b KQkq - 0 6",
+   "victim": "black",
+   "kind": "exploit",
+   "move": {
+    "uci": "c6d4",
+    "san": "Nxd4"
+   },
+   "popular": {
+    "games": 84069,
+    "share": 0.06888885793255581
+   },
+   "book": {
+    "games": 0,
+    "share": 0
+   },
+   "scoreBefore": {
+    "type": "cp",
+    "value": 7
+   },
+   "scoreAfter": {
+    "type": "cp",
+    "value": 447
+   },
+   "drop": 33.2,
+   "verdict": "blunder",
+   "refutation": {
+    "uci": [
+     "f3d4",
+     "e8g8",
+     "e1g1",
+     "f6e4",
+     "b1c3",
+     "e4f6",
+     "c1g5",
+     "c7c6",
+     "c3e4",
+     "c5e7"
+    ],
+    "san": [
+     "Nxd4",
+     "O-O",
+     "O-O",
+     "Nxe4",
+     "Nc3",
+     "Nf6",
+     "Bg5",
+     "c6",
+     "Ne4",
+     "Be7"
+    ],
+    "why": "White wins a knight for a pawn. Stockfish rates the position +4.5."
+   },
+   "opening": "Italian Game: Classical Variation, Greco Gambit, Traditional Line"
+  },
+  {
+   "id": "r1bqk2r/pppp1ppp/2n2n2/2b1P3/2Bp4/2P2N2/PP3PPP/RNBQK2R b KQkq -|c6e5",
+   "line": [
+    "e4",
+    "e5",
+    "Nf3",
+    "Nc6",
+    "Bc4",
+    "Bc5",
+    "c3",
+    "Nf6",
+    "d4",
+    "exd4",
+    "e5"
+   ],
+   "fen": "r1bqk2r/pppp1ppp/2n2n2/2b1P3/2Bp4/2P2N2/PP3PPP/RNBQK2R b KQkq - 0 6",
+   "victim": "black",
+   "kind": "exploit",
+   "move": {
+    "uci": "c6e5",
+    "san": "Nxe5"
+   },
+   "popular": {
+    "games": 8299,
+    "share": 0.05881102378944534
+   },
+   "book": {
+    "games": 0,
+    "share": 0
+   },
+   "scoreBefore": {
+    "type": "cp",
+    "value": 7
+   },
+   "scoreAfter": {
+    "type": "cp",
+    "value": 334
+   },
+   "drop": 26.7,
+   "verdict": "mistake",
+   "refutation": {
+    "uci": [
+     "f3e5",
+     "d7d5",
+     "c4b3",
+     "d4c3",
+     "b1c3",
+     "e8g8",
+     "e1g1",
+     "c7c6",
+     "c1f4",
+     "f8e8"
+    ],
+    "san": [
+     "Nxe5",
+     "d5",
+     "Bb3",
+     "dxc3",
+     "Nxc3",
+     "O-O",
+     "O-O",
+     "c6",
+     "Bf4",
+     "Re8"
+    ],
+    "why": "White wins a knight."
+   },
+   "opening": "Italian Game: Classical Variation, Greco Gambit, Modern Line"
+  },
+  {
+   "id": "r1bqkb1r/p4ppp/2p5/n2np1N1/8/3B4/PPPP1PPP/RNBQK2R w KQkq -|d1f3",
+   "line": [
+    "e4",
+    "e5",
+    "Nf3",
+    "Nc6",
+    "Bc4",
+    "Nf6",
+    "Ng5",
+    "d5",
+    "exd5",
+    "Na5",
+    "Bb5+",
+    "c6",
+    "dxc6",
+    "bxc6",
+    "Bd3",
+    "Nd5"
+   ],
+   "fen": "r1bqkb1r/p4ppp/2p5/n2np1N1/8/3B4/PPPP1PPP/RNBQK2R w KQkq - 2 9",
+   "victim": "white",
+   "kind": "avoid",
+   "move": {
+    "uci": "d1f3",
+    "san": "Qf3"
+   },
+   "popular": {
+    "games": 1459,
+    "share": 0.1212096037218576
+   },
+   "book": {
+    "games": 0,
+    "share": 0
+   },
+   "scoreBefore": {
+    "type": "cp",
+    "value": 17
+   },
+   "scoreAfter": {
+    "type": "cp",
+    "value": -456
+   },
+   "drop": 35.8,
+   "verdict": "blunder",
+   "refutation": {
+    "uci": [
+     "d8g5",
+     "e1g1",
+     "f8d6",
+     "b1c3",
+     "g5g4",
+     "d3e4",
+     "g4f3",
+     "e4f3",
+     "c8e6",
+     "c3e4"
+    ],
+    "san": [
+     "Qxg5",
+     "O-O",
+     "Bd6",
+     "Nc3",
+     "Qg4",
+     "Be4",
+     "Qxf3",
+     "Bxf3",
+     "Be6",
+     "Ne4"
+    ],
+    "why": "Black wins a knight."
+   },
+   "opening": "Italian Game: Two Knights Defense, Polerio Defense, Bishop Check Line"
+  }
+ ]
+}

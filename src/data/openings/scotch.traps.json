@@ -1,0 +1,836 @@
+{
+ "meta": {
+  "formatVersion": 1,
+  "side": "white",
+  "createdAt": "2026-11-23T17:01:09.418Z",
+  "snapshotCreatedAt": "2026-11-23T16:59:21.308Z",
+  "engine": {
+   "name": "Stockfish 19 Lite WASM",
+   "depth": 22
+  },
+  "rule": {
+   "minShare": 0.05,
+   "minGames": 1000,
+   "minDrop": 20,
+   "maxCandidates": 60
+  }
+ },
+ "traps": [
+  {
+   "id": "r1bqk1nr/pppp1ppp/2n5/2b5/3NP3/4B3/PPP2PPP/RN1QKB1R b KQkq -|g8f6",
+   "line": [
+    "e4",
+    "e5",
+    "Nf3",
+    "Nc6",
+    "d4",
+    "exd4",
+    "Nxd4",
+    "Bc5",
+    "Be3"
+   ],
+   "fen": "r1bqk1nr/pppp1ppp/2n5/2b5/3NP3/4B3/PPP2PPP/RN1QKB1R b KQkq - 2 5",
+   "victim": "black",
+   "kind": "exploit",
+   "move": {
+    "uci": "g8f6",
+    "san": "Nf6"
+   },
+   "popular": {
+    "games": 122641,
+    "share": 0.23936816999217336
+   },
+   "book": {
+    "games": 0,
+    "share": 0
+   },
+   "scoreBefore": {
+    "type": "cp",
+    "value": 18
+   },
+   "scoreAfter": {
+    "type": "cp",
+    "value": 623
+   },
+   "drop": 39.2,
+   "verdict": "blunder",
+   "refutation": {
+    "uci": [
+     "d4c6",
+     "b7c6",
+     "e3c5",
+     "d7d6",
+     "c5e3",
+     "a8b8",
+     "b1c3",
+     "f6g4",
+     "e3f4",
+     "d8f6"
+    ],
+    "san": [
+     "Nxc6",
+     "bxc6",
+     "Bxc5",
+     "d6",
+     "Be3",
+     "Rb8",
+     "Nc3",
+     "Ng4",
+     "Bf4",
+     "Qf6"
+    ],
+    "why": "White wins a bishop. Stockfish rates the position +6.2."
+   },
+   "opening": "Scotch Game: Classical Variation"
+  },
+  {
+   "id": "r1bqk1nr/p1pp1ppp/2p5/2b5/4P3/8/PPP2PPP/RNBQKB1R w KQkq -|c1e3",
+   "line": [
+    "e4",
+    "e5",
+    "Nf3",
+    "Nc6",
+    "d4",
+    "exd4",
+    "Nxd4",
+    "Bc5",
+    "Nxc6",
+    "bxc6"
+   ],
+   "fen": "r1bqk1nr/p1pp1ppp/2p5/2b5/4P3/8/PPP2PPP/RNBQKB1R w KQkq - 0 6",
+   "victim": "white",
+   "kind": "avoid",
+   "move": {
+    "uci": "c1e3",
+    "san": "Be3"
+   },
+   "popular": {
+    "games": 69319,
+    "share": 0.09410312939502707
+   },
+   "book": {
+    "games": 0,
+    "share": 0
+   },
+   "scoreBefore": {
+    "type": "cp",
+    "value": 35
+   },
+   "scoreAfter": {
+    "type": "cp",
+    "value": -224
+   },
+   "drop": 22.7,
+   "verdict": "mistake",
+   "refutation": {
+    "uci": [
+     "c5e3",
+     "f2e3",
+     "d8h4",
+     "e1d2",
+     "g8f6",
+     "b1c3",
+     "f6e4",
+     "c3e4",
+     "h4e4",
+     "a2a3"
+    ],
+    "san": [
+     "Bxe3",
+     "fxe3",
+     "Qh4+",
+     "Kd2",
+     "Nf6",
+     "Nc3",
+     "Nxe4+",
+     "Nxe4",
+     "Qxe4",
+     "a3"
+    ],
+    "why": "Black wins a pawn."
+   },
+   "opening": "Scotch Game: Classical Variation"
+  },
+  {
+   "id": "r1bqk2r/pppp1ppp/2n2n2/8/1b1NP3/2N5/PPP2PPP/R1BQKB1R w KQkq -|c1d2",
+   "line": [
+    "e4",
+    "e5",
+    "Nf3",
+    "Nc6",
+    "d4",
+    "exd4",
+    "Nxd4",
+    "Nf6",
+    "Nc3",
+    "Bb4"
+   ],
+   "fen": "r1bqk2r/pppp1ppp/2n2n2/8/1b1NP3/2N5/PPP2PPP/R1BQKB1R w KQkq - 3 6",
+   "victim": "white",
+   "kind": "avoid",
+   "move": {
+    "uci": "c1d2",
+    "san": "Bd2"
+   },
+   "popular": {
+    "games": 64259,
+    "share": 0.10030532253985895
+   },
+   "book": {
+    "games": 0,
+    "share": 0
+   },
+   "scoreBefore": {
+    "type": "cp",
+    "value": 11
+   },
+   "scoreAfter": {
+    "type": "cp",
+    "value": -361
+   },
+   "drop": 30.1,
+   "verdict": "blunder",
+   "refutation": {
+    "uci": [
+     "c6d4",
+     "e4e5",
+     "f6g8",
+     "a2a3",
+     "b4a5",
+     "f1c4",
+     "d7d5",
+     "e5d6",
+     "c7d6",
+     "e1g1"
+    ],
+    "san": [
+     "Nxd4",
+     "e5",
+     "Ng8",
+     "a3",
+     "Ba5",
+     "Bc4",
+     "d5",
+     "exd6",
+     "cxd6",
+     "O-O"
+    ],
+    "why": "Black wins a knight."
+   },
+   "opening": "Scotch Game: Schmidt Variation"
+  },
+  {
+   "id": "r1bqk1nr/pppp1ppp/2n5/2b5/3NP3/4B3/PPP2PPP/RN1QKB1R b KQkq -|d7d6",
+   "line": [
+    "e4",
+    "e5",
+    "Nf3",
+    "Nc6",
+    "d4",
+    "exd4",
+    "Nxd4",
+    "Bc5",
+    "Be3"
+   ],
+   "fen": "r1bqk1nr/pppp1ppp/2n5/2b5/3NP3/4B3/PPP2PPP/RN1QKB1R b KQkq - 2 5",
+   "victim": "black",
+   "kind": "exploit",
+   "move": {
+    "uci": "d7d6",
+    "san": "d6"
+   },
+   "popular": {
+    "games": 51654,
+    "share": 0.10081721000950516
+   },
+   "book": {
+    "games": 0,
+    "share": 0
+   },
+   "scoreBefore": {
+    "type": "cp",
+    "value": 28
+   },
+   "scoreAfter": {
+    "type": "cp",
+    "value": 299
+   },
+   "drop": 22.5,
+   "verdict": "mistake",
+   "refutation": {
+    "uci": [
+     "d4c6",
+     "b7c6",
+     "e3c5",
+     "d6c5",
+     "d1d8",
+     "e8d8",
+     "b1d2",
+     "g8f6",
+     "e1c1",
+     "a7a5"
+    ],
+    "san": [
+     "Nxc6",
+     "bxc6",
+     "Bxc5",
+     "dxc5",
+     "Qxd8+",
+     "Kxd8",
+     "Nd2",
+     "Nf6",
+     "O-O-O",
+     "a5"
+    ],
+    "why": "No immediate material win, but Stockfish rates the position +3.0. Black's winning chances fall from 47% to 25%."
+   },
+   "opening": "Scotch Game: Classical Variation"
+  },
+  {
+   "id": "r1bqkb1r/pppp1ppp/2n2n2/4P3/2Bp4/5N2/PPP2PPP/RNBQK2R b KQkq -|c6e5",
+   "line": [
+    "e4",
+    "e5",
+    "Nf3",
+    "Nc6",
+    "d4",
+    "exd4",
+    "Bc4",
+    "Nf6",
+    "e5"
+   ],
+   "fen": "r1bqkb1r/pppp1ppp/2n2n2/4P3/2Bp4/5N2/PPP2PPP/RNBQK2R b KQkq - 0 5",
+   "victim": "black",
+   "kind": "exploit",
+   "move": {
+    "uci": "c6e5",
+    "san": "Nxe5"
+   },
+   "popular": {
+    "games": 27360,
+    "share": 0.06308566369069579
+   },
+   "book": {
+    "games": 0,
+    "share": 0
+   },
+   "scoreBefore": {
+    "type": "cp",
+    "value": 16
+   },
+   "scoreAfter": {
+    "type": "cp",
+    "value": 320
+   },
+   "drop": 25,
+   "verdict": "mistake",
+   "refutation": {
+    "uci": [
+     "f3e5",
+     "d8e7",
+     "d1e2",
+     "d7d5",
+     "c4d3",
+     "g7g6",
+     "e1g1",
+     "f8g7",
+     "c2c3",
+     "d4c3"
+    ],
+    "san": [
+     "Nxe5",
+     "Qe7",
+     "Qe2",
+     "d5",
+     "Bd3",
+     "g6",
+     "O-O",
+     "Bg7",
+     "c3",
+     "dxc3"
+    ],
+    "why": "White wins a knight for a pawn."
+   },
+   "opening": "Scotch Game: Scotch Gambit, Advance Variation"
+  },
+  {
+   "id": "r1bqkb1r/ppp2ppp/2n2n2/3pP3/2Bp4/5N2/PPP2PPP/RNBQK2R w KQkq d6|e5f6",
+   "line": [
+    "e4",
+    "e5",
+    "Nf3",
+    "Nc6",
+    "d4",
+    "exd4",
+    "Bc4",
+    "Nf6",
+    "e5",
+    "d5"
+   ],
+   "fen": "r1bqkb1r/ppp2ppp/2n2n2/3pP3/2Bp4/5N2/PPP2PPP/RNBQK2R w KQkq d6 0 6",
+   "victim": "white",
+   "kind": "avoid",
+   "move": {
+    "uci": "e5f6",
+    "san": "exf6"
+   },
+   "popular": {
+    "games": 13783,
+    "share": 0.2275774387424873
+   },
+   "book": {
+    "games": 1,
+    "share": 0.0004601932811780948
+   },
+   "scoreBefore": {
+    "type": "cp",
+    "value": 8
+   },
+   "scoreAfter": {
+    "type": "cp",
+    "value": -337
+   },
+   "drop": 28.3,
+   "verdict": "mistake",
+   "refutation": {
+    "uci": [
+     "d5c4",
+     "c2c3",
+     "c8g4",
+     "d1e2",
+     "g4e6",
+     "f6g7",
+     "f8g7",
+     "e1g1",
+     "d4d3",
+     "e2e4"
+    ],
+    "san": [
+     "dxc4",
+     "c3",
+     "Bg4",
+     "Qe2+",
+     "Be6",
+     "fxg7",
+     "Bxg7",
+     "O-O",
+     "d3",
+     "Qe4"
+    ],
+    "why": "Black wins a bishop."
+   },
+   "opening": "Scotch Game: Scotch Gambit, Advance Variation"
+  },
+  {
+   "id": "r1bqkb1r/pppp1ppp/2n5/4P3/2Bp2n1/5N2/PPP2PPP/RNBQK2R w KQkq -|f3g5",
+   "line": [
+    "e4",
+    "e5",
+    "Nf3",
+    "Nc6",
+    "d4",
+    "exd4",
+    "Bc4",
+    "Nf6",
+    "e5",
+    "Ng4"
+   ],
+   "fen": "r1bqkb1r/pppp1ppp/2n5/4P3/2Bp2n1/5N2/PPP2PPP/RNBQK2R w KQkq - 1 6",
+   "victim": "white",
+   "kind": "avoid",
+   "move": {
+    "uci": "f3g5",
+    "san": "Ng5"
+   },
+   "popular": {
+    "games": 11585,
+    "share": 0.0970398043288883
+   },
+   "book": {
+    "games": 0,
+    "share": 0
+   },
+   "scoreBefore": {
+    "type": "cp",
+    "value": 23
+   },
+   "scoreAfter": {
+    "type": "cp",
+    "value": -291
+   },
+   "drop": 26.6,
+   "verdict": "mistake",
+   "refutation": {
+    "uci": [
+     "g4e5",
+     "c4d5",
+     "f8e7",
+     "f2f4",
+     "e7g5",
+     "f4g5",
+     "d7d6",
+     "e1g1",
+     "c8e6",
+     "d5c6"
+    ],
+    "san": [
+     "Ngxe5",
+     "Bd5",
+     "Be7",
+     "f4",
+     "Bxg5",
+     "fxg5",
+     "d6",
+     "O-O",
+     "Be6",
+     "Bxc6+"
+    ],
+    "why": "No immediate material win, but Stockfish rates the position -2.9. White's winning chances fall from 52% to 26%."
+   },
+   "opening": "Scotch Game: Scotch Gambit, Kingside Variation"
+  },
+  {
+   "id": "r1bqk1nr/pppp1ppp/2n5/2b5/3NP3/2P1B3/PP3PPP/RN1QKB1R b KQkq -|g8f6",
+   "line": [
+    "e4",
+    "e5",
+    "Nf3",
+    "Nc6",
+    "d4",
+    "exd4",
+    "Nxd4",
+    "Bb4+",
+    "c3",
+    "Bc5",
+    "Be3"
+   ],
+   "fen": "r1bqk1nr/pppp1ppp/2n5/2b5/3NP3/2P1B3/PP3PPP/RN1QKB1R b KQkq - 2 6",
+   "victim": "black",
+   "kind": "exploit",
+   "move": {
+    "uci": "g8f6",
+    "san": "Nf6"
+   },
+   "popular": {
+    "games": 9047,
+    "share": 0.34912978041909465
+   },
+   "book": {
+    "games": 0,
+    "share": 0
+   },
+   "scoreBefore": {
+    "type": "cp",
+    "value": 56
+   },
+   "scoreAfter": {
+    "type": "cp",
+    "value": 632
+   },
+   "drop": 36,
+   "verdict": "blunder",
+   "refutation": {
+    "uci": [
+     "d4c6",
+     "b7c6",
+     "e3c5",
+     "d7d6",
+     "c5d4",
+     "a8b8",
+     "d1c2",
+     "e8g8",
+     "d4f6",
+     "d8f6"
+    ],
+    "san": [
+     "Nxc6",
+     "bxc6",
+     "Bxc5",
+     "d6",
+     "Bd4",
+     "Rb8",
+     "Qc2",
+     "O-O",
+     "Bxf6",
+     "Qxf6"
+    ],
+    "why": "White wins a knight. Stockfish rates the position +6.3."
+   },
+   "opening": "Scotch Game: Malaniuk Variation"
+  },
+  {
+   "id": "r1bqk1nr/pppp1ppp/2n5/2b5/4P3/1N6/PPP2PPP/RNBQKB1R b KQkq -|d8f6",
+   "line": [
+    "e4",
+    "e5",
+    "Nf3",
+    "Nc6",
+    "d4",
+    "exd4",
+    "Nxd4",
+    "Bc5",
+    "Nb3"
+   ],
+   "fen": "r1bqk1nr/pppp1ppp/2n5/2b5/4P3/1N6/PPP2PPP/RNBQKB1R b KQkq - 2 5",
+   "victim": "black",
+   "kind": "exploit",
+   "move": {
+    "uci": "d8f6",
+    "san": "Qf6"
+   },
+   "popular": {
+    "games": 2835,
+    "share": 0.058490994243743426
+   },
+   "book": {
+    "games": 0,
+    "share": 0
+   },
+   "scoreBefore": {
+    "type": "cp",
+    "value": 32
+   },
+   "scoreAfter": {
+    "type": "cp",
+    "value": 624
+   },
+   "drop": 37.9,
+   "verdict": "blunder",
+   "refutation": {
+    "uci": [
+     "b3c5",
+     "f6e5",
+     "c1e3",
+     "e5b2",
+     "b1d2",
+     "c6b4",
+     "a1c1",
+     "b4a2",
+     "c1b1",
+     "b2f6"
+    ],
+    "san": [
+     "Nxc5",
+     "Qe5",
+     "Be3",
+     "Qxb2",
+     "Nd2",
+     "Nb4",
+     "Rc1",
+     "Nxa2",
+     "Rb1",
+     "Qf6"
+    ],
+    "why": "White wins a bishop for two pawns. Stockfish rates the position +6.2."
+   },
+   "opening": "Scotch Game: Potter Variation"
+  },
+  {
+   "id": "r1bqk1nr/pppp1ppp/2n5/2b5/4P3/1N6/PPP2PPP/RNBQKB1R b KQkq -|c5f2",
+   "line": [
+    "e4",
+    "e5",
+    "Nf3",
+    "Nc6",
+    "d4",
+    "exd4",
+    "Nxd4",
+    "Bc5",
+    "Nb3"
+   ],
+   "fen": "r1bqk1nr/pppp1ppp/2n5/2b5/4P3/1N6/PPP2PPP/RNBQKB1R b KQkq - 2 5",
+   "victim": "black",
+   "kind": "exploit",
+   "move": {
+    "uci": "c5f2",
+    "san": "Bxf2+"
+   },
+   "popular": {
+    "games": 2769,
+    "share": 0.057129299139656274
+   },
+   "book": {
+    "games": 0,
+    "share": 0
+   },
+   "scoreBefore": {
+    "type": "cp",
+    "value": 39
+   },
+   "scoreAfter": {
+    "type": "cp",
+    "value": 485
+   },
+   "drop": 32.1,
+   "verdict": "blunder",
+   "refutation": {
+    "uci": [
+     "e1f2",
+     "g8f6",
+     "f2g1",
+     "e8g8",
+     "c1g5",
+     "h7h6",
+     "g5h4",
+     "g7g5",
+     "h4g3",
+     "f6e4"
+    ],
+    "san": [
+     "Kxf2",
+     "Nf6",
+     "Kg1",
+     "O-O",
+     "Bg5",
+     "h6",
+     "Bh4",
+     "g5",
+     "Bg3",
+     "Nxe4"
+    ],
+    "why": "White wins a bishop for a pawn. Stockfish rates the position +4.8."
+   },
+   "opening": "Scotch Game: Potter Variation"
+  },
+  {
+   "id": "r1bqkb1r/ppp2ppp/2n2n2/1B1pP3/3p4/5N2/PPP2PPP/RNBQK2R b KQkq -|a7a6",
+   "line": [
+    "e4",
+    "e5",
+    "Nf3",
+    "Nc6",
+    "d4",
+    "exd4",
+    "Bc4",
+    "Nf6",
+    "e5",
+    "d5",
+    "Bb5"
+   ],
+   "fen": "r1bqkb1r/ppp2ppp/2n2n2/1B1pP3/3p4/5N2/PPP2PPP/RNBQK2R b KQkq - 1 6",
+   "victim": "black",
+   "kind": "exploit",
+   "move": {
+    "uci": "a7a6",
+    "san": "a6"
+   },
+   "popular": {
+    "games": 1420,
+    "share": 0.059327344892416964
+   },
+   "book": {
+    "games": 0,
+    "share": 0
+   },
+   "scoreBefore": {
+    "type": "cp",
+    "value": 19
+   },
+   "scoreAfter": {
+    "type": "cp",
+    "value": 480
+   },
+   "drop": 33.7,
+   "verdict": "blunder",
+   "refutation": {
+    "uci": [
+     "b5c6",
+     "b7c6",
+     "e5f6",
+     "d8f6",
+     "e1g1",
+     "f8c5",
+     "f1e1",
+     "c8e6",
+     "c2c3",
+     "d4c3"
+    ],
+    "san": [
+     "Bxc6+",
+     "bxc6",
+     "exf6",
+     "Qxf6",
+     "O-O",
+     "Bc5",
+     "Re1+",
+     "Be6",
+     "c3",
+     "dxc3"
+    ],
+    "why": "White wins two knights for a bishop and two pawns. Stockfish rates the position +4.8."
+   },
+   "opening": "Scotch Game: Scotch Gambit, Advance Variation"
+  },
+  {
+   "id": "r1b1kb1r/p1ppqppp/2p2n2/4P3/8/8/PPP1QPPP/RNB1KB1R b KQkq -|d7d6",
+   "line": [
+    "e4",
+    "e5",
+    "Nf3",
+    "Nc6",
+    "d4",
+    "exd4",
+    "Nxd4",
+    "Nf6",
+    "Nxc6",
+    "bxc6",
+    "e5",
+    "Qe7",
+    "Qe2"
+   ],
+   "fen": "r1b1kb1r/p1ppqppp/2p2n2/4P3/8/8/PPP1QPPP/RNB1KB1R b KQkq - 2 7",
+   "victim": "black",
+   "kind": "exploit",
+   "move": {
+    "uci": "d7d6",
+    "san": "d6"
+   },
+   "popular": {
+    "games": 1368,
+    "share": 0.06275517225560806
+   },
+   "book": {
+    "games": 0,
+    "share": 0
+   },
+   "scoreBefore": {
+    "type": "cp",
+    "value": 22
+   },
+   "scoreAfter": {
+    "type": "cp",
+    "value": 563
+   },
+   "drop": 36.8,
+   "verdict": "blunder",
+   "refutation": {
+    "uci": [
+     "e5f6",
+     "g7f6",
+     "c1d2",
+     "c8e6",
+     "g2g3",
+     "d6d5",
+     "f1g2",
+     "e6g4",
+     "e2e7",
+     "f8e7"
+    ],
+    "san": [
+     "exf6",
+     "gxf6",
+     "Bd2",
+     "Be6",
+     "g3",
+     "d5",
+     "Bg2",
+     "Bg4",
+     "Qxe7+",
+     "Bxe7"
+    ],
+    "why": "White wins a knight for a pawn. Stockfish rates the position +5.6."
+   },
+   "opening": "Scotch Game: Mieses Variation"
+  }
+ ]
+}

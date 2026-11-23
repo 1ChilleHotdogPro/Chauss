@@ -1,0 +1,87 @@
+{
+ "meta": {
+  "formatVersion": 1,
+  "side": "black",
+  "createdAt": "2026-11-23T22:12:47.516Z",
+  "snapshotCreatedAt": "2026-11-23T22:12:34.970Z",
+  "engine": {
+   "name": "Stockfish 19 Lite WASM",
+   "depth": 22
+  },
+  "rule": {
+   "minShare": 0.05,
+   "minGames": 1000,
+   "minDrop": 20,
+   "maxCandidates": 60
+  }
+ },
+ "traps": [
+  {
+   "id": "rnbqk2r/ppp2ppp/4pn2/3p4/QbPP4/2N2N2/PP2PPPP/R1B1KB1R b KQkq -|c8d7",
+   "line": [
+    "d4",
+    "d5",
+    "c4",
+    "e6",
+    "Nc3",
+    "Nf6",
+    "Nf3",
+    "Bb4",
+    "Qa4+"
+   ],
+   "fen": "rnbqk2r/ppp2ppp/4pn2/3p4/QbPP4/2N2N2/PP2PPPP/R1B1KB1R b KQkq - 5 5",
+   "victim": "black",
+   "kind": "avoid",
+   "move": {
+    "uci": "c8d7",
+    "san": "Bd7"
+   },
+   "popular": {
+    "games": 3897,
+    "share": 0.0720319402598843
+   },
+   "book": {
+    "games": 0,
+    "share": 0
+   },
+   "scoreBefore": {
+    "type": "cp",
+    "value": 8
+   },
+   "scoreAfter": {
+    "type": "cp",
+    "value": 599
+   },
+   "drop": 39.3,
+   "verdict": "blunder",
+   "refutation": {
+    "uci": [
+     "a4b4",
+     "b8c6",
+     "b4b3",
+     "c6a5",
+     "b3d1",
+     "a5c4",
+     "e2e3",
+     "e8g8",
+     "f1e2",
+     "c7c5"
+    ],
+    "san": [
+     "Qxb4",
+     "Nc6",
+     "Qb3",
+     "Na5",
+     "Qd1",
+     "Nxc4",
+     "e3",
+     "O-O",
+     "Be2",
+     "c5"
+    ],
+    "why": "White wins a bishop for a pawn. Stockfish rates the position +6.0."
+   },
+   "opening": "Queen's Gambit Declined: Ragozin Defense, Alekhine Variation"
+  }
+ ]
+}

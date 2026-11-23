@@ -1,3 +1,5 @@
+import { ENDGAME_DRILLS } from '../src/endgames/drills';
+import { OPENINGS } from '../src/openings/registry';
 import { enterDrill, expect, openApp, test } from './helpers';
 
 test('the navigation sits above the board and the Play tab is gone', async ({ page }) => {
@@ -21,11 +23,18 @@ test('Drill opens a full-page choice: Openings or Endgames', async ({ page }) =>
   // Endgames lists the endgame drills from the data.
   await hub.locator('[data-category="endgames"]').click();
   await expect(hub.locator('[data-entry="kq-vs-k"]')).toContainText('King and Queen vs King');
+  await expect(hub.locator('[data-entry]')).toHaveCount(ENDGAME_DRILLS.length);
+  await expect(hub.locator('.hub-group-title')).toHaveText([/^Give checkmate/, /^Win it/, /^Hold the draw/]);
   await hub.getByRole('button', { name: /All drills/ }).click();
 
   // Openings lists every opening; the current one is marked.
   await hub.locator('[data-category="openings"]').click();
-  await expect(hub.locator('[data-entry]')).toHaveCount(2);
+  await expect(hub.locator('[data-entry]')).toHaveCount(OPENINGS.length);
+  // Grouped by the side the user plays, White first.
+  const white = OPENINGS.filter((opening) => opening.side === 'white').length;
+  await expect(hub.locator('.hub-group-title')).toHaveText([`You play White (${white})`, `You play Black (${OPENINGS.length - white})`]);
+  await expect(hub.locator('.hub-group').first().locator('[data-entry="ponziani"]')).toBeVisible();
+  await expect(hub.locator('.hub-group').last().locator('[data-entry="caro-kann"]')).toBeVisible();
   await expect(hub.locator('[data-entry="ponziani"]')).toHaveAttribute('aria-current', 'true');
 });
 

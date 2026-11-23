@@ -1,0 +1,88 @@
+{
+ "meta": {
+  "formatVersion": 1,
+  "side": "black",
+  "createdAt": "2026-11-23T22:29:05.929Z",
+  "snapshotCreatedAt": "2026-11-23T22:28:53.697Z",
+  "engine": {
+   "name": "Stockfish 19 Lite WASM",
+   "depth": 22
+  },
+  "rule": {
+   "minShare": 0.05,
+   "minGames": 1000,
+   "minDrop": 20,
+   "maxCandidates": 60
+  }
+ },
+ "traps": [
+  {
+   "id": "r1bqkb1r/pp2pppp/2n2n2/3p4/3P1B2/2N5/PP2PPPP/R2QKBNR w KQkq -|c3b5",
+   "line": [
+    "d4",
+    "d5",
+    "c4",
+    "c6",
+    "Nc3",
+    "Nf6",
+    "cxd5",
+    "cxd5",
+    "Bf4",
+    "Nc6"
+   ],
+   "fen": "r1bqkb1r/pp2pppp/2n2n2/3p4/3P1B2/2N5/PP2PPPP/R2QKBNR w KQkq - 4 6",
+   "victim": "white",
+   "kind": "exploit",
+   "move": {
+    "uci": "c3b5",
+    "san": "Nb5"
+   },
+   "popular": {
+    "games": 4004,
+    "share": 0.160038370838163
+   },
+   "book": {
+    "games": 0,
+    "share": 0
+   },
+   "scoreBefore": {
+    "type": "cp",
+    "value": 8
+   },
+   "scoreAfter": {
+    "type": "cp",
+    "value": -244
+   },
+   "drop": 21.8,
+   "verdict": "mistake",
+   "refutation": {
+    "uci": [
+     "e7e5",
+     "f4e5",
+     "f6e4",
+     "a1c1",
+     "d8a5",
+     "b5c3",
+     "e4c3",
+     "b2c3",
+     "c6e5",
+     "d4e5"
+    ],
+    "san": [
+     "e5",
+     "Bxe5",
+     "Ne4",
+     "Rc1",
+     "Qa5+",
+     "Nc3",
+     "Nxc3",
+     "bxc3",
+     "Nxe5",
+     "dxe5"
+    ],
+    "why": "No immediate material win, but Stockfish rates the position -2.4. White's winning chances fall from 51% to 29%."
+   },
+   "opening": "Slav Defense: Exchange Variation"
+  }
+ ]
+}

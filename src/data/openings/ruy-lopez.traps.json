@@ -1,0 +1,780 @@
+{
+ "meta": {
+  "formatVersion": 1,
+  "side": "white",
+  "createdAt": "2026-11-23T16:39:13.330Z",
+  "snapshotCreatedAt": "2026-11-23T16:37:42.437Z",
+  "engine": {
+   "name": "Stockfish 19 Lite WASM",
+   "depth": 22
+  },
+  "rule": {
+   "minShare": 0.05,
+   "minGames": 1000,
+   "minDrop": 20,
+   "maxCandidates": 60
+  }
+ },
+ "traps": [
+  {
+   "id": "r1bqk2r/ppp2ppp/2p2n2/2b1p3/4P3/3P1N2/PPP2PPP/RNBQK2R w KQkq -|f3e5",
+   "line": [
+    "e4",
+    "e5",
+    "Nf3",
+    "Nc6",
+    "Bb5",
+    "Nf6",
+    "d3",
+    "Bc5",
+    "Bxc6",
+    "dxc6"
+   ],
+   "fen": "r1bqk2r/ppp2ppp/2p2n2/2b1p3/4P3/3P1N2/PPP2PPP/RNBQK2R w KQkq - 0 6",
+   "victim": "white",
+   "kind": "avoid",
+   "move": {
+    "uci": "f3e5",
+    "san": "Nxe5"
+   },
+   "popular": {
+    "games": 114977,
+    "share": 0.44792859758615583
+   },
+   "book": {
+    "games": 1,
+    "share": 0.00027800945232137893
+   },
+   "scoreBefore": {
+    "type": "cp",
+    "value": 9
+   },
+   "scoreAfter": {
+    "type": "cp",
+    "value": -472
+   },
+   "drop": 35.9,
+   "verdict": "blunder",
+   "refutation": {
+    "uci": [
+     "d8d4",
+     "d1e2",
+     "d4e5",
+     "h2h3",
+     "c8d7",
+     "a2a4",
+     "e8c8",
+     "b1d2",
+     "d8e8",
+     "a4a5"
+    ],
+    "san": [
+     "Qd4",
+     "Qe2",
+     "Qxe5",
+     "h3",
+     "Bd7",
+     "a4",
+     "O-O-O",
+     "Nd2",
+     "Rde8",
+     "a5"
+    ],
+    "why": "Black wins a knight."
+   },
+   "opening": "Ruy Lopez: Berlin Defense, Anti-Berlin Variation"
+  },
+  {
+   "id": "r1bqkb1r/pppp1ppp/2n5/1B2p3/4n3/5N2/PPPP1PPP/RNBQR1K1 b kq -|d7d5",
+   "line": [
+    "e4",
+    "e5",
+    "Nf3",
+    "Nc6",
+    "Bb5",
+    "Nf6",
+    "O-O",
+    "Nxe4",
+    "Re1"
+   ],
+   "fen": "r1bqkb1r/pppp1ppp/2n5/1B2p3/4n3/5N2/PPPP1PPP/RNBQR1K1 b kq - 1 5",
+   "victim": "black",
+   "kind": "exploit",
+   "move": {
+    "uci": "d7d5",
+    "san": "d5"
+   },
+   "popular": {
+    "games": 77715,
+    "share": 0.2222988183537044
+   },
+   "book": {
+    "games": 1,
+    "share": 0.00015969338869370808
+   },
+   "scoreBefore": {
+    "type": "cp",
+    "value": 20
+   },
+   "scoreAfter": {
+    "type": "cp",
+    "value": 387
+   },
+   "drop": 28.8,
+   "verdict": "mistake",
+   "refutation": {
+    "uci": [
+     "d2d3",
+     "e4f2",
+     "b5c6",
+     "b7c6",
+     "e1e5",
+     "f8e7",
+     "g1f2",
+     "e8g8",
+     "f2g1",
+     "e7d6"
+    ],
+    "san": [
+     "d3",
+     "Nxf2",
+     "Bxc6+",
+     "bxc6",
+     "Rxe5+",
+     "Be7",
+     "Kxf2",
+     "O-O",
+     "Kg1",
+     "Bd6"
+    ],
+    "why": "White wins two knights for a bishop."
+   },
+   "opening": "Ruy Lopez: Berlin Defense, Rio Gambit Accepted"
+  },
+  {
+   "id": "r1bqkb1r/2pp1ppp/p1n2n2/1p2p3/4P3/1B1P1N2/PPP2PPP/RNBQK2R b KQkq -|c6d4",
+   "line": [
+    "e4",
+    "e5",
+    "Nf3",
+    "Nc6",
+    "Bb5",
+    "a6",
+    "Ba4",
+    "Nf6",
+    "d3",
+    "b5",
+    "Bb3"
+   ],
+   "fen": "r1bqkb1r/2pp1ppp/p1n2n2/1p2p3/4P3/1B1P1N2/PPP2PPP/RNBQK2R b KQkq - 1 6",
+   "victim": "black",
+   "kind": "exploit",
+   "move": {
+    "uci": "c6d4",
+    "san": "Nd4"
+   },
+   "popular": {
+    "games": 23749,
+    "share": 0.07029596587764139
+   },
+   "book": {
+    "games": 0,
+    "share": 0
+   },
+   "scoreBefore": {
+    "type": "cp",
+    "value": 15
+   },
+   "scoreAfter": {
+    "type": "cp",
+    "value": 395
+   },
+   "drop": 29.7,
+   "verdict": "mistake",
+   "refutation": {
+    "uci": [
+     "f3d4",
+     "e5d4",
+     "e4e5",
+     "c8b7",
+     "e5f6",
+     "d8f6",
+     "e1g1",
+     "e8c8",
+     "b1d2",
+     "d8e8"
+    ],
+    "san": [
+     "Nxd4",
+     "exd4",
+     "e5",
+     "Bb7",
+     "exf6",
+     "Qxf6",
+     "O-O",
+     "O-O-O",
+     "Nd2",
+     "Re8"
+    ],
+    "why": "White wins a knight for a pawn."
+   },
+   "opening": "Ruy Lopez: Morphy Defense, Anderssen Variation"
+  },
+  {
+   "id": "r1bqkb1r/pppp1ppp/2n5/1B2p3/3Pn3/5N2/PPP2PPP/RNBQ1RK1 b kq -|c6d4",
+   "line": [
+    "e4",
+    "e5",
+    "Nf3",
+    "Nc6",
+    "Bb5",
+    "Nf6",
+    "O-O",
+    "Nxe4",
+    "d4"
+   ],
+   "fen": "r1bqkb1r/pppp1ppp/2n5/1B2p3/3Pn3/5N2/PPP2PPP/RNBQ1RK1 b kq - 0 5",
+   "victim": "black",
+   "kind": "exploit",
+   "move": {
+    "uci": "c6d4",
+    "san": "Nxd4"
+   },
+   "popular": {
+    "games": 11017,
+    "share": 0.12425421530479897
+   },
+   "book": {
+    "games": 0,
+    "share": 0
+   },
+   "scoreBefore": {
+    "type": "cp",
+    "value": 8
+   },
+   "scoreAfter": {
+    "type": "cp",
+    "value": 360
+   },
+   "drop": 28.3,
+   "verdict": "mistake",
+   "refutation": {
+    "uci": [
+     "f3d4",
+     "a7a6",
+     "b5d3",
+     "d7d5",
+     "d4f3",
+     "f8d6",
+     "c2c4",
+     "e4c5",
+     "c4d5",
+     "e8g8"
+    ],
+    "san": [
+     "Nxd4",
+     "a6",
+     "Bd3",
+     "d5",
+     "Nf3",
+     "Bd6",
+     "c4",
+     "Nc5",
+     "cxd5",
+     "O-O"
+    ],
+    "why": "White wins a knight and a pawn."
+   },
+   "opening": "Ruy Lopez: Berlin Defense, Rio Gambit Accepted"
+  },
+  {
+   "id": "r1bqkb1r/pppp1ppp/2nn4/1B2N3/8/8/PPPP1PPP/RNBQR1K1 b kq -|d6b5",
+   "line": [
+    "e4",
+    "e5",
+    "Nf3",
+    "Nc6",
+    "Bb5",
+    "Nf6",
+    "O-O",
+    "Nxe4",
+    "Re1",
+    "Nd6",
+    "Nxe5"
+   ],
+   "fen": "r1bqkb1r/pppp1ppp/2nn4/1B2N3/8/8/PPPP1PPP/RNBQR1K1 b kq - 0 6",
+   "victim": "black",
+   "kind": "exploit",
+   "move": {
+    "uci": "d6b5",
+    "san": "Nxb5"
+   },
+   "popular": {
+    "games": 5007,
+    "share": 0.21598654128202915
+   },
+   "book": {
+    "games": 0,
+    "share": 0
+   },
+   "scoreBefore": {
+    "type": "cp",
+    "value": 29
+   },
+   "scoreAfter": {
+    "type": "cp",
+    "value": 754
+   },
+   "drop": 41.5,
+   "verdict": "blunder",
+   "refutation": {
+    "uci": [
+     "e5c6",
+     "f8e7",
+     "c6d8",
+     "b5d4",
+     "d8f7",
+     "e8f7",
+     "d2d3",
+     "h7h5",
+     "e1e7",
+     "f7e7"
+    ],
+    "san": [
+     "Nxc6+",
+     "Be7",
+     "Nxd8",
+     "Nd4",
+     "Nxf7",
+     "Kxf7",
+     "d3",
+     "h5",
+     "Rxe7+",
+     "Kxe7"
+    ],
+    "why": "White wins a queen, a bishop and a pawn for a rook."
+   },
+   "opening": "Ruy Lopez: Berlin Defense, Rio Gambit Accepted"
+  },
+  {
+   "id": "r1bqkb1r/pppp1ppp/2n5/1B2p3/3Pn3/5N2/PPP2PPP/RNBQ1RK1 b kq -|d7d6",
+   "line": [
+    "e4",
+    "e5",
+    "Nf3",
+    "Nc6",
+    "Bb5",
+    "Nf6",
+    "O-O",
+    "Nxe4",
+    "d4"
+   ],
+   "fen": "r1bqkb1r/pppp1ppp/2n5/1B2p3/3Pn3/5N2/PPP2PPP/RNBQ1RK1 b kq - 0 5",
+   "victim": "black",
+   "kind": "exploit",
+   "move": {
+    "uci": "d7d6",
+    "san": "d6"
+   },
+   "popular": {
+    "games": 4899,
+    "share": 0.05525291828793774
+   },
+   "book": {
+    "games": 1,
+    "share": 0.00008159934720522235
+   },
+   "scoreBefore": {
+    "type": "cp",
+    "value": 15
+   },
+   "scoreAfter": {
+    "type": "cp",
+    "value": 268
+   },
+   "drop": 21.5,
+   "verdict": "mistake",
+   "refutation": {
+    "uci": [
+     "d1e2",
+     "f7f5",
+     "d4d5",
+     "c8d7",
+     "d5c6",
+     "b7c6",
+     "b5c4",
+     "f8e7",
+     "f1d1",
+     "a7a5"
+    ],
+    "san": [
+     "Qe2",
+     "f5",
+     "d5",
+     "Bd7",
+     "dxc6",
+     "bxc6",
+     "Bc4",
+     "Be7",
+     "Rd1",
+     "a5"
+    ],
+    "why": "White wins a knight for a pawn."
+   },
+   "opening": "Ruy Lopez: Berlin Defense, Rio Gambit Accepted"
+  },
+  {
+   "id": "r1bqkb1r/2pp1ppp/p1n5/1p2p3/3Pn3/1B3N2/PPP2PPP/RNBQ1RK1 b kq -|d7d6",
+   "line": [
+    "e4",
+    "e5",
+    "Nf3",
+    "Nc6",
+    "Bb5",
+    "a6",
+    "Ba4",
+    "Nf6",
+    "O-O",
+    "Nxe4",
+    "d4",
+    "b5",
+    "Bb3"
+   ],
+   "fen": "r1bqkb1r/2pp1ppp/p1n5/1p2p3/3Pn3/1B3N2/PPP2PPP/RNBQ1RK1 b kq - 1 7",
+   "victim": "black",
+   "kind": "exploit",
+   "move": {
+    "uci": "d7d6",
+    "san": "d6"
+   },
+   "popular": {
+    "games": 3242,
+    "share": 0.15000925411808255
+   },
+   "book": {
+    "games": 0,
+    "share": 0
+   },
+   "scoreBefore": {
+    "type": "cp",
+    "value": 46
+   },
+   "scoreAfter": {
+    "type": "cp",
+    "value": 342
+   },
+   "drop": 23.7,
+   "verdict": "mistake",
+   "refutation": {
+    "uci": [
+     "b3d5",
+     "c8b7",
+     "d5e4",
+     "d6d5",
+     "e4f5",
+     "e5e4",
+     "f3e5",
+     "c6e5",
+     "d4e5",
+     "g7g6"
+    ],
+    "san": [
+     "Bd5",
+     "Bb7",
+     "Bxe4",
+     "d5",
+     "Bf5",
+     "e4",
+     "Ne5",
+     "Nxe5",
+     "dxe5",
+     "g6"
+    ],
+    "why": "White wins a knight."
+   },
+   "opening": "Ruy Lopez: Open"
+  },
+  {
+   "id": "r1bqkbnr/1pp3pp/p1p2p2/8/3NP3/8/PPP2PPP/RNBQ1RK1 b kq -|f8c5",
+   "line": [
+    "e4",
+    "e5",
+    "Nf3",
+    "Nc6",
+    "Bb5",
+    "a6",
+    "Bxc6",
+    "dxc6",
+    "O-O",
+    "f6",
+    "d4",
+    "exd4",
+    "Nxd4"
+   ],
+   "fen": "r1bqkbnr/1pp3pp/p1p2p2/8/3NP3/8/PPP2PPP/RNBQ1RK1 b kq - 0 7",
+   "victim": "black",
+   "kind": "exploit",
+   "move": {
+    "uci": "f8c5",
+    "san": "Bc5"
+   },
+   "popular": {
+    "games": 2588,
+    "share": 0.3775346462436178
+   },
+   "book": {
+    "games": 0,
+    "share": 0
+   },
+   "scoreBefore": {
+    "type": "cp",
+    "value": 6
+   },
+   "scoreAfter": {
+    "type": "cp",
+    "value": 728
+   },
+   "drop": 43,
+   "verdict": "blunder",
+   "refutation": {
+    "uci": [
+     "d1h5",
+     "e8f8",
+     "h5c5",
+     "g8e7",
+     "c5c4",
+     "b7b6",
+     "d4f3",
+     "c6c5",
+     "h2h4",
+     "e7g6"
+    ],
+    "san": [
+     "Qh5+",
+     "Kf8",
+     "Qxc5+",
+     "Ne7",
+     "Qc4",
+     "b6",
+     "Nf3",
+     "c5",
+     "h4",
+     "Ng6"
+    ],
+    "why": "White wins a bishop. Stockfish rates the position +7.3."
+   },
+   "opening": "Ruy Lopez: Exchange Variation, Gligoric Variation"
+  },
+  {
+   "id": "r1bqkb1r/2pp1ppp/p1n5/1p2p3/3Pn3/1B3N2/PPP2PPP/RNBQ1RK1 b kq -|c6d4",
+   "line": [
+    "e4",
+    "e5",
+    "Nf3",
+    "Nc6",
+    "Bb5",
+    "a6",
+    "Ba4",
+    "Nf6",
+    "O-O",
+    "Nxe4",
+    "d4",
+    "b5",
+    "Bb3"
+   ],
+   "fen": "r1bqkb1r/2pp1ppp/p1n5/1p2p3/3Pn3/1B3N2/PPP2PPP/RNBQ1RK1 b kq - 1 7",
+   "victim": "black",
+   "kind": "exploit",
+   "move": {
+    "uci": "c6d4",
+    "san": "Nxd4"
+   },
+   "popular": {
+    "games": 1801,
+    "share": 0.08333333333333333
+   },
+   "book": {
+    "games": 0,
+    "share": 0
+   },
+   "scoreBefore": {
+    "type": "cp",
+    "value": 43
+   },
+   "scoreAfter": {
+    "type": "cp",
+    "value": 357
+   },
+   "drop": 24.9,
+   "verdict": "mistake",
+   "refutation": {
+    "uci": [
+     "f3d4",
+     "c8b7",
+     "d4f3",
+     "f8d6",
+     "b1c3",
+     "e4c3",
+     "b2c3",
+     "e8g8",
+     "b3d5",
+     "b7d5"
+    ],
+    "san": [
+     "Nxd4",
+     "Bb7",
+     "Nf3",
+     "Bd6",
+     "Nc3",
+     "Nxc3",
+     "bxc3",
+     "O-O",
+     "Bd5",
+     "Bxd5"
+    ],
+    "why": "No immediate material win, but Stockfish rates the position +3.6. Black's winning chances fall from 46% to 21%."
+   },
+   "opening": "Ruy Lopez: Open"
+  },
+  {
+   "id": "r1bqkb1r/1ppp1ppp/p1n5/4p3/B2Pn3/5N2/PPP2PPP/RNBQ1RK1 b kq -|c6d4",
+   "line": [
+    "e4",
+    "e5",
+    "Nf3",
+    "Nc6",
+    "Bb5",
+    "a6",
+    "Ba4",
+    "Nf6",
+    "O-O",
+    "Nxe4",
+    "d4"
+   ],
+   "fen": "r1bqkb1r/1ppp1ppp/p1n5/4p3/B2Pn3/5N2/PPP2PPP/RNBQ1RK1 b kq - 0 6",
+   "victim": "black",
+   "kind": "exploit",
+   "move": {
+    "uci": "c6d4",
+    "san": "Nxd4"
+   },
+   "popular": {
+    "games": 1581,
+    "share": 0.06748335325251835
+   },
+   "book": {
+    "games": 0,
+    "share": 0
+   },
+   "scoreBefore": {
+    "type": "cp",
+    "value": 40
+   },
+   "scoreAfter": {
+    "type": "cp",
+    "value": 348
+   },
+   "drop": 24.6,
+   "verdict": "mistake",
+   "refutation": {
+    "uci": [
+     "f3d4",
+     "b7b5",
+     "a4b3",
+     "c8b7",
+     "d4f3",
+     "f8d6",
+     "b1c3",
+     "e4c3",
+     "b2c3",
+     "e8g8"
+    ],
+    "san": [
+     "Nxd4",
+     "b5",
+     "Bb3",
+     "Bb7",
+     "Nf3",
+     "Bd6",
+     "Nc3",
+     "Nxc3",
+     "bxc3",
+     "O-O"
+    ],
+    "why": "White wins a knight."
+   },
+   "opening": "Ruy Lopez: Open"
+  },
+  {
+   "id": "r1bqkb1r/2pp1ppp/p1n5/1p2p3/3Pn3/1B3N2/PPP2PPP/RNBQ1RK1 b kq -|f8d6",
+   "line": [
+    "e4",
+    "e5",
+    "Nf3",
+    "Nc6",
+    "Bb5",
+    "a6",
+    "Ba4",
+    "Nf6",
+    "O-O",
+    "Nxe4",
+    "d4",
+    "b5",
+    "Bb3"
+   ],
+   "fen": "r1bqkb1r/2pp1ppp/p1n5/1p2p3/3Pn3/1B3N2/PPP2PPP/RNBQ1RK1 b kq - 1 7",
+   "victim": "black",
+   "kind": "exploit",
+   "move": {
+    "uci": "f8d6",
+    "san": "Bd6"
+   },
+   "popular": {
+    "games": 1364,
+    "share": 0.06311308532296872
+   },
+   "book": {
+    "games": 0,
+    "share": 0
+   },
+   "scoreBefore": {
+    "type": "cp",
+    "value": 40
+   },
+   "scoreAfter": {
+    "type": "cp",
+    "value": 583
+   },
+   "drop": 35.9,
+   "verdict": "blunder",
+   "refutation": {
+    "uci": [
+     "d4e5",
+     "c6e5",
+     "b3d5",
+     "e5f3",
+     "d1f3",
+     "e4g5",
+     "c1g5",
+     "d8g5",
+     "f1e1",
+     "e8d8"
+    ],
+    "san": [
+     "dxe5",
+     "Nxe5",
+     "Bd5",
+     "Nxf3+",
+     "Qxf3",
+     "Ng5",
+     "Bxg5",
+     "Qxg5",
+     "Re1+",
+     "Kd8"
+    ],
+    "why": "No immediate material win, but Stockfish rates the position +5.8. Black's winning chances fall from 46% to 10%."
+   },
+   "opening": "Ruy Lopez: Open"
+  }
+ ]
+}

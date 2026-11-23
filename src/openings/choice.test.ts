@@ -28,9 +28,9 @@ describe('the chosen opening', () => {
   });
 
   it('is null for an id the registry does not know, and refuses to store one', () => {
-    expect(loadChosenOpening(memoryStorage({ [OPENING_STORAGE_KEY]: 'sicilian' }))).toBeNull();
+    expect(loadChosenOpening(memoryStorage({ [OPENING_STORAGE_KEY]: 'no-such-opening' }))).toBeNull();
     const storage = memoryStorage();
-    expect(saveChosenOpening(storage, 'sicilian')).toBe(false);
+    expect(saveChosenOpening(storage, 'no-such-opening')).toBe(false);
     expect(storage.items.size).toBe(0);
   });
 
