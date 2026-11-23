@@ -1,4 +1,4 @@
-import { ENDGAME_DRILLS, userSide } from '../endgames/drills';
+import { ENDGAME_DRILLS, userSide, type EndgameGoal } from '../endgames/drills';
 import { hasOpeningData } from '../openings/assets';
 import { OPENINGS, type OpeningDef } from '../openings/registry';
 
@@ -19,6 +19,8 @@ export interface DrillEntry {
   unavailable?: string;
   /** Marks the entry that is open now, e.g. the opening being drilled. */
   current?: boolean;
+  /** A heading the entry is listed under ("You play White"); entries of one group come together. */
+  group?: string;
 }
 
 export interface DrillCategory {
@@ -50,7 +52,14 @@ export const OPENINGS_CATEGORY: DrillCategory = {
       note: rootMoves(opening),
       unavailable: hasOpeningData(opening.id) ? undefined : 'Coming soon: the data for this opening is still being built.',
       current: opening.id === currentOpening,
+      group: `You play ${sideName(opening)}`,
     })),
+};
+
+const GOAL_GROUP: Record<EndgameGoal, string> = {
+  mate: 'Give checkmate',
+  win: 'Win it',
+  draw: 'Hold the draw',
 };
 
 export const ENDGAMES_CATEGORY: DrillCategory = {
@@ -65,6 +74,7 @@ export const ENDGAMES_CATEGORY: DrillCategory = {
         title: drill.title,
         detail: `${drill.skill} · you play ${side === 'white' ? 'White' : 'Black'}`,
         note: `${drill.positions.length} positions`,
+        group: GOAL_GROUP[drill.goal],
       };
     }),
   emptyText: 'Endgame drills are coming soon.',

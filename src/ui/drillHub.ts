@@ -179,11 +179,25 @@ export function createDrillHub(options: DrillHubOptions): DrillHub {
       category = null;
       render();
     });
-    const list = document.createElement('div');
-    list.className = 'hub-list hub-entries';
     const entries = current.entries(currentOpening);
-    list.append(...entries.map((entry) => entryCard(current, entry)));
-    root.replaceChildren(back, heading(current.title, current.description), list);
+    // One list per group, each under its heading, in the order the groups first appear (entries
+    // without a group form one plain list).
+    const groups = new Map<string, DrillEntry[]>();
+    for (const entry of entries) groups.set(entry.group ?? '', [...(groups.get(entry.group ?? '') ?? []), entry]);
+    const sections = [...groups].map(([name, members]) => {
+      const list = document.createElement('div');
+      list.className = 'hub-list hub-entries';
+      list.append(...members.map((entry) => entryCard(current, entry)));
+      if (!name) return list;
+      const section = document.createElement('section');
+      section.className = 'hub-group';
+      const title = document.createElement('h3');
+      title.className = 'hub-group-title';
+      title.textContent = `${name} (${members.length})`;
+      section.append(title, list);
+      return section;
+    });
+    root.replaceChildren(back, heading(current.title, current.description), ...sections);
     if (entries.length === 0) {
       const empty = document.createElement('p');
       empty.className = 'hint hub-empty';
