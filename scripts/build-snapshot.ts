@@ -30,6 +30,13 @@ import { openingFiles } from './lib/openingFiles';
 
 const OPTIONS = {
   survey: false,
+  /**
+   * Only crawl (fill the explorer cache in .cache/explorer) and stop before Stockfish, so the next
+   * opening's crawl can start while this one is scored by another run.
+   */
+  crawlOnly: false,
+  /** The engine score file; '' = the shared one in .cache/. Separate files let runs score side by side. */
+  evalStore: '',
   /** Registry id (sets the root line, side and thresholds), or '' for an ad hoc --root. */
   opening: '',
   /** The moves that define the opening, e.g. ['e4', 'c6']. */
@@ -95,6 +102,12 @@ function parseArgs(argv: readonly string[]): typeof OPTIONS {
         break;
       case 'opening':
         break; // handled above
+      case 'crawl-only':
+        options.crawlOnly = true;
+        break;
+      case 'eval-store':
+        options.evalStore = value ?? '';
+        break;
       case 'root':
         options.rootLine = (value ?? '').split(/[s,]+/).filter(Boolean);
         break;
@@ -244,6 +257,10 @@ export async function main(argv: readonly string[]): Promise<number> {
       printSurvey(result, thresholds, options);
       return 0;
     }
+    if (options.crawlOnly) {
+      log('Crawl only: the explorer answers are in .cache/explorer; run again without --crawl-only to score and write.');
+      return 0;
+    }
 
     // Stockfish scores.
     const listing = { listShare: options.listShare, maxListedMoves: options.maxListed };
@@ -251,7 +268,7 @@ export async function main(argv: readonly string[]): Promise<number> {
     const enginePath = join(root, 'public', ENGINE_FILE);
     evaluator = createEvaluator(enginePath, options.depth);
     const engineName = await evaluator.ready();
-    const store = createEvalStore(join(cacheDir, `evals-${engineName.replace(/[^a-z0-9]+/gi, '-').toLowerCase()}-d${options.depth}.json`));
+    const store = createEvalStore(options.evalStore ? resolve(root, options.evalStore) : join(cacheDir, `evals-${engineName.replace(/[^a-z0-9]+/gi, '-').toLowerCase()}-d${options.depth}.json`));
     log(`Evaluating ${positions.size} positions with ${engineName} at depth ${options.depth} (${[...positions.keys()].filter((key) => store.get(key)).length} already done).`);
 
     const evals = new Map<string, Score>();

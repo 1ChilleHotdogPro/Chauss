@@ -13,7 +13,8 @@
     "test:e2e": "playwright test",
     "snapshot": "node scripts/run.mjs scripts/build-snapshot.ts",
     "traps": "node scripts/run.mjs scripts/build-traps.ts",
-    "endgames": "node scripts/run.mjs scripts/measure-endgames.ts"
+    "endgames": "node scripts/run.mjs scripts/measure-endgames.ts",
+    "ideas": "node scripts/run.mjs scripts/draft-ideas.ts"
   },
   "dependencies": {
     "@lichess-org/chessground": "^10.5.0",
