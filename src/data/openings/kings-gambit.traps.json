@@ -1,0 +1,1978 @@
+{
+ "meta": {
+  "formatVersion": 1,
+  "side": "white",
+  "createdAt": "2026-11-23T17:40:31.073Z",
+  "snapshotCreatedAt": "2026-11-23T17:30:49.754Z",
+  "engine": {
+   "name": "Stockfish 19 Lite WASM",
+   "depth": 22
+  },
+  "rule": {
+   "minShare": 0.05,
+   "minGames": 1000,
+   "minDrop": 20,
+   "maxCandidates": 60
+  }
+ },
+ "traps": [
+  {
+   "id": "rnbqkbnr/ppp2ppp/3p4/4p3/4PP2/8/PPPP2PP/RNBQKBNR w KQkq -|f4e5",
+   "line": [
+    "e4",
+    "e5",
+    "f4",
+    "d6"
+   ],
+   "fen": "rnbqkbnr/ppp2ppp/3p4/4p3/4PP2/8/PPPP2PP/RNBQKBNR w KQkq - 0 3",
+   "victim": "white",
+   "kind": "avoid",
+   "move": {
+    "uci": "f4e5",
+    "san": "fxe5"
+   },
+   "popular": {
+    "games": 247913,
+    "share": 0.12904459951424727
+   },
+   "book": {
+    "games": 0,
+    "share": 0
+   },
+   "scoreBefore": {
+    "type": "cp",
+    "value": 28
+   },
+   "scoreAfter": {
+    "type": "cp",
+    "value": -363
+   },
+   "drop": 31.8,
+   "verdict": "blunder",
+   "refutation": {
+    "uci": [
+     "d8h4",
+     "e1e2",
+     "h4e4",
+     "e2f2",
+     "e4d4",
+     "f2e2",
+     "d6e5",
+     "g1f3",
+     "d4c5",
+     "d2d3"
+    ],
+    "san": [
+     "Qh4+",
+     "Ke2",
+     "Qxe4+",
+     "Kf2",
+     "Qd4+",
+     "Ke2",
+     "dxe5",
+     "Nf3",
+     "Qc5",
+     "d3"
+    ],
+    "why": "Black wins two pawns."
+   },
+   "opening": "King's Gambit"
+  },
+  {
+   "id": "rnbqkbnr/ppp2ppp/3p4/4P3/4P3/8/PPPP2PP/RNBQKBNR b KQkq -|d6e5",
+   "line": [
+    "e4",
+    "e5",
+    "f4",
+    "d6",
+    "fxe5"
+   ],
+   "fen": "rnbqkbnr/ppp2ppp/3p4/4P3/4P3/8/PPPP2PP/RNBQKBNR b KQkq - 0 3",
+   "victim": "black",
+   "kind": "exploit",
+   "move": {
+    "uci": "d6e5",
+    "san": "dxe5"
+   },
+   "popular": {
+    "games": 229789,
+    "share": 0.9257622393399297
+   },
+   "book": {
+    "games": 0,
+    "share": 0
+   },
+   "scoreBefore": {
+    "type": "cp",
+    "value": -384
+   },
+   "scoreAfter": {
+    "type": "cp",
+    "value": -14
+   },
+   "drop": 29.1,
+   "verdict": "mistake",
+   "refutation": {
+    "uci": [
+     "g1f3",
+     "g8f6",
+     "c2c3",
+     "b8c6",
+     "f1b5",
+     "f8d6",
+     "d2d4",
+     "c8g4",
+     "e1g1",
+     "e8g8"
+    ],
+    "san": [
+     "Nf3",
+     "Nf6",
+     "c3",
+     "Nc6",
+     "Bb5",
+     "Bd6",
+     "d4",
+     "Bg4",
+     "O-O",
+     "O-O"
+    ],
+    "why": "No immediate material win, but Stockfish rates the position -0.1. Black's winning chances fall from 80% to 51%."
+   },
+   "opening": "King's Gambit"
+  },
+  {
+   "id": "rnbqkbnr/pppp2pp/5p2/4P3/4P3/8/PPPP2PP/RNBQKBNR b KQkq -|f6e5",
+   "line": [
+    "e4",
+    "e5",
+    "f4",
+    "f6",
+    "fxe5"
+   ],
+   "fen": "rnbqkbnr/pppp2pp/5p2/4P3/4P3/8/PPPP2PP/RNBQKBNR b KQkq - 0 3",
+   "victim": "black",
+   "kind": "exploit",
+   "move": {
+    "uci": "f6e5",
+    "san": "fxe5"
+   },
+   "popular": {
+    "games": 134819,
+    "share": 0.952939347031673
+   },
+   "book": {
+    "games": 0,
+    "share": 0
+   },
+   "scoreBefore": {
+    "type": "cp",
+    "value": 42
+   },
+   "scoreAfter": {
+    "type": "cp",
+    "value": 586
+   },
+   "drop": 35.8,
+   "verdict": "blunder",
+   "refutation": {
+    "uci": [
+     "d1h5",
+     "g7g6",
+     "h5e5",
+     "d8e7",
+     "e5h8",
+     "d7d5",
+     "f1b5",
+     "b8c6",
+     "b5c6",
+     "b7c6"
+    ],
+    "san": [
+     "Qh5+",
+     "g6",
+     "Qxe5+",
+     "Qe7",
+     "Qxh8",
+     "d5",
+     "Bb5+",
+     "Nc6",
+     "Bxc6+",
+     "bxc6"
+    ],
+    "why": "White wins a rook, a knight and a pawn for a bishop."
+   },
+   "opening": "King's Gambit"
+  },
+  {
+   "id": "rnbqkbnr/pppp2pp/8/4p3/4P3/8/PPPP2PP/RNBQKBNR w KQkq -|g1f3",
+   "line": [
+    "e4",
+    "e5",
+    "f4",
+    "f6",
+    "fxe5",
+    "fxe5"
+   ],
+   "fen": "rnbqkbnr/pppp2pp/8/4p3/4P3/8/PPPP2PP/RNBQKBNR w KQkq - 0 4",
+   "victim": "white",
+   "kind": "avoid",
+   "move": {
+    "uci": "g1f3",
+    "san": "Nf3"
+   },
+   "popular": {
+    "games": 59479,
+    "share": 0.4230189323357467
+   },
+   "book": {
+    "games": 0,
+    "share": 0
+   },
+   "scoreBefore": {
+    "type": "cp",
+    "value": 632
+   },
+   "scoreAfter": {
+    "type": "cp",
+    "value": 86
+   },
+   "drop": 33.3,
+   "verdict": "blunder",
+   "refutation": {
+    "uci": [
+     "f8c5",
+     "f1c4",
+     "d7d5",
+     "c4d5",
+     "g8f6",
+     "b1c3",
+     "f6d5",
+     "c3d5",
+     "c7c6",
+     "d2d4"
+    ],
+    "san": [
+     "Bc5",
+     "Bc4",
+     "d5",
+     "Bxd5",
+     "Nf6",
+     "Nc3",
+     "Nxd5",
+     "Nxd5",
+     "c6",
+     "d4"
+    ],
+    "why": "No immediate material win, but Stockfish rates the position +0.9. White's winning chances fall from 91% to 58%."
+   },
+   "opening": "King's Gambit"
+  },
+  {
+   "id": "rnbqkbnr/ppp2ppp/3p4/4pP2/4P3/8/PPPP2PP/RNBQKBNR b KQkq -|g8f6",
+   "line": [
+    "e4",
+    "e5",
+    "f4",
+    "d6",
+    "f5"
+   ],
+   "fen": "rnbqkbnr/ppp2ppp/3p4/4pP2/4P3/8/PPPP2PP/RNBQKBNR b KQkq - 0 3",
+   "victim": "black",
+   "kind": "exploit",
+   "move": {
+    "uci": "g8f6",
+    "san": "Nf6"
+   },
+   "popular": {
+    "games": 33721,
+    "share": 0.36161930294906164
+   },
+   "book": {
+    "games": 0,
+    "share": 0
+   },
+   "scoreBefore": {
+    "type": "cp",
+    "value": -584
+   },
+   "scoreAfter": {
+    "type": "cp",
+    "value": -90
+   },
+   "drop": 31.4,
+   "verdict": "blunder",
+   "refutation": {
+    "uci": [
+     "d2d3",
+     "b8c6",
+     "g1f3",
+     "d6d5",
+     "d1e2",
+     "g7g6",
+     "c1g5",
+     "f8e7",
+     "b1c3",
+     "d5d4"
+    ],
+    "san": [
+     "d3",
+     "Nc6",
+     "Nf3",
+     "d5",
+     "Qe2",
+     "g6",
+     "Bg5",
+     "Be7",
+     "Nc3",
+     "d4"
+    ],
+    "why": "No immediate material win, but Stockfish rates the position -0.9. Black's winning chances fall from 90% to 58%."
+   },
+   "opening": "King's Gambit"
+  },
+  {
+   "id": "rnbqkbnr/ppp2ppp/8/4p3/4P3/8/PPPP2PP/RNBQKBNR w KQkq -|f1c4",
+   "line": [
+    "e4",
+    "e5",
+    "f4",
+    "d6",
+    "fxe5",
+    "dxe5"
+   ],
+   "fen": "rnbqkbnr/ppp2ppp/8/4p3/4P3/8/PPPP2PP/RNBQKBNR w KQkq - 0 4",
+   "victim": "white",
+   "kind": "avoid",
+   "move": {
+    "uci": "f1c4",
+    "san": "Bc4"
+   },
+   "popular": {
+    "games": 30375,
+    "share": 0.059771422274521535
+   },
+   "book": {
+    "games": 0,
+    "share": 0
+   },
+   "scoreBefore": {
+    "type": "cp",
+    "value": 18
+   },
+   "scoreAfter": {
+    "type": "cp",
+    "value": -228
+   },
+   "drop": 21.5,
+   "verdict": "mistake",
+   "refutation": {
+    "uci": [
+     "d8h4",
+     "e1f1",
+     "h4e4",
+     "d2d3",
+     "e4f5",
+     "d1f3",
+     "b8c6",
+     "f3f5",
+     "c8f5",
+     "g1f3"
+    ],
+    "san": [
+     "Qh4+",
+     "Kf1",
+     "Qxe4",
+     "d3",
+     "Qf5+",
+     "Qf3",
+     "Nc6",
+     "Qxf5",
+     "Bxf5",
+     "Nf3"
+    ],
+    "why": "Black wins a pawn."
+   },
+   "opening": "King's Gambit"
+  },
+  {
+   "id": "r1bqkbnr/ppp2ppp/3p4/4n3/4P3/5N2/PPPP2PP/RNBQKB1R w KQkq -|f3e5",
+   "line": [
+    "e4",
+    "e5",
+    "f4",
+    "d6",
+    "Nf3",
+    "Nc6",
+    "fxe5",
+    "Nxe5"
+   ],
+   "fen": "r1bqkbnr/ppp2ppp/3p4/4n3/4P3/5N2/PPPP2PP/RNBQKB1R w KQkq - 0 5",
+   "victim": "white",
+   "kind": "avoid",
+   "move": {
+    "uci": "f3e5",
+    "san": "Nxe5"
+   },
+   "popular": {
+    "games": 25338,
+    "share": 0.3465262582056893
+   },
+   "book": {
+    "games": 0,
+    "share": 0
+   },
+   "scoreBefore": {
+    "type": "cp",
+    "value": 95
+   },
+   "scoreAfter": {
+    "type": "cp",
+    "value": -194
+   },
+   "drop": 25.8,
+   "verdict": "mistake",
+   "refutation": {
+    "uci": [
+     "d8h4",
+     "g2g3",
+     "h4e4",
+     "d1e2",
+     "e4e2",
+     "f1e2",
+     "d6e5",
+     "d2d3",
+     "c8d7",
+     "c1e3"
+    ],
+    "san": [
+     "Qh4+",
+     "g3",
+     "Qxe4+",
+     "Qe2",
+     "Qxe2+",
+     "Bxe2",
+     "dxe5",
+     "d3",
+     "Bd7",
+     "Be3"
+    ],
+    "why": "No immediate material win, but Stockfish rates the position -1.9. White's winning chances fall from 59% to 33%."
+   },
+   "opening": "King's Gambit"
+  },
+  {
+   "id": "r2qkbnr/ppp2ppp/2np4/4p3/2B1PPb1/5N2/PPPP2PP/RNBQK2R w KQkq -|c4f7",
+   "line": [
+    "e4",
+    "e5",
+    "f4",
+    "d6",
+    "Nf3",
+    "Nc6",
+    "Bc4",
+    "Bg4"
+   ],
+   "fen": "r2qkbnr/ppp2ppp/2np4/4p3/2B1PPb1/5N2/PPPP2PP/RNBQK2R w KQkq - 4 5",
+   "victim": "white",
+   "kind": "avoid",
+   "move": {
+    "uci": "c4f7",
+    "san": "Bxf7+"
+   },
+   "popular": {
+    "games": 24424,
+    "share": 0.1223800576224477
+   },
+   "book": {
+    "games": 0,
+    "share": 0
+   },
+   "scoreBefore": {
+    "type": "cp",
+    "value": 37
+   },
+   "scoreAfter": {
+    "type": "cp",
+    "value": -384
+   },
+   "drop": 33.8,
+   "verdict": "blunder",
+   "refutation": {
+    "uci": [
+     "e8f7",
+     "e1g1",
+     "g8f6",
+     "h2h3",
+     "g4f3",
+     "d1f3",
+     "f8e7",
+     "f3b3",
+     "f7e8",
+     "b3b7"
+    ],
+    "san": [
+     "Kxf7",
+     "O-O",
+     "Nf6",
+     "h3",
+     "Bxf3",
+     "Qxf3",
+     "Be7",
+     "Qb3+",
+     "Ke8",
+     "Qxb7"
+    ],
+    "why": "Black wins a knight for a pawn."
+   },
+   "opening": "King's Gambit"
+  },
+  {
+   "id": "rnbqkbnr/pppp2pp/5p2/8/2B1Pp2/5N2/PPPP2PP/RNBQK2R b KQkq -|g7g5",
+   "line": [
+    "e4",
+    "e5",
+    "f4",
+    "f6",
+    "Nf3",
+    "exf4",
+    "Bc4"
+   ],
+   "fen": "rnbqkbnr/pppp2pp/5p2/8/2B1Pp2/5N2/PPPP2PP/RNBQK2R b KQkq - 1 4",
+   "victim": "black",
+   "kind": "exploit",
+   "move": {
+    "uci": "g7g5",
+    "san": "g5"
+   },
+   "popular": {
+    "games": 19411,
+    "share": 0.21860711309322703
+   },
+   "book": {
+    "games": 0,
+    "share": 0
+   },
+   "scoreBefore": {
+    "type": "cp",
+    "value": 84
+   },
+   "scoreAfter": {
+    "type": "cp",
+    "value": 684
+   },
+   "drop": 34.9,
+   "verdict": "blunder",
+   "refutation": {
+    "uci": [
+     "f3g5",
+     "g8h6",
+     "d1h5",
+     "e8e7",
+     "g5f7",
+     "d8e8",
+     "h5c5",
+     "d7d6",
+     "c5c7",
+     "e8d7"
+    ],
+    "san": [
+     "Nxg5",
+     "Nh6",
+     "Qh5+",
+     "Ke7",
+     "Nf7",
+     "Qe8",
+     "Qc5+",
+     "d6",
+     "Qxc7+",
+     "Qd7"
+    ],
+    "why": "White wins two pawns. Stockfish rates the position +6.8."
+   },
+   "opening": "King's Gambit"
+  },
+  {
+   "id": "rnbqkbnr/pppp3p/5p2/6p1/3PPp2/5N2/PPP3PP/RNBQKB1R w KQkq -|f1c4",
+   "line": [
+    "e4",
+    "e5",
+    "f4",
+    "f6",
+    "Nf3",
+    "exf4",
+    "d4",
+    "g5"
+   ],
+   "fen": "rnbqkbnr/pppp3p/5p2/6p1/3PPp2/5N2/PPP3PP/RNBQKB1R w KQkq - 0 5",
+   "victim": "white",
+   "kind": "avoid",
+   "move": {
+    "uci": "f1c4",
+    "san": "Bc4"
+   },
+   "popular": {
+    "games": 16785,
+    "share": 0.31248254677464393
+   },
+   "book": {
+    "games": 0,
+    "share": 0
+   },
+   "scoreBefore": {
+    "type": "cp",
+    "value": 397
+   },
+   "scoreAfter": {
+    "type": "cp",
+    "value": 92
+   },
+   "drop": 22.8,
+   "verdict": "mistake",
+   "refutation": {
+    "uci": [
+     "d7d5",
+     "c4d5",
+     "g8e7",
+     "d5c4",
+     "b8c6",
+     "c2c3",
+     "e7g6",
+     "e1g1",
+     "f8d6",
+     "b1d2"
+    ],
+    "san": [
+     "d5",
+     "Bxd5",
+     "Ne7",
+     "Bc4",
+     "Nbc6",
+     "c3",
+     "Ng6",
+     "O-O",
+     "Bd6",
+     "Nbd2"
+    ],
+    "why": "No immediate material win, but Stockfish rates the position +0.9. White's winning chances fall from 81% to 58%."
+   },
+   "opening": "King's Gambit"
+  },
+  {
+   "id": "rnbqkbnr/ppp2ppp/3p4/4pP2/4P3/8/PPPP2PP/RNBQKBNR b KQkq -|f7f6",
+   "line": [
+    "e4",
+    "e5",
+    "f4",
+    "d6",
+    "f5"
+   ],
+   "fen": "rnbqkbnr/ppp2ppp/3p4/4pP2/4P3/8/PPPP2PP/RNBQKBNR b KQkq - 0 3",
+   "victim": "black",
+   "kind": "exploit",
+   "move": {
+    "uci": "f7f6",
+    "san": "f6"
+   },
+   "popular": {
+    "games": 16538,
+    "share": 0.17735120643431634
+   },
+   "book": {
+    "games": 0,
+    "share": 0
+   },
+   "scoreBefore": {
+    "type": "cp",
+    "value": -586
+   },
+   "scoreAfter": {
+    "type": "cp",
+    "value": 159
+   },
+   "drop": 53.9,
+   "verdict": "blunder",
+   "refutation": {
+    "uci": [
+     "d1h5",
+     "e8e7",
+     "b1c3",
+     "d8d7",
+     "g1f3",
+     "g7g6",
+     "h5h4",
+     "g6f5",
+     "e4f5",
+     "b8c6"
+    ],
+    "san": [
+     "Qh5+",
+     "Ke7",
+     "Nc3",
+     "Qd7",
+     "Nf3",
+     "g6",
+     "Qh4",
+     "gxf5",
+     "exf5",
+     "Nc6"
+    ],
+    "why": "No immediate material win, but Stockfish rates the position +1.6. Black's winning chances fall from 90% to 36%."
+   },
+   "opening": "King's Gambit"
+  },
+  {
+   "id": "r1bqkbnr/pppp2pp/2n2p2/4P3/4P3/5N2/PPPP2PP/RNBQKB1R b KQkq -|c6e5",
+   "line": [
+    "e4",
+    "e5",
+    "f4",
+    "f6",
+    "Nf3",
+    "Nc6",
+    "fxe5"
+   ],
+   "fen": "r1bqkbnr/pppp2pp/2n2p2/4P3/4P3/5N2/PPPP2PP/RNBQKB1R b KQkq - 0 4",
+   "victim": "black",
+   "kind": "exploit",
+   "move": {
+    "uci": "c6e5",
+    "san": "Nxe5"
+   },
+   "popular": {
+    "games": 14650,
+    "share": 0.2598577434059989
+   },
+   "book": {
+    "games": 0,
+    "share": 0
+   },
+   "scoreBefore": {
+    "type": "cp",
+    "value": 99
+   },
+   "scoreAfter": {
+    "type": "cp",
+    "value": 552
+   },
+   "drop": 29.4,
+   "verdict": "mistake",
+   "refutation": {
+    "uci": [
+     "f3e5",
+     "d8e7",
+     "e5f3",
+     "d7d5",
+     "d2d3",
+     "c8g4",
+     "d1e2",
+     "e8c8",
+     "e4d5",
+     "e7d7"
+    ],
+    "san": [
+     "Nxe5",
+     "Qe7",
+     "Nf3",
+     "d5",
+     "d3",
+     "Bg4",
+     "Qe2",
+     "O-O-O",
+     "exd5",
+     "Qd7"
+    ],
+    "why": "White wins a knight and a pawn."
+   },
+   "opening": "King's Gambit"
+  },
+  {
+   "id": "rnbqkbnr/ppp2ppp/3p4/4pP2/4P3/8/PPPP2PP/RNBQKBNR b KQkq -|b8c6",
+   "line": [
+    "e4",
+    "e5",
+    "f4",
+    "d6",
+    "f5"
+   ],
+   "fen": "rnbqkbnr/ppp2ppp/3p4/4pP2/4P3/8/PPPP2PP/RNBQKBNR b KQkq - 0 3",
+   "victim": "black",
+   "kind": "exploit",
+   "move": {
+    "uci": "b8c6",
+    "san": "Nc6"
+   },
+   "popular": {
+    "games": 11904,
+    "share": 0.127656836461126
+   },
+   "book": {
+    "games": 0,
+    "share": 0
+   },
+   "scoreBefore": {
+    "type": "cp",
+    "value": -595
+   },
+   "scoreAfter": {
+    "type": "cp",
+    "value": -53
+   },
+   "drop": 35.1,
+   "verdict": "blunder",
+   "refutation": {
+    "uci": [
+     "b1c3",
+     "g7g6",
+     "f5g6",
+     "h7g6",
+     "f1b5",
+     "a7a6",
+     "b5c6",
+     "b7c6",
+     "d2d3",
+     "d8h4"
+    ],
+    "san": [
+     "Nc3",
+     "g6",
+     "fxg6",
+     "hxg6",
+     "Bb5",
+     "a6",
+     "Bxc6+",
+     "bxc6",
+     "d3",
+     "Qh4+"
+    ],
+    "why": "No immediate material win, but Stockfish rates the position -0.5. Black's winning chances fall from 90% to 55%."
+   },
+   "opening": "King's Gambit"
+  },
+  {
+   "id": "rnbqkbnr/ppp2ppp/3p4/4pP2/4P3/8/PPPP2PP/RNBQKBNR b KQkq -|g7g6",
+   "line": [
+    "e4",
+    "e5",
+    "f4",
+    "d6",
+    "f5"
+   ],
+   "fen": "rnbqkbnr/ppp2ppp/3p4/4pP2/4P3/8/PPPP2PP/RNBQKBNR b KQkq - 0 3",
+   "victim": "black",
+   "kind": "exploit",
+   "move": {
+    "uci": "g7g6",
+    "san": "g6"
+   },
+   "popular": {
+    "games": 11561,
+    "share": 0.12397855227882038
+   },
+   "book": {
+    "games": 0,
+    "share": 0
+   },
+   "scoreBefore": {
+    "type": "cp",
+    "value": -605
+   },
+   "scoreAfter": {
+    "type": "cp",
+    "value": -76
+   },
+   "drop": 33.3,
+   "verdict": "blunder",
+   "refutation": {
+    "uci": [
+     "b1c3",
+     "g6f5",
+     "e4f5",
+     "c8f5",
+     "g1f3",
+     "f5g6",
+     "d2d4",
+     "e5e4",
+     "d1e2",
+     "d8e7"
+    ],
+    "san": [
+     "Nc3",
+     "gxf5",
+     "exf5",
+     "Bxf5",
+     "Nf3",
+     "Bg6",
+     "d4",
+     "e4",
+     "Qe2",
+     "Qe7"
+    ],
+    "why": "No immediate material win, but Stockfish rates the position -0.8. Black's winning chances fall from 90% to 57%."
+   },
+   "opening": "King's Gambit"
+  },
+  {
+   "id": "rnbqkbnr/ppp2ppp/8/4p3/2B1P3/8/PPPP2PP/RNBQK1NR b KQkq -|g8f6",
+   "line": [
+    "e4",
+    "e5",
+    "f4",
+    "d6",
+    "fxe5",
+    "dxe5",
+    "Bc4"
+   ],
+   "fen": "rnbqkbnr/ppp2ppp/8/4p3/2B1P3/8/PPPP2PP/RNBQK1NR b KQkq - 1 4",
+   "victim": "black",
+   "kind": "exploit",
+   "move": {
+    "uci": "g8f6",
+    "san": "Nf6"
+   },
+   "popular": {
+    "games": 11525,
+    "share": 0.37720102114289455
+   },
+   "book": {
+    "games": 0,
+    "share": 0
+   },
+   "scoreBefore": {
+    "type": "cp",
+    "value": -261
+   },
+   "scoreAfter": {
+    "type": "cp",
+    "value": 6
+   },
+   "drop": 22.9,
+   "verdict": "mistake",
+   "refutation": {
+    "uci": [
+     "d2d3",
+     "f8c5",
+     "g1f3",
+     "e8g8",
+     "d1e2",
+     "d8d6",
+     "a2a4",
+     "c8e6",
+     "c4e6",
+     "d6e6"
+    ],
+    "san": [
+     "d3",
+     "Bc5",
+     "Nf3",
+     "O-O",
+     "Qe2",
+     "Qd6",
+     "a4",
+     "Be6",
+     "Bxe6",
+     "Qxe6"
+    ],
+    "why": "No immediate material win, but Stockfish rates the position +0.1. Black's winning chances fall from 72% to 49%."
+   },
+   "opening": "King's Gambit"
+  },
+  {
+   "id": "r1bqkbnr/ppp2ppp/8/4p3/4P3/8/PPPP2PP/RNBQKB1R w KQkq -|f1c4",
+   "line": [
+    "e4",
+    "e5",
+    "f4",
+    "d6",
+    "Nf3",
+    "Nc6",
+    "fxe5",
+    "Nxe5",
+    "Nxe5",
+    "dxe5"
+   ],
+   "fen": "r1bqkbnr/ppp2ppp/8/4p3/4P3/8/PPPP2PP/RNBQKB1R w KQkq - 0 6",
+   "victim": "white",
+   "kind": "avoid",
+   "move": {
+    "uci": "f1c4",
+    "san": "Bc4"
+   },
+   "popular": {
+    "games": 11158,
+    "share": 0.44633785351414057
+   },
+   "book": {
+    "games": 0,
+    "share": 0
+   },
+   "scoreBefore": {
+    "type": "cp",
+    "value": -31
+   },
+   "scoreAfter": {
+    "type": "cp",
+    "value": -345
+   },
+   "drop": 25.2,
+   "verdict": "mistake",
+   "refutation": {
+    "uci": [
+     "d8h4",
+     "e1f1",
+     "f8c5",
+     "d1f3",
+     "g8f6",
+     "b1c3",
+     "c8g4",
+     "f3g3",
+     "h4g3",
+     "h2g3"
+    ],
+    "san": [
+     "Qh4+",
+     "Kf1",
+     "Bc5",
+     "Qf3",
+     "Nf6",
+     "Nc3",
+     "Bg4",
+     "Qg3",
+     "Qxg3",
+     "hxg3"
+    ],
+    "why": "No immediate material win, but Stockfish rates the position -3.5. White's winning chances fall from 47% to 22%."
+   },
+   "opening": "King's Gambit"
+  },
+  {
+   "id": "rn1qkb1r/ppp2ppp/3p1n2/8/3PPBb1/2N2N2/PPP3PP/R2QKB1R b KQkq -|g4f3",
+   "line": [
+    "e4",
+    "e5",
+    "f4",
+    "d6",
+    "Nf3",
+    "Nf6",
+    "Nc3",
+    "exf4",
+    "d4",
+    "Bg4",
+    "Bxf4"
+   ],
+   "fen": "rn1qkb1r/ppp2ppp/3p1n2/8/3PPBb1/2N2N2/PPP3PP/R2QKB1R b KQkq - 0 6",
+   "victim": "black",
+   "kind": "exploit",
+   "move": {
+    "uci": "g4f3",
+    "san": "Bxf3"
+   },
+   "popular": {
+    "games": 9603,
+    "share": 0.21113383022228085
+   },
+   "book": {
+    "games": 0,
+    "share": 0
+   },
+   "scoreBefore": {
+    "type": "cp",
+    "value": 139
+   },
+   "scoreAfter": {
+    "type": "cp",
+    "value": 466
+   },
+   "drop": 22.2,
+   "verdict": "mistake",
+   "refutation": {
+    "uci": [
+     "d1f3",
+     "f6d7",
+     "h2h4",
+     "b8c6",
+     "e1c1",
+     "f8e7",
+     "c1b1",
+     "d7b6",
+     "c3d5",
+     "e7f6"
+    ],
+    "san": [
+     "Qxf3",
+     "Nfd7",
+     "h4",
+     "Nc6",
+     "O-O-O",
+     "Be7",
+     "Kb1",
+     "Nb6",
+     "Nd5",
+     "Bf6"
+    ],
+    "why": "White wins a bishop."
+   },
+   "opening": "King's Gambit"
+  },
+  {
+   "id": "r1bqkb1r/ppp2ppp/2np1n2/4p3/2B1PP2/5N2/PPPP2PP/RNBQK2R w KQkq -|c4f7",
+   "line": [
+    "e4",
+    "e5",
+    "f4",
+    "d6",
+    "Nf3",
+    "Nc6",
+    "Bc4",
+    "Nf6"
+   ],
+   "fen": "r1bqkb1r/ppp2ppp/2np1n2/4p3/2B1PP2/5N2/PPPP2PP/RNBQK2R w KQkq - 4 5",
+   "victim": "white",
+   "kind": "avoid",
+   "move": {
+    "uci": "c4f7",
+    "san": "Bxf7+"
+   },
+   "popular": {
+    "games": 8851,
+    "share": 0.07119759323015541
+   },
+   "book": {
+    "games": 0,
+    "share": 0
+   },
+   "scoreBefore": {
+    "type": "cp",
+    "value": 39
+   },
+   "scoreAfter": {
+    "type": "cp",
+    "value": -442
+   },
+   "drop": 37.2,
+   "verdict": "blunder",
+   "refutation": {
+    "uci": [
+     "e8f7",
+     "b1c3",
+     "f7g8",
+     "e1g1",
+     "c8e6",
+     "f4f5",
+     "e6f7",
+     "f3g5",
+     "d8d7",
+     "g5f7"
+    ],
+    "san": [
+     "Kxf7",
+     "Nc3",
+     "Kg8",
+     "O-O",
+     "Be6",
+     "f5",
+     "Bf7",
+     "Ng5",
+     "Qd7",
+     "Nxf7"
+    ],
+    "why": "No immediate material win, but Stockfish rates the position -4.4. White's winning chances fall from 54% to 16%."
+   },
+   "opening": "King's Gambit"
+  },
+  {
+   "id": "r1bqkbnr/pppp2pp/2n2p2/4p3/2B1PP2/5N2/PPPP2PP/RNBQK2R b KQkq -|h7h6",
+   "line": [
+    "e4",
+    "e5",
+    "f4",
+    "f6",
+    "Nf3",
+    "Nc6",
+    "Bc4"
+   ],
+   "fen": "r1bqkbnr/pppp2pp/2n2p2/4p3/2B1PP2/5N2/PPPP2PP/RNBQK2R b KQkq - 3 4",
+   "victim": "black",
+   "kind": "exploit",
+   "move": {
+    "uci": "h7h6",
+    "san": "h6"
+   },
+   "popular": {
+    "games": 8842,
+    "share": 0.05795942446986333
+   },
+   "book": {
+    "games": 0,
+    "share": 0
+   },
+   "scoreBefore": {
+    "type": "cp",
+    "value": 102
+   },
+   "scoreAfter": {
+    "type": "cp",
+    "value": 430
+   },
+   "drop": 23.7,
+   "verdict": "mistake",
+   "refutation": {
+    "uci": [
+     "f3h4",
+     "h6h5",
+     "h4g6",
+     "h8h6",
+     "c4g8",
+     "d7d5",
+     "f4f5",
+     "d5e4",
+     "e1g1",
+     "f8c5"
+    ],
+    "san": [
+     "Nh4",
+     "h5",
+     "Ng6",
+     "Rh6",
+     "Bxg8",
+     "d5",
+     "f5",
+     "dxe4",
+     "O-O",
+     "Bc5+"
+    ],
+    "why": "White wins a knight for a pawn. Stockfish rates the position +4.3."
+   },
+   "opening": "King's Gambit"
+  },
+  {
+   "id": "rn1qkb1r/ppp2ppp/3p1n2/4p3/4PPb1/2N2N1P/PPPP2P1/R1BQKB1R b KQkq -|g4h5",
+   "line": [
+    "e4",
+    "e5",
+    "f4",
+    "d6",
+    "Nf3",
+    "Nf6",
+    "Nc3",
+    "Bg4",
+    "h3"
+   ],
+   "fen": "rn1qkb1r/ppp2ppp/3p1n2/4p3/4PPb1/2N2N1P/PPPP2P1/R1BQKB1R b KQkq - 0 5",
+   "victim": "black",
+   "kind": "exploit",
+   "move": {
+    "uci": "g4h5",
+    "san": "Bh5"
+   },
+   "popular": {
+    "games": 6460,
+    "share": 0.28000520133500933
+   },
+   "book": {
+    "games": 0,
+    "share": 0
+   },
+   "scoreBefore": {
+    "type": "cp",
+    "value": 70
+   },
+   "scoreAfter": {
+    "type": "cp",
+    "value": 389
+   },
+   "drop": 24.3,
+   "verdict": "mistake",
+   "refutation": {
+    "uci": [
+     "g2g4",
+     "f6g4",
+     "h3g4",
+     "h5g4",
+     "d2d3",
+     "f8e7",
+     "c3d5",
+     "b8c6",
+     "f1h3",
+     "g4h3"
+    ],
+    "san": [
+     "g4",
+     "Nxg4",
+     "hxg4",
+     "Bxg4",
+     "d3",
+     "Be7",
+     "Nd5",
+     "Nc6",
+     "Bh3",
+     "Bxh3"
+    ],
+    "why": "No immediate material win, but Stockfish rates the position +3.9. Black's winning chances fall from 44% to 19%."
+   },
+   "opening": "King's Gambit"
+  },
+  {
+   "id": "rnbqkbnr/pppp3p/5p2/6p1/3PPp2/5N2/PPP3PP/RNBQKB1R w KQkq -|h2h3",
+   "line": [
+    "e4",
+    "e5",
+    "f4",
+    "f6",
+    "Nf3",
+    "exf4",
+    "d4",
+    "g5"
+   ],
+   "fen": "rnbqkbnr/pppp3p/5p2/6p1/3PPp2/5N2/PPP3PP/RNBQKB1R w KQkq - 0 5",
+   "victim": "white",
+   "kind": "avoid",
+   "move": {
+    "uci": "h2h3",
+    "san": "h3"
+   },
+   "popular": {
+    "games": 5841,
+    "share": 0.10874057525830773
+   },
+   "book": {
+    "games": 0,
+    "share": 0
+   },
+   "scoreBefore": {
+    "type": "cp",
+    "value": 403
+   },
+   "scoreAfter": {
+    "type": "cp",
+    "value": 25
+   },
+   "drop": 29.2,
+   "verdict": "mistake",
+   "refutation": {
+    "uci": [
+     "d7d5",
+     "e4d5",
+     "g8e7",
+     "f1d3",
+     "f8g7",
+     "c2c4",
+     "c7c6",
+     "b1c3",
+     "c6d5",
+     "c3d5"
+    ],
+    "san": [
+     "d5",
+     "exd5",
+     "Ne7",
+     "Bd3",
+     "Bg7",
+     "c4",
+     "c6",
+     "Nc3",
+     "cxd5",
+     "Nxd5"
+    ],
+    "why": "No immediate material win, but Stockfish rates the position +0.3. White's winning chances fall from 82% to 52%."
+   },
+   "opening": "King's Gambit"
+  },
+  {
+   "id": "r1bqkbnr/pppp2pp/2n5/4p3/4P3/5N2/PPPP2PP/RNBQKB1R w KQkq -|f3e5",
+   "line": [
+    "e4",
+    "e5",
+    "f4",
+    "f6",
+    "Nf3",
+    "Nc6",
+    "fxe5",
+    "fxe5"
+   ],
+   "fen": "r1bqkbnr/pppp2pp/2n5/4p3/4P3/5N2/PPPP2PP/RNBQKB1R w KQkq - 0 5",
+   "victim": "white",
+   "kind": "avoid",
+   "move": {
+    "uci": "f3e5",
+    "san": "Nxe5"
+   },
+   "popular": {
+    "games": 5690,
+    "share": 0.07823671763282367
+   },
+   "book": {
+    "games": 0,
+    "share": 0
+   },
+   "scoreBefore": {
+    "type": "cp",
+    "value": 103
+   },
+   "scoreAfter": {
+    "type": "cp",
+    "value": -553
+   },
+   "drop": 47.8,
+   "verdict": "blunder",
+   "refutation": {
+    "uci": [
+     "d8h4",
+     "g2g3",
+     "h4e4",
+     "d1e2",
+     "e4e5",
+     "e2e5",
+     "c6e5",
+     "f1g2",
+     "g8f6",
+     "d2d4"
+    ],
+    "san": [
+     "Qh4+",
+     "g3",
+     "Qxe4+",
+     "Qe2",
+     "Qxe5",
+     "Qxe5+",
+     "Nxe5",
+     "Bg2",
+     "Nf6",
+     "d4"
+    ],
+    "why": "Black wins a knight and a pawn."
+   },
+   "opening": "King's Gambit"
+  },
+  {
+   "id": "rnbqkbnr/pppp3p/5p2/6p1/3PPp2/5N2/PPP3PP/RNBQKB1R w KQkq -|e4e5",
+   "line": [
+    "e4",
+    "e5",
+    "f4",
+    "f6",
+    "Nf3",
+    "exf4",
+    "d4",
+    "g5"
+   ],
+   "fen": "rnbqkbnr/pppp3p/5p2/6p1/3PPp2/5N2/PPP3PP/RNBQKB1R w KQkq - 0 5",
+   "victim": "white",
+   "kind": "avoid",
+   "move": {
+    "uci": "e4e5",
+    "san": "e5"
+   },
+   "popular": {
+    "games": 5349,
+    "share": 0.09958112259145491
+   },
+   "book": {
+    "games": 0,
+    "share": 0
+   },
+   "scoreBefore": {
+    "type": "cp",
+    "value": 373
+   },
+   "scoreAfter": {
+    "type": "cp",
+    "value": 14
+   },
+   "drop": 28.5,
+   "verdict": "mistake",
+   "refutation": {
+    "uci": [
+     "d7d6",
+     "b1c3",
+     "d6e5",
+     "f3e5",
+     "h7h5",
+     "e5g6",
+     "h8h6",
+     "g6f4",
+     "g5f4",
+     "c1f4"
+    ],
+    "san": [
+     "d6",
+     "Nc3",
+     "dxe5",
+     "Nxe5",
+     "h5",
+     "Ng6",
+     "Rh6",
+     "Nxf4",
+     "gxf4",
+     "Bxf4"
+    ],
+    "why": "Black wins a knight for two pawns."
+   },
+   "opening": "King's Gambit"
+  },
+  {
+   "id": "rnbqk1nr/ppp2ppp/8/2b1p3/4P3/5N2/PPPP2PP/RNBQKB1R w KQkq -|f3e5",
+   "line": [
+    "e4",
+    "e5",
+    "f4",
+    "d6",
+    "fxe5",
+    "dxe5",
+    "Nf3",
+    "Bc5"
+   ],
+   "fen": "rnbqk1nr/ppp2ppp/8/2b1p3/4P3/5N2/PPPP2PP/RNBQKB1R w KQkq - 2 5",
+   "victim": "white",
+   "kind": "avoid",
+   "move": {
+    "uci": "f3e5",
+    "san": "Nxe5"
+   },
+   "popular": {
+    "games": 4900,
+    "share": 0.35915854284248333
+   },
+   "book": {
+    "games": 0,
+    "share": 0
+   },
+   "scoreBefore": {
+    "type": "cp",
+    "value": 15
+   },
+   "scoreAfter": {
+    "type": "cp",
+    "value": -536
+   },
+   "drop": 39.2,
+   "verdict": "blunder",
+   "refutation": {
+    "uci": [
+     "d8h4",
+     "g2g3",
+     "h4e4",
+     "d1e2",
+     "e4h1",
+     "d2d4",
+     "c8h3",
+     "d4c5",
+     "h3f1",
+     "e2f1"
+    ],
+    "san": [
+     "Qh4+",
+     "g3",
+     "Qxe4+",
+     "Qe2",
+     "Qxh1",
+     "d4",
+     "Bh3",
+     "dxc5",
+     "Bxf1",
+     "Qxf1"
+    ],
+    "why": "Black wins a rook and a pawn for a bishop. Stockfish rates the position -5.4."
+   },
+   "opening": "King's Gambit"
+  },
+  {
+   "id": "r1bqkbnr/ppp2ppp/3p4/4n3/4P3/5N2/PPPP2PP/RNBQKB1R w KQkq -|f1c4",
+   "line": [
+    "e4",
+    "e5",
+    "f4",
+    "d6",
+    "Nf3",
+    "Nc6",
+    "fxe5",
+    "Nxe5"
+   ],
+   "fen": "r1bqkbnr/ppp2ppp/3p4/4n3/4P3/5N2/PPPP2PP/RNBQKB1R w KQkq - 0 5",
+   "victim": "white",
+   "kind": "avoid",
+   "move": {
+    "uci": "f1c4",
+    "san": "Bc4"
+   },
+   "popular": {
+    "games": 4840,
+    "share": 0.0661925601750547
+   },
+   "book": {
+    "games": 0,
+    "share": 0
+   },
+   "scoreBefore": {
+    "type": "cp",
+    "value": 76
+   },
+   "scoreAfter": {
+    "type": "cp",
+    "value": -560
+   },
+   "drop": 45.7,
+   "verdict": "blunder",
+   "refutation": {
+    "uci": [
+     "e5c4",
+     "d2d4",
+     "c4b6",
+     "b1c3",
+     "f8e7",
+     "e1g1",
+     "g8f6",
+     "e4e5",
+     "d6e5",
+     "d4e5"
+    ],
+    "san": [
+     "Nxc4",
+     "d4",
+     "Nb6",
+     "Nc3",
+     "Be7",
+     "O-O",
+     "Nf6",
+     "e5",
+     "dxe5",
+     "dxe5"
+    ],
+    "why": "Black wins a bishop. Stockfish rates the position -5.6."
+   },
+   "opening": "King's Gambit"
+  },
+  {
+   "id": "rnbqkbnr/ppp2ppp/8/4p3/2B1P3/8/PPPP2PP/RNBQK1NR b KQkq -|b8c6",
+   "line": [
+    "e4",
+    "e5",
+    "f4",
+    "d6",
+    "fxe5",
+    "dxe5",
+    "Bc4"
+   ],
+   "fen": "rnbqkbnr/ppp2ppp/8/4p3/2B1P3/8/PPPP2PP/RNBQK1NR b KQkq - 1 4",
+   "victim": "black",
+   "kind": "exploit",
+   "move": {
+    "uci": "b8c6",
+    "san": "Nc6"
+   },
+   "popular": {
+    "games": 3521,
+    "share": 0.11523859396478366
+   },
+   "book": {
+    "games": 0,
+    "share": 0
+   },
+   "scoreBefore": {
+    "type": "cp",
+    "value": -266
+   },
+   "scoreAfter": {
+    "type": "cp",
+    "value": 1
+   },
+   "drop": 22.8,
+   "verdict": "mistake",
+   "refutation": {
+    "uci": [
+     "g1f3",
+     "g8f6",
+     "d2d3",
+     "f8c5",
+     "c2c3",
+     "a7a6",
+     "a2a4",
+     "e8g8",
+     "d1e2",
+     "f6h5"
+    ],
+    "san": [
+     "Nf3",
+     "Nf6",
+     "d3",
+     "Bc5",
+     "c3",
+     "a6",
+     "a4",
+     "O-O",
+     "Qe2",
+     "Nh5"
+    ],
+    "why": "No immediate material win, but Stockfish rates the position 0.0. Black's winning chances fall from 73% to 50%."
+   },
+   "opening": "King's Gambit"
+  },
+  {
+   "id": "rnbqkbnr/ppp3pp/5p2/4p3/4P3/5N2/PPPP2PP/RNBQKB1R w KQkq -|f3e5",
+   "line": [
+    "e4",
+    "e5",
+    "f4",
+    "d6",
+    "fxe5",
+    "dxe5",
+    "Nf3",
+    "f6"
+   ],
+   "fen": "rnbqkbnr/ppp3pp/5p2/4p3/4P3/5N2/PPPP2PP/RNBQKB1R w KQkq - 0 5",
+   "victim": "white",
+   "kind": "avoid",
+   "move": {
+    "uci": "f3e5",
+    "san": "Nxe5"
+   },
+   "popular": {
+    "games": 3254,
+    "share": 0.0840522808286408
+   },
+   "book": {
+    "games": 0,
+    "share": 0
+   },
+   "scoreBefore": {
+    "type": "cp",
+    "value": 76
+   },
+   "scoreAfter": {
+    "type": "cp",
+    "value": -259
+   },
+   "drop": 29.1,
+   "verdict": "mistake",
+   "refutation": {
+    "uci": [
+     "f6e5",
+     "d1h5",
+     "e8d7",
+     "h5f5",
+     "d7d6",
+     "f5f2",
+     "d8f6",
+     "f2g3",
+     "d6d7",
+     "f1b5"
+    ],
+    "san": [
+     "fxe5",
+     "Qh5+",
+     "Kd7",
+     "Qf5+",
+     "Kd6",
+     "Qf2",
+     "Qf6",
+     "Qg3",
+     "Kd7",
+     "Bb5+"
+    ],
+    "why": "Black wins a knight."
+   },
+   "opening": "King's Gambit"
+  },
+  {
+   "id": "r2qkb1r/ppp2ppp/2np1n2/4p3/2B1PPb1/5N2/PPPP2PP/RNBQ1RK1 w kq -|c4f7",
+   "line": [
+    "e4",
+    "e5",
+    "f4",
+    "d6",
+    "Nf3",
+    "Nc6",
+    "Bc4",
+    "Bg4",
+    "O-O",
+    "Nf6"
+   ],
+   "fen": "r2qkb1r/ppp2ppp/2np1n2/4p3/2B1PPb1/5N2/PPPP2PP/RNBQ1RK1 w kq - 6 6",
+   "victim": "white",
+   "kind": "avoid",
+   "move": {
+    "uci": "c4f7",
+    "san": "Bxf7+"
+   },
+   "popular": {
+    "games": 2409,
+    "share": 0.056575857209957725
+   },
+   "book": {
+    "games": 0,
+    "share": 0
+   },
+   "scoreBefore": {
+    "type": "cp",
+    "value": 40
+   },
+   "scoreAfter": {
+    "type": "cp",
+    "value": -417
+   },
+   "drop": 36,
+   "verdict": "blunder",
+   "refutation": {
+    "uci": [
+     "e8f7",
+     "b1c3",
+     "d8d7",
+     "h2h3",
+     "g4f3",
+     "d1f3",
+     "f8e7",
+     "c3d5",
+     "c6d4",
+     "f3d1"
+    ],
+    "san": [
+     "Kxf7",
+     "Nc3",
+     "Qd7",
+     "h3",
+     "Bxf3",
+     "Qxf3",
+     "Be7",
+     "Nd5",
+     "Nd4",
+     "Qd1"
+    ],
+    "why": "Black wins a knight."
+   },
+   "opening": "King's Gambit"
+  },
+  {
+   "id": "r2qkbnr/ppp2ppp/3p4/4p3/2BnPPb1/5N2/PPPP2PP/RNBQ1RK1 w kq -|h2h3",
+   "line": [
+    "e4",
+    "e5",
+    "f4",
+    "d6",
+    "Nf3",
+    "Nc6",
+    "Bc4",
+    "Bg4",
+    "O-O",
+    "Nd4"
+   ],
+   "fen": "r2qkbnr/ppp2ppp/3p4/4p3/2BnPPb1/5N2/PPPP2PP/RNBQ1RK1 w kq - 6 6",
+   "victim": "white",
+   "kind": "avoid",
+   "move": {
+    "uci": "h2h3",
+    "san": "h3"
+   },
+   "popular": {
+    "games": 2247,
+    "share": 0.08875459177627681
+   },
+   "book": {
+    "games": 0,
+    "share": 0
+   },
+   "scoreBefore": {
+    "type": "cp",
+    "value": 119
+   },
+   "scoreAfter": {
+    "type": "cp",
+    "value": -157
+   },
+   "drop": 24.8,
+   "verdict": "mistake",
+   "refutation": {
+    "uci": [
+     "g4f3",
+     "f1f3",
+     "d4f3",
+     "d1f3",
+     "g8f6",
+     "d2d3",
+     "c7c6",
+     "f4e5",
+     "d6e5",
+     "c1e3"
+    ],
+    "san": [
+     "Bxf3",
+     "Rxf3",
+     "Nxf3+",
+     "Qxf3",
+     "Nf6",
+     "d3",
+     "c6",
+     "fxe5",
+     "dxe5",
+     "Be3"
+    ],
+    "why": "Black wins a rook for a bishop."
+   },
+   "opening": "King's Gambit"
+  },
+  {
+   "id": "rnbqkbnr/ppp2ppp/8/4p3/2B1P3/8/PPPP2PP/RNBQK1NR b KQkq -|c8e6",
+   "line": [
+    "e4",
+    "e5",
+    "f4",
+    "d6",
+    "fxe5",
+    "dxe5",
+    "Bc4"
+   ],
+   "fen": "rnbqkbnr/ppp2ppp/8/4p3/2B1P3/8/PPPP2PP/RNBQK1NR b KQkq - 1 4",
+   "victim": "black",
+   "kind": "exploit",
+   "move": {
+    "uci": "c8e6",
+    "san": "Be6"
+   },
+   "popular": {
+    "games": 2175,
+    "share": 0.07118544216796492
+   },
+   "book": {
+    "games": 0,
+    "share": 0
+   },
+   "scoreBefore": {
+    "type": "cp",
+    "value": -274
+   },
+   "scoreAfter": {
+    "type": "cp",
+    "value": 28
+   },
+   "drop": 25.9,
+   "verdict": "mistake",
+   "refutation": {
+    "uci": [
+     "c4e6",
+     "d8h4",
+     "e1f1",
+     "f7e6",
+     "d2d3",
+     "b8c6",
+     "g2g3",
+     "h4f6",
+     "f1g2",
+     "e8c8"
+    ],
+    "san": [
+     "Bxe6",
+     "Qh4+",
+     "Kf1",
+     "fxe6",
+     "d3",
+     "Nc6",
+     "g3",
+     "Qf6+",
+     "Kg2",
+     "O-O-O"
+    ],
+    "why": "No immediate material win, but Stockfish rates the position +0.3. Black's winning chances fall from 73% to 47%."
+   },
+   "opening": "King's Gambit"
+  }
+ ]
+}

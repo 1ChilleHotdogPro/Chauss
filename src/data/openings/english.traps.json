@@ -1,0 +1,86 @@
+{
+ "meta": {
+  "formatVersion": 1,
+  "side": "white",
+  "createdAt": "2026-11-23T18:58:47.859Z",
+  "snapshotCreatedAt": "2026-11-23T18:58:36.065Z",
+  "engine": {
+   "name": "Stockfish 19 Lite WASM",
+   "depth": 22
+  },
+  "rule": {
+   "minShare": 0.05,
+   "minGames": 1000,
+   "minDrop": 20,
+   "maxCandidates": 60
+  }
+ },
+ "traps": [
+  {
+   "id": "rnbqkb1r/ppp2ppp/8/3np3/8/6P1/PP1PPPBP/RNBQK1NR w KQkq -|e2e4",
+   "line": [
+    "c4",
+    "e5",
+    "g3",
+    "Nf6",
+    "Bg2",
+    "d5",
+    "cxd5",
+    "Nxd5"
+   ],
+   "fen": "rnbqkb1r/ppp2ppp/8/3np3/8/6P1/PP1PPPBP/RNBQK1NR w KQkq - 0 5",
+   "victim": "white",
+   "kind": "avoid",
+   "move": {
+    "uci": "e2e4",
+    "san": "e4"
+   },
+   "popular": {
+    "games": 4576,
+    "share": 0.08404349103732
+   },
+   "book": {
+    "games": 0,
+    "share": 0
+   },
+   "scoreBefore": {
+    "type": "cp",
+    "value": 16
+   },
+   "scoreAfter": {
+    "type": "cp",
+    "value": -367
+   },
+   "drop": 30.9,
+   "verdict": "blunder",
+   "refutation": {
+    "uci": [
+     "d5b4",
+     "d2d4",
+     "d8d4",
+     "d1d4",
+     "b4c2",
+     "e1d1",
+     "c2d4",
+     "b1c3",
+     "f8c5",
+     "c3a4"
+    ],
+    "san": [
+     "Nb4",
+     "d4",
+     "Qxd4",
+     "Qxd4",
+     "Nc2+",
+     "Kd1",
+     "Nxd4",
+     "Nc3",
+     "Bc5",
+     "Na4"
+    ],
+    "why": "Black wins a pawn. Stockfish rates the position -3.7."
+   },
+   "opening": "English Opening: King's English Variation"
+  }
+ ]
+}

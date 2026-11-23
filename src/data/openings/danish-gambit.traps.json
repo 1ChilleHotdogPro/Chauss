@@ -1,0 +1,644 @@
+{
+ "meta": {
+  "formatVersion": 1,
+  "side": "white",
+  "createdAt": "2026-11-23T17:59:15.009Z",
+  "snapshotCreatedAt": "2026-11-23T17:58:01.527Z",
+  "engine": {
+   "name": "Stockfish 19 Lite WASM",
+   "depth": 22
+  },
+  "rule": {
+   "minShare": 0.05,
+   "minGames": 1000,
+   "minDrop": 20,
+   "maxCandidates": 60
+  }
+ },
+ "traps": [
+  {
+   "id": "r1bqk1nr/pppp1ppp/2n5/2b5/2B1P3/2p2N2/PP3PPP/RNBQK2R w KQkq -|d1d5",
+   "line": [
+    "e4",
+    "e5",
+    "d4",
+    "exd4",
+    "c3",
+    "Nc6",
+    "Bc4",
+    "Bc5",
+    "Nf3",
+    "dxc3"
+   ],
+   "fen": "r1bqk1nr/pppp1ppp/2n5/2b5/2B1P3/2p2N2/PP3PPP/RNBQK2R w KQkq - 0 6",
+   "victim": "white",
+   "kind": "avoid",
+   "move": {
+    "uci": "d1d5",
+    "san": "Qd5"
+   },
+   "popular": {
+    "games": 23829,
+    "share": 0.05628769106847167
+   },
+   "book": {
+    "games": 0,
+    "share": 0
+   },
+   "scoreBefore": {
+    "type": "cp",
+    "value": 116
+   },
+   "scoreAfter": {
+    "type": "cp",
+    "value": -132
+   },
+   "drop": 22.4,
+   "verdict": "mistake",
+   "refutation": {
+    "uci": [
+     "d8e7",
+     "b1c3",
+     "g8f6",
+     "d5g5",
+     "e8g8",
+     "e1g1",
+     "d7d6",
+     "h2h3",
+     "c8e6",
+     "c4b5"
+    ],
+    "san": [
+     "Qe7",
+     "Nxc3",
+     "Nf6",
+     "Qg5",
+     "O-O",
+     "O-O",
+     "d6",
+     "h3",
+     "Be6",
+     "Bb5"
+    ],
+    "why": "No immediate material win, but Stockfish rates the position -1.3. White's winning chances fall from 61% to 38%."
+   },
+   "opening": "Danish Gambit"
+  },
+  {
+   "id": "r1bqk2r/pppp1ppp/2n2n2/2b5/2B1P3/2N2N2/PP3PPP/R1BQK2R w KQkq -|f3g5",
+   "line": [
+    "e4",
+    "e5",
+    "d4",
+    "exd4",
+    "c3",
+    "Nc6",
+    "Bc4",
+    "dxc3",
+    "Nxc3",
+    "Nf6",
+    "Nf3",
+    "Bc5"
+   ],
+   "fen": "r1bqk2r/pppp1ppp/2n2n2/2b5/2B1P3/2N2N2/PP3PPP/R1BQK2R w KQkq - 3 7",
+   "victim": "white",
+   "kind": "avoid",
+   "move": {
+    "uci": "f3g5",
+    "san": "Ng5"
+   },
+   "popular": {
+    "games": 7101,
+    "share": 0.09954998527989234
+   },
+   "book": {
+    "games": 0,
+    "share": 0
+   },
+   "scoreBefore": {
+    "type": "cp",
+    "value": 108
+   },
+   "scoreAfter": {
+    "type": "cp",
+    "value": -133
+   },
+   "drop": 21.8,
+   "verdict": "mistake",
+   "refutation": {
+    "uci": [
+     "e8g8",
+     "e1g1",
+     "d7d6",
+     "h2h3",
+     "c6e5",
+     "c4b3",
+     "h7h6",
+     "g5f3",
+     "d8e7",
+     "f1e1"
+    ],
+    "san": [
+     "O-O",
+     "O-O",
+     "d6",
+     "h3",
+     "Ne5",
+     "Bb3",
+     "h6",
+     "Nf3",
+     "Qe7",
+     "Re1"
+    ],
+    "why": "No immediate material win, but Stockfish rates the position -1.3. White's winning chances fall from 60% to 38%."
+   },
+   "opening": "Danish Gambit"
+  },
+  {
+   "id": "r1bqkb1r/pppp1ppp/2n2n2/8/2B1P3/2N5/PP3PPP/R1BQK1NR w KQkq -|e4e5",
+   "line": [
+    "e4",
+    "e5",
+    "d4",
+    "exd4",
+    "c3",
+    "Nc6",
+    "Bc4",
+    "dxc3",
+    "Nxc3",
+    "Nf6"
+   ],
+   "fen": "r1bqkb1r/pppp1ppp/2n2n2/8/2B1P3/2N5/PP3PPP/R1BQK1NR w KQkq - 1 6",
+   "victim": "white",
+   "kind": "avoid",
+   "move": {
+    "uci": "e4e5",
+    "san": "e5"
+   },
+   "popular": {
+    "games": 4952,
+    "share": 0.0658650776761013
+   },
+   "book": {
+    "games": 0,
+    "share": 0
+   },
+   "scoreBefore": {
+    "type": "cp",
+    "value": -6
+   },
+   "scoreAfter": {
+    "type": "cp",
+    "value": -335
+   },
+   "drop": 26.9,
+   "verdict": "mistake",
+   "refutation": {
+    "uci": [
+     "c6e5",
+     "c4b3",
+     "d7d5",
+     "d1e2",
+     "d8e7",
+     "c1e3",
+     "c8f5",
+     "e1c1",
+     "e8c8",
+     "g1f3"
+    ],
+    "san": [
+     "Nxe5",
+     "Bb3",
+     "d5",
+     "Qe2",
+     "Qe7",
+     "Be3",
+     "Bf5",
+     "O-O-O",
+     "O-O-O",
+     "Nf3"
+    ],
+    "why": "Black wins a pawn. Stockfish rates the position -3.4."
+   },
+   "opening": "Danish Gambit"
+  },
+  {
+   "id": "r1bqk2r/pppp1ppp/2n2n2/2b5/2B1P3/2N2N2/PP3PPP/R1BQK2R w KQkq -|c4f7",
+   "line": [
+    "e4",
+    "e5",
+    "d4",
+    "exd4",
+    "c3",
+    "Nc6",
+    "Bc4",
+    "dxc3",
+    "Nxc3",
+    "Nf6",
+    "Nf3",
+    "Bc5"
+   ],
+   "fen": "r1bqk2r/pppp1ppp/2n2n2/2b5/2B1P3/2N2N2/PP3PPP/R1BQK2R w KQkq - 3 7",
+   "victim": "white",
+   "kind": "avoid",
+   "move": {
+    "uci": "c4f7",
+    "san": "Bxf7+"
+   },
+   "popular": {
+    "games": 4512,
+    "share": 0.0632544055179375
+   },
+   "book": {
+    "games": 0,
+    "share": 0
+   },
+   "scoreBefore": {
+    "type": "cp",
+    "value": 119
+   },
+   "scoreAfter": {
+    "type": "cp",
+    "value": -269
+   },
+   "drop": 33.7,
+   "verdict": "blunder",
+   "refutation": {
+    "uci": [
+     "e8f7",
+     "e1g1",
+     "d7d6",
+     "b2b4",
+     "c5b4",
+     "d1b3",
+     "f7e8",
+     "c3d5",
+     "a7a5",
+     "c1g5"
+    ],
+    "san": [
+     "Kxf7",
+     "O-O",
+     "d6",
+     "b4",
+     "Bxb4",
+     "Qb3+",
+     "Ke8",
+     "Nd5",
+     "a5",
+     "Bg5"
+    ],
+    "why": "Black wins a bishop and a pawn."
+   },
+   "opening": "Danish Gambit"
+  },
+  {
+   "id": "r1bqk2r/pppp1ppp/2n2n2/2b1P3/2B5/2N2N2/PP3PPP/R1BQK2R b KQkq -|d8e7",
+   "line": [
+    "e4",
+    "e5",
+    "d4",
+    "exd4",
+    "c3",
+    "Nc6",
+    "Bc4",
+    "dxc3",
+    "Nxc3",
+    "Nf6",
+    "Nf3",
+    "Bc5",
+    "e5"
+   ],
+   "fen": "r1bqk2r/pppp1ppp/2n2n2/2b1P3/2B5/2N2N2/PP3PPP/R1BQK2R b KQkq - 0 7",
+   "victim": "black",
+   "kind": "exploit",
+   "move": {
+    "uci": "d8e7",
+    "san": "Qe7"
+   },
+   "popular": {
+    "games": 3768,
+    "share": 0.1662915397855157
+   },
+   "book": {
+    "games": 0,
+    "share": 0
+   },
+   "scoreBefore": {
+    "type": "cp",
+    "value": 129
+   },
+   "scoreAfter": {
+    "type": "cp",
+    "value": 528
+   },
+   "drop": 25.8,
+   "verdict": "mistake",
+   "refutation": {
+    "uci": [
+     "e1g1",
+     "c6e5",
+     "f3e5",
+     "e8g8",
+     "f1e1",
+     "d7d5",
+     "c3d5",
+     "f6d5",
+     "c4d5",
+     "e7f6"
+    ],
+    "san": [
+     "O-O",
+     "Nxe5",
+     "Nxe5",
+     "O-O",
+     "Re1",
+     "d5",
+     "Nxd5",
+     "Nxd5",
+     "Bxd5",
+     "Qf6"
+    ],
+    "why": "White wins a knight. Stockfish rates the position +5.3."
+   },
+   "opening": "Danish Gambit"
+  },
+  {
+   "id": "r1bqk1nr/pppp1ppp/2n5/2b5/2BpP3/2P5/PP3PPP/RNBQK1NR w KQkq -|d1f3",
+   "line": [
+    "e4",
+    "e5",
+    "d4",
+    "exd4",
+    "c3",
+    "Nc6",
+    "Bc4",
+    "Bc5"
+   ],
+   "fen": "r1bqk1nr/pppp1ppp/2n5/2b5/2BpP3/2P5/PP3PPP/RNBQK1NR w KQkq - 3 5",
+   "victim": "white",
+   "kind": "avoid",
+   "move": {
+    "uci": "d1f3",
+    "san": "Qf3"
+   },
+   "popular": {
+    "games": 3216,
+    "share": 0.07233468286099864
+   },
+   "book": {
+    "games": 0,
+    "share": 0
+   },
+   "scoreBefore": {
+    "type": "cp",
+    "value": 43
+   },
+   "scoreAfter": {
+    "type": "cp",
+    "value": -327
+   },
+   "drop": 30.9,
+   "verdict": "blunder",
+   "refutation": {
+    "uci": [
+     "g8f6",
+     "c4b5",
+     "e8g8",
+     "c1g5",
+     "c6e5",
+     "f3f4",
+     "e5g6",
+     "g5f6",
+     "g6f4",
+     "f6d8"
+    ],
+    "san": [
+     "Nf6",
+     "Bb5",
+     "O-O",
+     "Bg5",
+     "Ne5",
+     "Qf4",
+     "Ng6",
+     "Bxf6",
+     "Nxf4",
+     "Bxd8"
+    ],
+    "why": "No immediate material win, but Stockfish rates the position -3.3. White's winning chances fall from 54% to 23%."
+   },
+   "opening": "Danish Gambit"
+  },
+  {
+   "id": "r1bqk1nr/ppp2ppp/2np4/2b5/2B1P3/2N2N2/PP3PPP/R1BQK2R w KQkq -|c4f7",
+   "line": [
+    "e4",
+    "e5",
+    "d4",
+    "exd4",
+    "c3",
+    "Nc6",
+    "Bc4",
+    "Bc5",
+    "Nf3",
+    "dxc3",
+    "Nxc3",
+    "d6"
+   ],
+   "fen": "r1bqk1nr/ppp2ppp/2np4/2b5/2B1P3/2N2N2/PP3PPP/R1BQK2R w KQkq - 0 7",
+   "victim": "white",
+   "kind": "avoid",
+   "move": {
+    "uci": "c4f7",
+    "san": "Bxf7+"
+   },
+   "popular": {
+    "games": 2149,
+    "share": 0.07757282604772046
+   },
+   "book": {
+    "games": 0,
+    "share": 0
+   },
+   "scoreBefore": {
+    "type": "cp",
+    "value": -17
+   },
+   "scoreAfter": {
+    "type": "cp",
+    "value": -318
+   },
+   "drop": 24.8,
+   "verdict": "mistake",
+   "refutation": {
+    "uci": [
+     "e8f7",
+     "d1b3",
+     "f7e8",
+     "c1e3",
+     "c5e3",
+     "f2e3",
+     "g8f6",
+     "e1g1",
+     "d8e7",
+     "c3d5"
+    ],
+    "san": [
+     "Kxf7",
+     "Qb3+",
+     "Ke8",
+     "Be3",
+     "Bxe3",
+     "fxe3",
+     "Nf6",
+     "O-O",
+     "Qe7",
+     "Nd5"
+    ],
+    "why": "Black wins a bishop."
+   },
+   "opening": "Danish Gambit"
+  },
+  {
+   "id": "r1bqk1nr/ppp2ppp/2np4/2b5/2B1P3/2N2N2/PP3PPP/R1BQK2R w KQkq -|d1d5",
+   "line": [
+    "e4",
+    "e5",
+    "d4",
+    "exd4",
+    "c3",
+    "Nc6",
+    "Bc4",
+    "Bc5",
+    "Nf3",
+    "dxc3",
+    "Nxc3",
+    "d6"
+   ],
+   "fen": "r1bqk1nr/ppp2ppp/2np4/2b5/2B1P3/2N2N2/PP3PPP/R1BQK2R w KQkq - 0 7",
+   "victim": "white",
+   "kind": "avoid",
+   "move": {
+    "uci": "d1d5",
+    "san": "Qd5"
+   },
+   "popular": {
+    "games": 1940,
+    "share": 0.07002851676713713
+   },
+   "book": {
+    "games": 0,
+    "share": 0
+   },
+   "scoreBefore": {
+    "type": "cp",
+    "value": -11
+   },
+   "scoreAfter": {
+    "type": "cp",
+    "value": -448
+   },
+   "drop": 32.9,
+   "verdict": "blunder",
+   "refutation": {
+    "uci": [
+     "c8e6",
+     "d5d3",
+     "c6b4",
+     "d3e2",
+     "e6c4",
+     "e2c4",
+     "b4c2",
+     "e1e2",
+     "c2a1",
+     "c1g5"
+    ],
+    "san": [
+     "Be6",
+     "Qd3",
+     "Nb4",
+     "Qe2",
+     "Bxc4",
+     "Qxc4",
+     "Nc2+",
+     "Ke2",
+     "Nxa1",
+     "Bg5"
+    ],
+    "why": "Black wins a rook."
+   },
+   "opening": "Danish Gambit"
+  },
+  {
+   "id": "r3kbnr/ppp2ppp/2n5/3q4/3P2b1/2N2N2/PP3PPP/R1BQKB1R b KQkq -|d5e6",
+   "line": [
+    "e4",
+    "e5",
+    "d4",
+    "exd4",
+    "c3",
+    "Nc6",
+    "cxd4",
+    "d5",
+    "exd5",
+    "Qxd5",
+    "Nf3",
+    "Bg4",
+    "Nc3"
+   ],
+   "fen": "r3kbnr/ppp2ppp/2n5/3q4/3P2b1/2N2N2/PP3PPP/R1BQKB1R b KQkq - 3 7",
+   "victim": "black",
+   "kind": "exploit",
+   "move": {
+    "uci": "d5e6",
+    "san": "Qe6+"
+   },
+   "popular": {
+    "games": 1519,
+    "share": 0.21555271746842627
+   },
+   "book": {
+    "games": 1,
+    "share": 0.029411764705882353
+   },
+   "scoreBefore": {
+    "type": "cp",
+    "value": -72
+   },
+   "scoreAfter": {
+    "type": "cp",
+    "value": 257
+   },
+   "drop": 28.6,
+   "verdict": "mistake",
+   "refutation": {
+    "uci": [
+     "c1e3",
+     "e6c8",
+     "d4d5",
+     "c6e7",
+     "f1b5",
+     "c7c6",
+     "d5c6",
+     "e7c6",
+     "e1g1",
+     "a7a6"
+    ],
+    "san": [
+     "Be3",
+     "Qc8",
+     "d5",
+     "Nce7",
+     "Bb5+",
+     "c6",
+     "dxc6",
+     "Nxc6",
+     "O-O",
+     "a6"
+    ],
+    "why": "No immediate material win, but Stockfish rates the position +2.6. Black's winning chances fall from 57% to 28%."
+   },
+   "opening": "Danish Gambit"
+  }
+ ]
+}

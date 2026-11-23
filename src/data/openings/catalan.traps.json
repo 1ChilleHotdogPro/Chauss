@@ -1,0 +1,19 @@
+{
+ "meta": {
+  "formatVersion": 1,
+  "side": "white",
+  "createdAt": "2026-11-23T19:43:30.931Z",
+  "snapshotCreatedAt": "2026-11-23T19:43:29.865Z",
+  "engine": {
+   "name": "Stockfish 19 Lite WASM",
+   "depth": 22
+  },
+  "rule": {
+   "minShare": 0.05,
+   "minGames": 1000,
+   "minDrop": 20,
+   "maxCandidates": 60
+  }
+ },
+ "traps": []
+}

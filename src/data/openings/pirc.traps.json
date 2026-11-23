@@ -1,0 +1,150 @@
+{
+ "meta": {
+  "formatVersion": 1,
+  "side": "black",
+  "createdAt": "2026-11-23T20:51:37.133Z",
+  "snapshotCreatedAt": "2026-11-23T20:51:24.449Z",
+  "engine": {
+   "name": "Stockfish 19 Lite WASM",
+   "depth": 22
+  },
+  "rule": {
+   "minShare": 0.05,
+   "minGames": 1000,
+   "minDrop": 20,
+   "maxCandidates": 60
+  }
+ },
+ "traps": [
+  {
+   "id": "rnbqk1nr/ppp1ppbp/3p2p1/8/2BPP3/5N2/PPP2PPP/RNBQK2R b KQkq -|c8g4",
+   "line": [
+    "e4",
+    "d6",
+    "d4",
+    "g6",
+    "Nf3",
+    "Bg7",
+    "Bc4"
+   ],
+   "fen": "rnbqk1nr/ppp1ppbp/3p2p1/8/2BPP3/5N2/PPP2PPP/RNBQK2R b KQkq - 3 4",
+   "victim": "black",
+   "kind": "avoid",
+   "move": {
+    "uci": "c8g4",
+    "san": "Bg4"
+   },
+   "popular": {
+    "games": 65099,
+    "share": 0.1200508241403602
+   },
+   "book": {
+    "games": 0,
+    "share": 0
+   },
+   "scoreBefore": {
+    "type": "cp",
+    "value": 43
+   },
+   "scoreAfter": {
+    "type": "cp",
+    "value": 355
+   },
+   "drop": 24.8,
+   "verdict": "mistake",
+   "refutation": {
+    "uci": [
+     "c4f7",
+     "e8f7",
+     "f3g5",
+     "f7e8",
+     "d1g4",
+     "g7d4",
+     "g4e6",
+     "b8c6",
+     "c2c3",
+     "d4f6"
+    ],
+    "san": [
+     "Bxf7+",
+     "Kxf7",
+     "Ng5+",
+     "Ke8",
+     "Qxg4",
+     "Bxd4",
+     "Qe6",
+     "Nc6",
+     "c3",
+     "Bf6"
+    ],
+    "why": "No immediate material win, but Stockfish rates the position +3.5. Black's winning chances fall from 46% to 21%."
+   },
+   "opening": "Pirc Defense"
+  },
+  {
+   "id": "rnbqk1nr/ppp1ppbp/3p2p1/8/2BPP3/5N2/PPP2PPP/RNBQK2R b KQkq -|b8d7",
+   "line": [
+    "e4",
+    "d6",
+    "d4",
+    "g6",
+    "Nf3",
+    "Bg7",
+    "Bc4"
+   ],
+   "fen": "rnbqk1nr/ppp1ppbp/3p2p1/8/2BPP3/5N2/PPP2PPP/RNBQK2R b KQkq - 3 4",
+   "victim": "black",
+   "kind": "avoid",
+   "move": {
+    "uci": "b8d7",
+    "san": "Nd7"
+   },
+   "popular": {
+    "games": 35519,
+    "share": 0.06550154722256031
+   },
+   "book": {
+    "games": 1,
+    "share": 0.0004035512510088781
+   },
+   "scoreBefore": {
+    "type": "cp",
+    "value": 49
+   },
+   "scoreAfter": {
+    "type": "cp",
+    "value": 546
+   },
+   "drop": 33.7,
+   "verdict": "blunder",
+   "refutation": {
+    "uci": [
+     "c4f7",
+     "e8f8",
+     "f7b3",
+     "c7c5",
+     "f3g5",
+     "d7f6",
+     "e1g1",
+     "d8c7",
+     "d4c5",
+     "d6c5"
+    ],
+    "san": [
+     "Bxf7+",
+     "Kf8",
+     "Bb3",
+     "c5",
+     "Ng5",
+     "Ndf6",
+     "O-O",
+     "Qc7",
+     "dxc5",
+     "dxc5"
+    ],
+    "why": "White wins a pawn. Stockfish rates the position +5.5."
+   },
+   "opening": "Pirc Defense"
+  }
+ ]
+}

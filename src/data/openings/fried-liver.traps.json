@@ -1,0 +1,670 @@
+{
+ "meta": {
+  "formatVersion": 1,
+  "side": "white",
+  "createdAt": "2026-11-23T18:31:34.804Z",
+  "snapshotCreatedAt": "2026-11-23T18:30:19.622Z",
+  "engine": {
+   "name": "Stockfish 19 Lite WASM",
+   "depth": 22
+  },
+  "rule": {
+   "minShare": 0.05,
+   "minGames": 1000,
+   "minDrop": 20,
+   "maxCandidates": 60
+  }
+ },
+ "traps": [
+  {
+   "id": "r1bq3r/ppppkBpp/2n2n2/2b1p1N1/4P3/8/PPPP1PPP/RNBQK2R w KQ -|e1g1",
+   "line": [
+    "e4",
+    "e5",
+    "Nf3",
+    "Nc6",
+    "Bc4",
+    "Nf6",
+    "Ng5",
+    "Bc5",
+    "Bxf7+",
+    "Ke7"
+   ],
+   "fen": "r1bq3r/ppppkBpp/2n2n2/2b1p1N1/4P3/8/PPPP1PPP/RNBQK2R w KQ - 1 6",
+   "victim": "white",
+   "kind": "avoid",
+   "move": {
+    "uci": "e1g1",
+    "san": "O-O"
+   },
+   "popular": {
+    "games": 10186,
+    "share": 0.1693067167528215
+   },
+   "book": {
+    "games": 0,
+    "share": 0
+   },
+   "scoreBefore": {
+    "type": "cp",
+    "value": 103
+   },
+   "scoreAfter": {
+    "type": "cp",
+    "value": -391
+   },
+   "drop": 40.2,
+   "verdict": "blunder",
+   "refutation": {
+    "uci": [
+     "h7h6",
+     "f7c4",
+     "h6g5",
+     "b1c3",
+     "c6d4",
+     "d2d3",
+     "d8e8",
+     "c1g5",
+     "e8g6",
+     "h2h4"
+    ],
+    "san": [
+     "h6",
+     "Bc4",
+     "hxg5",
+     "Nc3",
+     "Nd4",
+     "d3",
+     "Qe8",
+     "Bxg5",
+     "Qg6",
+     "h4"
+    ],
+    "why": "Black wins a knight for a pawn."
+   },
+   "opening": "Italian Game: Two Knights Defense, Traxler Counterattack, Bishop Sacrifice Line"
+  },
+  {
+   "id": "r1bqkb1r/ppp2ppp/5n2/3Pp1N1/2Bn4/2P5/PP1P1PPP/RNBQK2R b KQkq -|c8g4",
+   "line": [
+    "e4",
+    "e5",
+    "Nf3",
+    "Nc6",
+    "Bc4",
+    "Nf6",
+    "Ng5",
+    "d5",
+    "exd5",
+    "Nd4",
+    "c3"
+   ],
+   "fen": "r1bqkb1r/ppp2ppp/5n2/3Pp1N1/2Bn4/2P5/PP1P1PPP/RNBQK2R b KQkq - 0 6",
+   "victim": "black",
+   "kind": "exploit",
+   "move": {
+    "uci": "c8g4",
+    "san": "Bg4"
+   },
+   "popular": {
+    "games": 9544,
+    "share": 0.05954913864641763
+   },
+   "book": {
+    "games": 0,
+    "share": 0
+   },
+   "scoreBefore": {
+    "type": "cp",
+    "value": 62
+   },
+   "scoreAfter": {
+    "type": "cp",
+    "value": 394
+   },
+   "drop": 25.3,
+   "verdict": "mistake",
+   "refutation": {
+    "uci": [
+     "f2f3",
+     "d4f3",
+     "g2f3",
+     "g4h5",
+     "c4b5",
+     "f6d7",
+     "d2d4",
+     "f8d6",
+     "e1g1",
+     "e8g8"
+    ],
+    "san": [
+     "f3",
+     "Nxf3+",
+     "gxf3",
+     "Bh5",
+     "Bb5+",
+     "Nd7",
+     "d4",
+     "Bd6",
+     "O-O",
+     "O-O"
+    ],
+    "why": "White wins a knight for a pawn."
+   },
+   "opening": "Italian Game: Two Knights Defense, Fritz Variation"
+  },
+  {
+   "id": "r1bqkb1r/ppp2ppp/5n2/3Pp1N1/2Bn4/2P5/PP1P1PPP/RNBQK2R b KQkq -|f6d5",
+   "line": [
+    "e4",
+    "e5",
+    "Nf3",
+    "Nc6",
+    "Bc4",
+    "Nf6",
+    "Ng5",
+    "d5",
+    "exd5",
+    "Nd4",
+    "c3"
+   ],
+   "fen": "r1bqkb1r/ppp2ppp/5n2/3Pp1N1/2Bn4/2P5/PP1P1PPP/RNBQK2R b KQkq - 0 6",
+   "victim": "black",
+   "kind": "exploit",
+   "move": {
+    "uci": "f6d5",
+    "san": "Nxd5"
+   },
+   "popular": {
+    "games": 9243,
+    "share": 0.05767106962582127
+   },
+   "book": {
+    "games": 0,
+    "share": 0
+   },
+   "scoreBefore": {
+    "type": "cp",
+    "value": 59
+   },
+   "scoreAfter": {
+    "type": "cp",
+    "value": 469
+   },
+   "drop": 29.5,
+   "verdict": "mistake",
+   "refutation": {
+    "uci": [
+     "c3d4",
+     "d8g5",
+     "c4d5",
+     "e5d4",
+     "d5f3",
+     "g5e5",
+     "d1e2",
+     "e5e2",
+     "e1e2",
+     "d4d3"
+    ],
+    "san": [
+     "cxd4",
+     "Qxg5",
+     "Bxd5",
+     "exd4",
+     "Bf3",
+     "Qe5+",
+     "Qe2",
+     "Qxe2+",
+     "Kxe2",
+     "d3+"
+    ],
+    "why": "White wins a knight for a pawn. Stockfish rates the position +4.7."
+   },
+   "opening": "Italian Game: Two Knights Defense, Fritz Variation"
+  },
+  {
+   "id": "r1bqkb1r/p4pp1/2p2n1p/n3p1N1/8/3B4/PPPP1PPP/RNBQK2R w KQkq -|g5f3",
+   "line": [
+    "e4",
+    "e5",
+    "Nf3",
+    "Nc6",
+    "Bc4",
+    "Nf6",
+    "Ng5",
+    "d5",
+    "exd5",
+    "Na5",
+    "Bb5+",
+    "c6",
+    "dxc6",
+    "bxc6",
+    "Bd3",
+    "h6"
+   ],
+   "fen": "r1bqkb1r/p4pp1/2p2n1p/n3p1N1/8/3B4/PPPP1PPP/RNBQK2R w KQkq - 0 9",
+   "victim": "white",
+   "kind": "avoid",
+   "move": {
+    "uci": "g5f3",
+    "san": "Nf3"
+   },
+   "popular": {
+    "games": 8504,
+    "share": 0.2520301108410883
+   },
+   "book": {
+    "games": 0,
+    "share": 0
+   },
+   "scoreBefore": {
+    "type": "cp",
+    "value": 63
+   },
+   "scoreAfter": {
+    "type": "cp",
+    "value": -327
+   },
+   "drop": 32.7,
+   "verdict": "blunder",
+   "refutation": {
+    "uci": [
+     "e5e4",
+     "d3e4",
+     "f6e4",
+     "d1e2",
+     "d8e7",
+     "e1g1",
+     "e4f6",
+     "f1e1",
+     "e7e2",
+     "e1e2"
+    ],
+    "san": [
+     "e4",
+     "Bxe4",
+     "Nxe4",
+     "Qe2",
+     "Qe7",
+     "O-O",
+     "Nf6",
+     "Re1",
+     "Qxe2",
+     "Rxe2+"
+    ],
+    "why": "Black wins a bishop for a pawn."
+   },
+   "opening": "Italian Game: Two Knights Defense, Polerio Defense, Bishop Check Line"
+  },
+  {
+   "id": "Q1bqkb1r/p4ppp/5n2/np2p1N1/8/8/PPPP1PPP/RNB1K2R b KQk -|c8b7",
+   "line": [
+    "e4",
+    "e5",
+    "Nf3",
+    "Nc6",
+    "Bc4",
+    "Nf6",
+    "Ng5",
+    "d5",
+    "exd5",
+    "Na5",
+    "Bb5+",
+    "c6",
+    "dxc6",
+    "bxc6",
+    "Qf3",
+    "cxb5",
+    "Qxa8"
+   ],
+   "fen": "Q1bqkb1r/p4ppp/5n2/np2p1N1/8/8/PPPP1PPP/RNB1K2R b KQk - 0 9",
+   "victim": "black",
+   "kind": "exploit",
+   "move": {
+    "uci": "c8b7",
+    "san": "Bb7"
+   },
+   "popular": {
+    "games": 2068,
+    "share": 0.19498397133697906
+   },
+   "book": {
+    "games": 0,
+    "share": 0
+   },
+   "scoreBefore": {
+    "type": "cp",
+    "value": 13
+   },
+   "scoreAfter": {
+    "type": "cp",
+    "value": 731
+   },
+   "drop": 42.5,
+   "verdict": "blunder",
+   "refutation": {
+    "uci": [
+     "a8d8",
+     "e8d8",
+     "g5f7",
+     "d8c8",
+     "f7h8",
+     "a5c6",
+     "c2c3",
+     "b5b4",
+     "e1g1",
+     "f8c5"
+    ],
+    "san": [
+     "Qxd8+",
+     "Kxd8",
+     "Nxf7+",
+     "Kc8",
+     "Nxh8",
+     "Nc6",
+     "c3",
+     "b4",
+     "O-O",
+     "Bc5"
+    ],
+    "why": "White wins a rook and a pawn."
+   },
+   "opening": "Italian Game: Two Knights Defense, Blackburne Variation"
+  },
+  {
+   "id": "r1bqkb1r/p4pp1/2p2n1p/n7/4p3/5N2/PPPPBPPP/RNBQK2R w KQkq -|f3h4",
+   "line": [
+    "e4",
+    "e5",
+    "Nf3",
+    "Nc6",
+    "Bc4",
+    "Nf6",
+    "Ng5",
+    "d5",
+    "exd5",
+    "Na5",
+    "Bb5+",
+    "c6",
+    "dxc6",
+    "bxc6",
+    "Be2",
+    "h6",
+    "Nf3",
+    "e4"
+   ],
+   "fen": "r1bqkb1r/p4pp1/2p2n1p/n7/4p3/5N2/PPPPBPPP/RNBQK2R w KQkq - 0 10",
+   "victim": "white",
+   "kind": "avoid",
+   "move": {
+    "uci": "f3h4",
+    "san": "Nh4"
+   },
+   "popular": {
+    "games": 1855,
+    "share": 0.10699042565463145
+   },
+   "book": {
+    "games": 0,
+    "share": 0
+   },
+   "scoreBefore": {
+    "type": "cp",
+    "value": -15
+   },
+   "scoreAfter": {
+    "type": "cp",
+    "value": -366
+   },
+   "drop": 28,
+   "verdict": "mistake",
+   "refutation": {
+    "uci": [
+     "g7g5",
+     "b1c3",
+     "g5h4",
+     "d2d3",
+     "h8g8",
+     "c1f4",
+     "c8e6",
+     "d3e4",
+     "d8d1",
+     "a1d1"
+    ],
+    "san": [
+     "g5",
+     "Nc3",
+     "gxh4",
+     "d3",
+     "Rg8",
+     "Bf4",
+     "Be6",
+     "dxe4",
+     "Qxd1+",
+     "Rxd1"
+    ],
+    "why": "Black wins a knight for a pawn."
+   },
+   "opening": "Italian Game: Two Knights Defense, Polerio Defense, Suhle Defense"
+  },
+  {
+   "id": "r1bqkb1r/p4pp1/2p2n1p/n7/4p3/5N2/PPPPBPPP/RNBQK2R w KQkq -|f3d4",
+   "line": [
+    "e4",
+    "e5",
+    "Nf3",
+    "Nc6",
+    "Bc4",
+    "Nf6",
+    "Ng5",
+    "d5",
+    "exd5",
+    "Na5",
+    "Bb5+",
+    "c6",
+    "dxc6",
+    "bxc6",
+    "Be2",
+    "h6",
+    "Nf3",
+    "e4"
+   ],
+   "fen": "r1bqkb1r/p4pp1/2p2n1p/n7/4p3/5N2/PPPPBPPP/RNBQK2R w KQkq - 0 10",
+   "victim": "white",
+   "kind": "avoid",
+   "move": {
+    "uci": "f3d4",
+    "san": "Nd4"
+   },
+   "popular": {
+    "games": 1821,
+    "share": 0.1050294151574576
+   },
+   "book": {
+    "games": 0,
+    "share": 0
+   },
+   "scoreBefore": {
+    "type": "cp",
+    "value": -8
+   },
+   "scoreAfter": {
+    "type": "cp",
+    "value": -470
+   },
+   "drop": 34.2,
+   "verdict": "blunder",
+   "refutation": {
+    "uci": [
+     "d8d4",
+     "d2d3",
+     "e4d3",
+     "e1g1",
+     "c8e6",
+     "e2d3",
+     "f8e7",
+     "f1e1",
+     "a8d8",
+     "d1f3"
+    ],
+    "san": [
+     "Qxd4",
+     "d3",
+     "exd3",
+     "O-O",
+     "Be6",
+     "Bxd3",
+     "Be7",
+     "Re1",
+     "Rd8",
+     "Qf3"
+    ],
+    "why": "Black wins a knight."
+   },
+   "opening": "Italian Game: Two Knights Defense, Polerio Defense, Suhle Defense"
+  },
+  {
+   "id": "r1bqkb1r/p4ppp/2p5/n2np1N1/8/3B4/PPPP1PPP/RNBQK2R w KQkq -|d1f3",
+   "line": [
+    "e4",
+    "e5",
+    "Nf3",
+    "Nc6",
+    "Bc4",
+    "Nf6",
+    "Ng5",
+    "d5",
+    "exd5",
+    "Na5",
+    "Bb5+",
+    "c6",
+    "dxc6",
+    "bxc6",
+    "Bd3",
+    "Nd5"
+   ],
+   "fen": "r1bqkb1r/p4ppp/2p5/n2np1N1/8/3B4/PPPP1PPP/RNBQK2R w KQkq - 2 9",
+   "victim": "white",
+   "kind": "avoid",
+   "move": {
+    "uci": "d1f3",
+    "san": "Qf3"
+   },
+   "popular": {
+    "games": 1459,
+    "share": 0.1212096037218576
+   },
+   "book": {
+    "games": 0,
+    "share": 0
+   },
+   "scoreBefore": {
+    "type": "cp",
+    "value": 0
+   },
+   "scoreAfter": {
+    "type": "cp",
+    "value": -476
+   },
+   "drop": 35.2,
+   "verdict": "blunder",
+   "refutation": {
+    "uci": [
+     "d8g5",
+     "e1g1",
+     "f8d6",
+     "b1c3",
+     "g5g4",
+     "d3e2",
+     "g4f3",
+     "e2f3",
+     "d5c3",
+     "d2c3"
+    ],
+    "san": [
+     "Qxg5",
+     "O-O",
+     "Bd6",
+     "Nc3",
+     "Qg4",
+     "Be2",
+     "Qxf3",
+     "Bxf3",
+     "Nxc3",
+     "dxc3"
+    ],
+    "why": "Black wins a knight."
+   },
+   "opening": "Italian Game: Two Knights Defense, Polerio Defense, Bishop Check Line"
+  },
+  {
+   "id": "r1bq3r/ppppk1pp/2n2n2/2bBp1N1/4P3/8/PPPP1PPP/RNBQK2R b KQ -|f6d5",
+   "line": [
+    "e4",
+    "e5",
+    "Nf3",
+    "Nc6",
+    "Bc4",
+    "Nf6",
+    "Ng5",
+    "Bc5",
+    "Bxf7+",
+    "Ke7",
+    "Bd5"
+   ],
+   "fen": "r1bq3r/ppppk1pp/2n2n2/2bBp1N1/4P3/8/PPPP1PPP/RNBQK2R b KQ - 2 6",
+   "victim": "black",
+   "kind": "exploit",
+   "move": {
+    "uci": "f6d5",
+    "san": "Nxd5"
+   },
+   "popular": {
+    "games": 1324,
+    "share": 0.3642365887207703
+   },
+   "book": {
+    "games": 0,
+    "share": 0
+   },
+   "scoreBefore": {
+    "type": "cp",
+    "value": 77
+   },
+   "scoreAfter": {
+    "type": "cp",
+    "value": 368
+   },
+   "drop": 22.5,
+   "verdict": "mistake",
+   "refutation": {
+    "uci": [
+     "e4d5",
+     "c6d4",
+     "c2c3",
+     "d4f5",
+     "e1g1",
+     "d8f8",
+     "d2d4",
+     "e5d4",
+     "g5e4",
+     "d7d6"
+    ],
+    "san": [
+     "exd5",
+     "Nd4",
+     "c3",
+     "Nf5",
+     "O-O",
+     "Qf8",
+     "d4",
+     "exd4",
+     "Ne4",
+     "d6"
+    ],
+    "why": "White wins a knight for a pawn."
+   },
+   "opening": "Italian Game: Two Knights Defense, Traxler Counterattack, Bishop Sacrifice Line"
+  }
+ ]
+}

@@ -1,0 +1,484 @@
+{
+ "meta": {
+  "formatVersion": 1,
+  "side": "black",
+  "createdAt": "2026-11-23T21:38:55.263Z",
+  "snapshotCreatedAt": "2026-11-23T21:37:22.937Z",
+  "engine": {
+   "name": "Stockfish 19 Lite WASM",
+   "depth": 22
+  },
+  "rule": {
+   "minShare": 0.05,
+   "minGames": 1000,
+   "minDrop": 20,
+   "maxCandidates": 60
+  }
+ },
+ "traps": [
+  {
+   "id": "rnbqkb1r/ppp2ppp/3p4/8/4n3/5N2/PPPPQPPP/RNB1KB1R b KQkq -|d6d5",
+   "line": [
+    "e4",
+    "e5",
+    "Nf3",
+    "Nf6",
+    "Nxe5",
+    "d6",
+    "Nf3",
+    "Nxe4",
+    "Qe2"
+   ],
+   "fen": "rnbqkb1r/ppp2ppp/3p4/8/4n3/5N2/PPPPQPPP/RNB1KB1R b KQkq - 1 5",
+   "victim": "black",
+   "kind": "avoid",
+   "move": {
+    "uci": "d6d5",
+    "san": "d5"
+   },
+   "popular": {
+    "games": 90571,
+    "share": 0.14331126540377348
+   },
+   "book": {
+    "games": 0,
+    "share": 0
+   },
+   "scoreBefore": {
+    "type": "cp",
+    "value": 13
+   },
+   "scoreAfter": {
+    "type": "cp",
+    "value": 361
+   },
+   "drop": 27.9,
+   "verdict": "mistake",
+   "refutation": {
+    "uci": [
+     "d2d3",
+     "f7f5",
+     "c1g5",
+     "f8e7",
+     "g5e7",
+     "d8e7",
+     "d3e4",
+     "f5e4",
+     "f3d2",
+     "b8c6"
+    ],
+    "san": [
+     "d3",
+     "f5",
+     "Bg5",
+     "Be7",
+     "Bxe7",
+     "Qxe7",
+     "dxe4",
+     "fxe4",
+     "Nfd2",
+     "Nc6"
+    ],
+    "why": "White wins a knight for a pawn."
+   },
+   "opening": "Petrov's Defense: Cozio Attack"
+  },
+  {
+   "id": "rnbqkb1r/ppp2ppp/3p4/8/4n3/5N2/PPPPQPPP/RNB1KB1R b KQkq -|c8f5",
+   "line": [
+    "e4",
+    "e5",
+    "Nf3",
+    "Nf6",
+    "Nxe5",
+    "d6",
+    "Nf3",
+    "Nxe4",
+    "Qe2"
+   ],
+   "fen": "rnbqkb1r/ppp2ppp/3p4/8/4n3/5N2/PPPPQPPP/RNB1KB1R b KQkq - 1 5",
+   "victim": "black",
+   "kind": "avoid",
+   "move": {
+    "uci": "c8f5",
+    "san": "Bf5"
+   },
+   "popular": {
+    "games": 45865,
+    "share": 0.07257258049203466
+   },
+   "book": {
+    "games": 0,
+    "share": 0
+   },
+   "scoreBefore": {
+    "type": "cp",
+    "value": 11
+   },
+   "scoreAfter": {
+    "type": "cp",
+    "value": 571
+   },
+   "drop": 38.1,
+   "verdict": "blunder",
+   "refutation": {
+    "uci": [
+     "d2d3",
+     "d6d5",
+     "f3d4",
+     "f5g6",
+     "d3e4",
+     "f8e7",
+     "b1c3",
+     "b8c6",
+     "d4c6",
+     "b7c6"
+    ],
+    "san": [
+     "d3",
+     "d5",
+     "Nd4",
+     "Bg6",
+     "dxe4",
+     "Be7",
+     "Nc3",
+     "Nc6",
+     "Nxc6",
+     "bxc6"
+    ],
+    "why": "White wins a knight. Stockfish rates the position +5.7."
+   },
+   "opening": "Petrov's Defense: Cozio Attack"
+  },
+  {
+   "id": "rnbqkb1r/ppp2ppp/3p4/8/4n3/2N2N2/PPPP1PPP/R1BQKB1R b KQkq -|d8e7",
+   "line": [
+    "e4",
+    "e5",
+    "Nf3",
+    "Nf6",
+    "Nxe5",
+    "d6",
+    "Nf3",
+    "Nxe4",
+    "Nc3"
+   ],
+   "fen": "rnbqkb1r/ppp2ppp/3p4/8/4n3/2N2N2/PPPP1PPP/R1BQKB1R b KQkq - 1 5",
+   "victim": "black",
+   "kind": "avoid",
+   "move": {
+    "uci": "d8e7",
+    "san": "Qe7"
+   },
+   "popular": {
+    "games": 5228,
+    "share": 0.07827636287412598
+   },
+   "book": {
+    "games": 0,
+    "share": 0
+   },
+   "scoreBefore": {
+    "type": "cp",
+    "value": 42
+   },
+   "scoreAfter": {
+    "type": "cp",
+    "value": 521
+   },
+   "drop": 33.3,
+   "verdict": "blunder",
+   "refutation": {
+    "uci": [
+     "c3d5",
+     "e7d7",
+     "d1e2",
+     "f7f5",
+     "d2d3",
+     "c7c6",
+     "d5f4",
+     "d6d5",
+     "f3g5",
+     "g7g6"
+    ],
+    "san": [
+     "Nd5",
+     "Qd7",
+     "Qe2",
+     "f5",
+     "d3",
+     "c6",
+     "Nf4",
+     "d5",
+     "Ng5",
+     "g6"
+    ],
+    "why": "No immediate material win, but Stockfish rates the position +5.2. Black's winning chances fall from 46% to 13%."
+   },
+   "opening": "Petrov's Defense: Nimzowitsch Attack"
+  },
+  {
+   "id": "rnbqkb1r/pppp1ppp/8/4p3/3Pn3/3B1N2/PPP2PPP/RNBQK2R b KQkq -|e4f2",
+   "line": [
+    "e4",
+    "e5",
+    "Nf3",
+    "Nf6",
+    "d4",
+    "Nxe4",
+    "Bd3"
+   ],
+   "fen": "rnbqkb1r/pppp1ppp/8/4p3/3Pn3/3B1N2/PPP2PPP/RNBQK2R b KQkq - 1 4",
+   "victim": "black",
+   "kind": "avoid",
+   "move": {
+    "uci": "e4f2",
+    "san": "Nxf2"
+   },
+   "popular": {
+    "games": 2566,
+    "share": 0.10835233510683219
+   },
+   "book": {
+    "games": 0,
+    "share": 0
+   },
+   "scoreBefore": {
+    "type": "cp",
+    "value": 47
+   },
+   "scoreAfter": {
+    "type": "cp",
+    "value": 470
+   },
+   "drop": 30.6,
+   "verdict": "blunder",
+   "refutation": {
+    "uci": [
+     "e1f2",
+     "b8c6",
+     "h1e1",
+     "d7d6",
+     "b1c3",
+     "f8e7",
+     "f2g1",
+     "c8g4",
+     "d3b5",
+     "f7f6"
+    ],
+    "san": [
+     "Kxf2",
+     "Nc6",
+     "Re1",
+     "d6",
+     "Nc3",
+     "Be7",
+     "Kg1",
+     "Bg4",
+     "Bb5",
+     "f6"
+    ],
+    "why": "White wins a knight."
+   },
+   "opening": "Petrov's Defense: Modern Attack, Center Variation"
+  },
+  {
+   "id": "rnbq1rk1/pppp1ppp/5n2/4N3/1b2P3/2N5/PPPP1PPP/R1BQKB1R w KQ -|c3d5",
+   "line": [
+    "e4",
+    "e5",
+    "Nf3",
+    "Nf6",
+    "Nc3",
+    "Bb4",
+    "Nxe5",
+    "O-O"
+   ],
+   "fen": "rnbq1rk1/pppp1ppp/5n2/4N3/1b2P3/2N5/PPPP1PPP/R1BQKB1R w KQ - 1 5",
+   "victim": "white",
+   "kind": "exploit",
+   "move": {
+    "uci": "c3d5",
+    "san": "Nd5"
+   },
+   "popular": {
+    "games": 2271,
+    "share": 0.07808685486366605
+   },
+   "book": {
+    "games": 0,
+    "share": 0
+   },
+   "scoreBefore": {
+    "type": "cp",
+    "value": 58
+   },
+   "scoreAfter": {
+    "type": "cp",
+    "value": -362
+   },
+   "drop": 34.5,
+   "verdict": "blunder",
+   "refutation": {
+    "uci": [
+     "f6d5",
+     "a2a3",
+     "d8e7",
+     "a3b4",
+     "e7e5",
+     "f2f3",
+     "f7f5",
+     "d2d4",
+     "e5e7",
+     "f1e2"
+    ],
+    "san": [
+     "Nxd5",
+     "a3",
+     "Qe7",
+     "axb4",
+     "Qxe5",
+     "f3",
+     "f5",
+     "d4",
+     "Qe7",
+     "Be2"
+    ],
+    "why": "Black wins two knights for a bishop."
+   },
+   "opening": "Petrov's Defense: Three Knights Game"
+  },
+  {
+   "id": "rnbqkb1r/pppp1ppp/8/4p3/3Pn3/3B1N2/PPP2PPP/RNBQK2R b KQkq -|e4d6",
+   "line": [
+    "e4",
+    "e5",
+    "Nf3",
+    "Nf6",
+    "d4",
+    "Nxe4",
+    "Bd3"
+   ],
+   "fen": "rnbqkb1r/pppp1ppp/8/4p3/3Pn3/3B1N2/PPP2PPP/RNBQK2R b KQkq - 1 4",
+   "victim": "black",
+   "kind": "avoid",
+   "move": {
+    "uci": "e4d6",
+    "san": "Nd6"
+   },
+   "popular": {
+    "games": 1809,
+    "share": 0.07638712946541677
+   },
+   "book": {
+    "games": 0,
+    "share": 0
+   },
+   "scoreBefore": {
+    "type": "cp",
+    "value": 40
+   },
+   "scoreAfter": {
+    "type": "cp",
+    "value": 641
+   },
+   "drop": 37.7,
+   "verdict": "blunder",
+   "refutation": {
+    "uci": [
+     "d4e5",
+     "b7b6",
+     "e5d6",
+     "f8d6",
+     "e1g1",
+     "e8g8",
+     "b1c3",
+     "b8c6",
+     "c1g5",
+     "d6e7"
+    ],
+    "san": [
+     "dxe5",
+     "b6",
+     "exd6",
+     "Bxd6",
+     "O-O",
+     "O-O",
+     "Nc3",
+     "Nc6",
+     "Bg5",
+     "Be7"
+    ],
+    "why": "White wins a knight. Stockfish rates the position +6.4."
+   },
+   "opening": "Petrov's Defense: Modern Attack, Center Variation"
+  },
+  {
+   "id": "rnbqkb1r/ppp2ppp/8/3pP3/4n3/3B1N2/PPP2PPP/RNBQK2R b KQkq -|e4f2",
+   "line": [
+    "e4",
+    "e5",
+    "Nf3",
+    "Nf6",
+    "d4",
+    "Nxe4",
+    "dxe5",
+    "d5",
+    "Bd3"
+   ],
+   "fen": "rnbqkb1r/ppp2ppp/8/3pP3/4n3/3B1N2/PPP2PPP/RNBQK2R b KQkq - 0 5",
+   "victim": "black",
+   "kind": "avoid",
+   "move": {
+    "uci": "e4f2",
+    "san": "Nxf2"
+   },
+   "popular": {
+    "games": 1430,
+    "share": 0.05515273063869176
+   },
+   "book": {
+    "games": 0,
+    "share": 0
+   },
+   "scoreBefore": {
+    "type": "cp",
+    "value": 26
+   },
+   "scoreAfter": {
+    "type": "cp",
+    "value": 366
+   },
+   "drop": 27,
+   "verdict": "mistake",
+   "refutation": {
+    "uci": [
+     "e1f2",
+     "f8c5",
+     "c1e3",
+     "c5e3",
+     "f2e3",
+     "e8g8",
+     "e3f2",
+     "f7f6",
+     "e5e6",
+     "c8e6"
+    ],
+    "san": [
+     "Kxf2",
+     "Bc5+",
+     "Be3",
+     "Bxe3+",
+     "Kxe3",
+     "O-O",
+     "Kf2",
+     "f6",
+     "e6",
+     "Bxe6"
+    ],
+    "why": "White wins a knight for a pawn."
+   },
+   "opening": "Petrov's Defense: Modern Attack, Center Variation"
+  }
+ ]
+}

@@ -1,0 +1,348 @@
+{
+ "meta": {
+  "formatVersion": 1,
+  "side": "white",
+  "createdAt": "2026-11-23T17:11:04.256Z",
+  "snapshotCreatedAt": "2026-11-23T17:10:10.824Z",
+  "engine": {
+   "name": "Stockfish 19 Lite WASM",
+   "depth": 22
+  },
+  "rule": {
+   "minShare": 0.05,
+   "minGames": 1000,
+   "minDrop": 20,
+   "maxCandidates": 60
+  }
+ },
+ "traps": [
+  {
+   "id": "rnbqkb1r/pppp1ppp/5n2/4p3/3PP3/2N5/PPP2PPP/R1BQKBNR b KQkq -|f8b4",
+   "line": [
+    "e4",
+    "e5",
+    "Nc3",
+    "Nf6",
+    "d4"
+   ],
+   "fen": "rnbqkb1r/pppp1ppp/5n2/4p3/3PP3/2N5/PPP2PPP/R1BQKBNR b KQkq - 0 3",
+   "victim": "black",
+   "kind": "exploit",
+   "move": {
+    "uci": "f8b4",
+    "san": "Bb4"
+   },
+   "popular": {
+    "games": 70831,
+    "share": 0.12660872860390956
+   },
+   "book": {
+    "games": 1,
+    "share": 0.003355704697986577
+   },
+   "scoreBefore": {
+    "type": "cp",
+    "value": -13
+   },
+   "scoreAfter": {
+    "type": "cp",
+    "value": 241
+   },
+   "drop": 22,
+   "verdict": "mistake",
+   "refutation": {
+    "uci": [
+     "d4e5",
+     "f6e4",
+     "d1g4",
+     "d7d5",
+     "g4g7",
+     "h8f8",
+     "a2a3",
+     "b4c3",
+     "b2c3",
+     "c8f5"
+    ],
+    "san": [
+     "dxe5",
+     "Nxe4",
+     "Qg4",
+     "d5",
+     "Qxg7",
+     "Rf8",
+     "a3",
+     "Bxc3+",
+     "bxc3",
+     "Bf5"
+    ],
+    "why": "White wins a bishop and a pawn for a knight."
+   },
+   "opening": "Vienna Game: Falkbeer Variation"
+  },
+  {
+   "id": "rnbqkb1r/ppp2ppp/5n2/3pP3/4P3/2N5/PPPP2PP/R1BQKBNR b KQkq -|d5d4",
+   "line": [
+    "e4",
+    "e5",
+    "Nc3",
+    "Nf6",
+    "f4",
+    "d5",
+    "fxe5"
+   ],
+   "fen": "rnbqkb1r/ppp2ppp/5n2/3pP3/4P3/2N5/PPPP2PP/R1BQKBNR b KQkq - 0 4",
+   "victim": "black",
+   "kind": "exploit",
+   "move": {
+    "uci": "d5d4",
+    "san": "d4"
+   },
+   "popular": {
+    "games": 9478,
+    "share": 0.07082436633189862
+   },
+   "book": {
+    "games": 0,
+    "share": 0
+   },
+   "scoreBefore": {
+    "type": "cp",
+    "value": -13
+   },
+   "scoreAfter": {
+    "type": "cp",
+    "value": 220
+   },
+   "drop": 20.4,
+   "verdict": "mistake",
+   "refutation": {
+    "uci": [
+     "e5f6",
+     "d4c3",
+     "b2c3",
+     "d8f6",
+     "d1f3",
+     "f6g6",
+     "d2d4",
+     "c7c5",
+     "g1h3",
+     "c8g4"
+    ],
+    "san": [
+     "exf6",
+     "dxc3",
+     "bxc3",
+     "Qxf6",
+     "Qf3",
+     "Qg6",
+     "d4",
+     "c5",
+     "Nh3",
+     "Bg4"
+    ],
+    "why": "No immediate material win, but Stockfish rates the position +2.2. Black's winning chances fall from 51% to 31%."
+   },
+   "opening": "Vienna Game: Vienna Gambit, Main Line"
+  },
+  {
+   "id": "rnbqk2r/pppp1ppp/5n2/2b1p3/4P3/2N3P1/PPPP1PBP/R1BQK1NR b KQkq -|f6g4",
+   "line": [
+    "e4",
+    "e5",
+    "Nc3",
+    "Nf6",
+    "g3",
+    "Bc5",
+    "Bg2"
+   ],
+   "fen": "rnbqk2r/pppp1ppp/5n2/2b1p3/4P3/2N3P1/PPPP1PBP/R1BQK1NR b KQkq - 2 4",
+   "victim": "black",
+   "kind": "exploit",
+   "move": {
+    "uci": "f6g4",
+    "san": "Ng4"
+   },
+   "popular": {
+    "games": 9385,
+    "share": 0.18409180070615927
+   },
+   "book": {
+    "games": 0,
+    "share": 0
+   },
+   "scoreBefore": {
+    "type": "cp",
+    "value": 4
+   },
+   "scoreAfter": {
+    "type": "cp",
+    "value": 568
+   },
+   "drop": 38.6,
+   "verdict": "blunder",
+   "refutation": {
+    "uci": [
+     "d1g4",
+     "e8g8",
+     "g4d1",
+     "f7f5",
+     "d2d3",
+     "d7d6",
+     "e4f5",
+     "b8c6",
+     "c1e3",
+     "c5e3"
+    ],
+    "san": [
+     "Qxg4",
+     "O-O",
+     "Qd1",
+     "f5",
+     "d3",
+     "d6",
+     "exf5",
+     "Nc6",
+     "Be3",
+     "Bxe3"
+    ],
+    "why": "White wins a knight and a pawn for a bishop. Stockfish rates the position +5.7."
+   },
+   "opening": "Vienna Game: Mieses Variation"
+  },
+  {
+   "id": "r1bqk2r/pppp1ppp/2n2n2/2b1p3/4P3/2NP2P1/PPP2PBP/R1BQK1NR b KQkq -|f6g4",
+   "line": [
+    "e4",
+    "e5",
+    "Nc3",
+    "Nf6",
+    "g3",
+    "Nc6",
+    "Bg2",
+    "Bc5",
+    "d3"
+   ],
+   "fen": "r1bqk2r/pppp1ppp/2n2n2/2b1p3/4P3/2NP2P1/PPP2PBP/R1BQK1NR b KQkq - 0 5",
+   "victim": "black",
+   "kind": "exploit",
+   "move": {
+    "uci": "f6g4",
+    "san": "Ng4"
+   },
+   "popular": {
+    "games": 2769,
+    "share": 0.10523315471439973
+   },
+   "book": {
+    "games": 0,
+    "share": 0
+   },
+   "scoreBefore": {
+    "type": "cp",
+    "value": 13
+   },
+   "scoreAfter": {
+    "type": "cp",
+    "value": 597
+   },
+   "drop": 38.8,
+   "verdict": "blunder",
+   "refutation": {
+    "uci": [
+     "d1g4",
+     "e8g8",
+     "g4d1",
+     "f7f5",
+     "e4f5",
+     "d7d6",
+     "c1e3",
+     "c5e3",
+     "f2e3",
+     "c8f5"
+    ],
+    "san": [
+     "Qxg4",
+     "O-O",
+     "Qd1",
+     "f5",
+     "exf5",
+     "d6",
+     "Be3",
+     "Bxe3",
+     "fxe3",
+     "Bxf5"
+    ],
+    "why": "White wins a knight. Stockfish rates the position +6.0."
+   },
+   "opening": "Vienna Game: Mieses Variation"
+  },
+  {
+   "id": "r1bqkb1r/ppp2ppp/2n5/3pP3/4n3/2N2N2/PPPP2PP/R1BQKB1R w KQkq -|c3e4",
+   "line": [
+    "e4",
+    "e5",
+    "Nc3",
+    "Nf6",
+    "f4",
+    "d5",
+    "fxe5",
+    "Nxe4",
+    "Nf3",
+    "Nc6"
+   ],
+   "fen": "r1bqkb1r/ppp2ppp/2n5/3pP3/4n3/2N2N2/PPPP2PP/R1BQKB1R w KQkq - 2 6",
+   "victim": "white",
+   "kind": "avoid",
+   "move": {
+    "uci": "c3e4",
+    "san": "Nxe4"
+   },
+   "popular": {
+    "games": 2685,
+    "share": 0.34569331788335267
+   },
+   "book": {
+    "games": 0,
+    "share": 0
+   },
+   "scoreBefore": {
+    "type": "cp",
+    "value": 26
+   },
+   "scoreAfter": {
+    "type": "cp",
+    "value": -478
+   },
+   "drop": 37.7,
+   "verdict": "blunder",
+   "refutation": {
+    "uci": [
+     "d5e4",
+     "f3g1",
+     "f8c5",
+     "f1b5",
+     "e8g8",
+     "b5c6",
+     "b7c6",
+     "g1e2",
+     "d8h4",
+     "g2g3"
+    ],
+    "san": [
+     "dxe4",
+     "Ng1",
+     "Bc5",
+     "Bb5",
+     "O-O",
+     "Bxc6",
+     "bxc6",
+     "Ne2",
+     "Qh4+",
+     "g3"
+    ],
+    "why": "Black wins a bishop."
+   },
+   "opening": "Vienna Game: Vienna Gambit, Main Line"
+  }
+ ]
+}

@@ -1,11 +1,11 @@
 # Chauss — Opening Trainer
 
-A browser app for learning chess openings from the side you play: which moves are theory, which opponent moves are bad, and how to punish them. Two openings so far, chosen in a picker on your first visit and switched from the button in the header:
+A browser app for learning chess openings from the side you play: which moves are theory, which opponent moves are bad, and how to punish them. 27 openings, chosen in the Drill menu:
 
-- the **Ponziani Opening as White** (1.e4 e5 2.Nf3 Nc6 3.c3);
-- the **Caro-Kann Defence as Black** (1.e4 c6).
+- **as White:** Ponziani, Italian Game, Ruy Lopez, Scotch Game, Vienna Game, King's Gambit, Evans Gambit, Danish Gambit, Bishop's Opening, Fried Liver Attack, London System, English Opening, Smith-Morra Gambit, Alapin Sicilian, Catalan;
+- **as Black:** Caro-Kann, Sicilian, French, Scandinavian, Pirc, Alekhine's, Modern, Two Knights, Petrov, Philidor, Queen's Gambit Declined, Slav.
 
-Progress is kept separately for each opening.
+The full list, with each opening's first moves, is in `src/openings/registry.ts`. Progress is kept separately for each opening. The Drill menu also has 21 endgame drills: checkmates (Queen, Rook, two Rooks, two Bishops, Bishop and Knight, Bishop and rook's pawn), winning technique (King and pawn, Queen vs pawn, Rook vs pawn, Lucena, outside passed pawn, breakthrough) and holding a draw (opposition, rook's pawn, rule of the square, wrong bishop, Philidor, Bishop or Knight vs Rook, opposite-coloured bishops, the stalemate draw against a queen).
 
 **Status:** all three modes work — **Explore** (look up any position), **Drill** (learn your moves with spaced repetition) and **Analyse** (a whole game reviewed by Stockfish). A GitHub Pages workflow is ready; the site is not published yet.
 
@@ -84,7 +84,7 @@ crawls (add `--opening=caro-kann` to either command for the Caro-Kann; the openi
 
 ## Drill
 
-The Drill tab first opens a full-page menu: **Openings** (pick which opening to drill; **Endgames** is a placeholder for now). Inside a drill, **← Drill menu** takes you back to switch. The app plays the other colour and you play yours (White in the Ponziani, Black in the Caro-Kann, where the app plays 1.e4 and you must find 1...c6). In every position you must find **your repertoire move**: the move masters play most there, unless Stockfish rates another move clearly better (more than 5 points of winning chances). The opponent's replies are chosen the way players at your level choose them, weighted by how often they are played.
+The Drill tab first opens a full-page menu: **Openings** (pick which opening to drill, grouped by the side you play) or **Endgames** (grouped by goal: give mate, win, or hold the draw). Inside a drill, **← Drill menu** takes you back to switch. The app plays the other colour and you play yours (White in the Ponziani, Black in the Caro-Kann, where the app plays 1.e4 and you must find 1...c6). In every position you must find **your repertoire move**: the move masters play most there, unless Stockfish rates another move clearly better (more than 5 points of winning chances). The opponent's replies are chosen the way players at your level choose them, weighted by how often they are played.
 
 - A wrong move is taken back. You see the right move (an arrow) and why it is the one; play it to go on.
 - Each position is a card with its own review date (spaced repetition, SM-2). Positions you miss come back soon; ones you know well come back later. The next line aims at a card that is due, then at a new one.

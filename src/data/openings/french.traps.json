@@ -1,0 +1,224 @@
+{
+ "meta": {
+  "formatVersion": 1,
+  "side": "black",
+  "createdAt": "2026-11-23T20:16:38.336Z",
+  "snapshotCreatedAt": "2026-11-23T20:16:06.660Z",
+  "engine": {
+   "name": "Stockfish 19 Lite WASM",
+   "depth": 22
+  },
+  "rule": {
+   "minShare": 0.05,
+   "minGames": 1000,
+   "minDrop": 20,
+   "maxCandidates": 60
+  }
+ },
+ "traps": [
+  {
+   "id": "rnbqk2r/ppp1bppp/4pn2/6B1/3PN3/8/PPP2PPP/R2QKBNR w KQkq -|d1f3",
+   "line": [
+    "e4",
+    "e6",
+    "d4",
+    "d5",
+    "Nc3",
+    "Nf6",
+    "Bg5",
+    "dxe4",
+    "Nxe4",
+    "Be7"
+   ],
+   "fen": "rnbqk2r/ppp1bppp/4pn2/6B1/3PN3/8/PPP2PPP/R2QKBNR w KQkq - 1 6",
+   "victim": "white",
+   "kind": "exploit",
+   "move": {
+    "uci": "d1f3",
+    "san": "Qf3"
+   },
+   "popular": {
+    "games": 5619,
+    "share": 0.09564580921903724
+   },
+   "book": {
+    "games": 0,
+    "share": 0
+   },
+   "scoreBefore": {
+    "type": "cp",
+    "value": 29
+   },
+   "scoreAfter": {
+    "type": "cp",
+    "value": -364
+   },
+   "drop": 31.9,
+   "verdict": "blunder",
+   "refutation": {
+    "uci": [
+     "f6e4",
+     "g5e7",
+     "d8e7",
+     "f3e4",
+     "e7b4",
+     "e1e2",
+     "b4b2",
+     "a1d1",
+     "b8d7",
+     "e4d3"
+    ],
+    "san": [
+     "Nxe4",
+     "Bxe7",
+     "Qxe7",
+     "Qxe4",
+     "Qb4+",
+     "Ke2",
+     "Qxb2",
+     "Rd1",
+     "Nd7",
+     "Qd3"
+    ],
+    "why": "Black wins a pawn. Stockfish rates the position -3.6."
+   },
+   "opening": "French Defense: Classical Variation"
+  },
+  {
+   "id": "rnbqk2r/ppp1bppp/4pn2/6B1/3PN3/8/PPP2PPP/R2QKBNR w KQkq -|g1f3",
+   "line": [
+    "e4",
+    "e6",
+    "d4",
+    "d5",
+    "Nc3",
+    "Nf6",
+    "Bg5",
+    "dxe4",
+    "Nxe4",
+    "Be7"
+   ],
+   "fen": "rnbqk2r/ppp1bppp/4pn2/6B1/3PN3/8/PPP2PPP/R2QKBNR w KQkq - 1 6",
+   "victim": "white",
+   "kind": "exploit",
+   "move": {
+    "uci": "g1f3",
+    "san": "Nf3"
+   },
+   "popular": {
+    "games": 4564,
+    "share": 0.07768775107237694
+   },
+   "book": {
+    "games": 0,
+    "share": 0
+   },
+   "scoreBefore": {
+    "type": "cp",
+    "value": 24
+   },
+   "scoreAfter": {
+    "type": "cp",
+    "value": -528
+   },
+   "drop": 39.7,
+   "verdict": "blunder",
+   "refutation": {
+    "uci": [
+     "f6e4",
+     "h2h4",
+     "b8c6",
+     "g5e3",
+     "e4f6",
+     "f1b5",
+     "c8d7",
+     "d1e2",
+     "c6b4",
+     "b5c4"
+    ],
+    "san": [
+     "Nxe4",
+     "h4",
+     "Nc6",
+     "Be3",
+     "Nf6",
+     "Bb5",
+     "Bd7",
+     "Qe2",
+     "Nb4",
+     "Bc4"
+    ],
+    "why": "Black wins a knight. Stockfish rates the position -5.3."
+   },
+   "opening": "French Defense: Classical Variation"
+  },
+  {
+   "id": "rnbqk2r/pppnbppp/4p3/3pP1B1/3P4/2N5/PPP2PPP/R2QKBNR w KQkq -|g1f3",
+   "line": [
+    "e4",
+    "e6",
+    "d4",
+    "d5",
+    "Nc3",
+    "Nf6",
+    "Bg5",
+    "Be7",
+    "e5",
+    "Nfd7"
+   ],
+   "fen": "rnbqk2r/pppnbppp/4p3/3pP1B1/3P4/2N5/PPP2PPP/R2QKBNR w KQkq - 1 6",
+   "victim": "white",
+   "kind": "exploit",
+   "move": {
+    "uci": "g1f3",
+    "san": "Nf3"
+   },
+   "popular": {
+    "games": 1553,
+    "share": 0.07551665451008996
+   },
+   "book": {
+    "games": 0,
+    "share": 0
+   },
+   "scoreBefore": {
+    "type": "cp",
+    "value": 55
+   },
+   "scoreAfter": {
+    "type": "cp",
+    "value": -542
+   },
+   "drop": 43.1,
+   "verdict": "blunder",
+   "refutation": {
+    "uci": [
+     "e7g5",
+     "f3g5",
+     "d8g5",
+     "h2h4",
+     "g5e7",
+     "d1d2",
+     "a7a6",
+     "h4h5",
+     "b7b6",
+     "h1h3"
+    ],
+    "san": [
+     "Bxg5",
+     "Nxg5",
+     "Qxg5",
+     "h4",
+     "Qe7",
+     "Qd2",
+     "a6",
+     "h5",
+     "b6",
+     "Rh3"
+    ],
+    "why": "Black wins a knight. Stockfish rates the position -5.4."
+   },
+   "opening": "French Defense: Classical Variation, Normal Variation"
+  }
+ ]
+}
