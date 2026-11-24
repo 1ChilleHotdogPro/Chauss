@@ -195,7 +195,13 @@ interface Pending {
  */
 export async function crawl(
   source: CrawlSource,
-  options: { rootLine: readonly string[]; thresholds: CrawlThresholds; side?: Side },
+  options: {
+    rootLine: readonly string[];
+    thresholds: CrawlThresholds;
+    side?: Side;
+    /** False: also follow moves into differently named openings (the Queen's Gambit's replies all are). */
+    stayInOpening?: boolean;
+  },
   onProgress?: (visited: number, waiting: number, node: CrawlNode) => void,
 ): Promise<CrawlResult> {
   const { rootLine, thresholds } = options;
@@ -233,7 +239,7 @@ export async function crawl(
     if (opening) node.opening = opening;
     nodes.set(key, node);
     // The first position of the opening itself names the family the tree stays in.
-    if (node.kind === 'tree' && family === undefined && node.opening) family = openingFamily(node.opening.name);
+    if (node.kind === 'tree' && family === undefined && node.opening && options.stayInOpening !== false) family = openingFamily(node.opening.name);
 
     const follow = movesToFollow(node, rootLine, thresholds, family, side);
     for (const move of node.moves) {

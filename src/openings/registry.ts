@@ -30,6 +30,11 @@ export interface OpeningDef {
    * Left out until the survey run has shown the explorer's own name.
    */
   family?: string;
+  /**
+   * False when the opening's own replies have names of their own, so the tree should follow them anyway:
+   * every answer to the Queen's Gambit is the QGD, the QGA or the Slav to the explorer.
+   */
+  stayInOpening?: boolean;
   crawl: CrawlSettings;
 }
 
@@ -122,6 +127,14 @@ export const OPENINGS: readonly OpeningDef[] = [
     name: 'Fried Liver Attack',
     side: 'white',
     rootLine: ['e4', 'e5', 'Nf3', 'Nc6', 'Bc4', 'Nf6', 'Ng5'],
+    crawl: NEW_OPENING_CRAWL,
+  },
+  {
+    id: 'queens-gambit',
+    name: "Queen's Gambit",
+    side: 'white',
+    rootLine: ['d4', 'd5', 'c4'],
+    stayInOpening: false,
     crawl: NEW_OPENING_CRAWL,
   },
   {
@@ -234,6 +247,34 @@ export const OPENINGS: readonly OpeningDef[] = [
     name: 'Slav Defence',
     side: 'black',
     rootLine: ['d4', 'd5', 'c4', 'c6'],
+    crawl: NEW_OPENING_CRAWL,
+  },
+  {
+    id: 'kings-indian',
+    name: "King's Indian Defence",
+    side: 'black',
+    rootLine: ['d4', 'Nf6', 'c4', 'g6'],
+    crawl: NEW_OPENING_CRAWL,
+  },
+  {
+    id: 'nimzo-indian',
+    name: 'Nimzo-Indian Defence',
+    side: 'black',
+    rootLine: ['d4', 'Nf6', 'c4', 'e6', 'Nc3', 'Bb4'],
+    crawl: NEW_OPENING_CRAWL,
+  },
+  {
+    id: 'dutch',
+    name: 'Dutch Defence',
+    side: 'black',
+    rootLine: ['d4', 'f5'],
+    crawl: NEW_OPENING_CRAWL,
+  },
+  {
+    id: 'grunfeld',
+    name: 'Grünfeld Defence',
+    side: 'black',
+    rootLine: ['d4', 'Nf6', 'c4', 'g6', 'Nc3', 'd5'],
     crawl: NEW_OPENING_CRAWL,
   },
 ];

@@ -330,6 +330,18 @@ describe('crawl', () => {
     expect(countReachable(result, ROOT, THRESHOLDS)).toBe(result.nodes.size);
   });
 
+  it('follows moves into differently named openings when told not to stay in the opening', async () => {
+    const source = fakeSource(BOOK, {
+      [P]: { eco: 'C44', name: 'Ponziani Opening' },
+      [`${P} d5`]: { eco: 'C50', name: 'Some Other Opening: A Variation' },
+    });
+    const result = await crawl(source, { rootLine: ROOT, thresholds: THRESHOLDS, stayInOpening: false });
+    expect(result.family).toBeUndefined();
+    expect(result.nodes.get(key(P))!.moves.find((m) => m.san === 'd5')?.follow).toBe('tree');
+    expect(result.nodes.has(key(`${P} d5`))).toBe(true);
+    expect(countReachable(result, ROOT, THRESHOLDS)).toBe(result.nodes.size);
+  });
+
   it('reports progress', async () => {
     const source = fakeSource(BOOK);
     const seen: number[] = [];

@@ -61,6 +61,8 @@ const OPTIONS = {
   maxPositions: 0,
   /** Stockfish search depth. */
   depth: 18,
+  /** False: follow moves into differently named openings too (from the registry). */
+  stayInOpening: true,
   /**
    * Pause between explorer requests, in milliseconds. Lichess started answering "too many
    * requests" after roughly 20 requests in a minute (observed November 2026), so stay under that.
@@ -86,6 +88,7 @@ function parseArgs(argv: readonly string[]): typeof OPTIONS {
     options.maxPly = opening.crawl.maxPly;
     options.maxPositions = opening.crawl.maxPositions;
     options.depth = opening.crawl.depth;
+    options.stayInOpening = opening.stayInOpening !== false;
   }
   for (const arg of argv) {
     const equals = arg.indexOf('=');
@@ -243,7 +246,7 @@ export async function main(argv: readonly string[]): Promise<number> {
     log(`Lichess games: rated ${describeRatings(options.ratings)}, speeds ${options.speeds.join(', ')}.`);
     log(`Following moves with >= ${options.minShare * 100}% of the games and >= ${thresholds.minGamesLichess} Lichess games or >= ${thresholds.minGamesMasters} master games; depth limit ${thresholds.maxPly} half-moves; at most ${thresholds.maxPositions} positions.`);
 
-    const result = await crawl(source, { rootLine: options.rootLine, thresholds, side: options.side }, (visited, waiting, node) => {
+    const result = await crawl(source, { rootLine: options.rootLine, thresholds, side: options.side, stayInOpening: options.stayInOpening }, (visited, waiting, node) => {
       if (visited % 10 === 0 || waiting === 0) {
         log(`  ${visited} positions (${waiting} waiting) — move ${Math.ceil(node.ply / 2)}, ${node.opening?.name ?? 'unnamed'}; ${client.requestsSent()} requests sent, ${diskCache.hits()} answered from disk`);
       }
