@@ -1,6 +1,6 @@
 # Chauss — Opening Trainer
 
-Browser app that teaches chess openings, one at a time, from the side the user plays: which moves are theory, which opponent moves are bad, and how to punish them, with Stockfish available for evaluation. Openings so far: the **Ponziani as White** (1.e4 e5 2.Nf3 Nc6 3.c3) and the **Caro-Kann as Black** (1.e4 c6).
+Browser app that teaches chess openings, one at a time, from the side the user plays: which moves are theory, which opponent moves are bad, and how to punish them, with Stockfish available for evaluation. Openings: 32 — first the **Ponziani as White** (1.e4 e5 2.Nf3 Nc6 3.c3) and the **Caro-Kann as Black** (1.e4 c6), then 30 more in `src/openings/registry.ts` (crawl cut by a 150-position limit; `stayInOpening: false` for the Queen's Gambit, whose replies all have names of their own). Endgame drills: `src/endgames/drills.ts`, checked by `npm run endgames -- --play`.
 
 ## User
 - Beginner (<1200). Explanations short, concrete, no jargon without a one-line gloss. UI in English.

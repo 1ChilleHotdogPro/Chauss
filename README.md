@@ -1,9 +1,9 @@
 # Chauss — Opening Trainer
 
-A browser app for learning chess openings from the side you play: which moves are theory, which opponent moves are bad, and how to punish them. 27 openings, chosen in the Drill menu:
+A browser app for learning chess openings from the side you play: which moves are theory, which opponent moves are bad, and how to punish them. 32 openings, chosen in the Drill menu:
 
-- **as White:** Ponziani, Italian Game, Ruy Lopez, Scotch Game, Vienna Game, King's Gambit, Evans Gambit, Danish Gambit, Bishop's Opening, Fried Liver Attack, London System, English Opening, Smith-Morra Gambit, Alapin Sicilian, Catalan;
-- **as Black:** Caro-Kann, Sicilian, French, Scandinavian, Pirc, Alekhine's, Modern, Two Knights, Petrov, Philidor, Queen's Gambit Declined, Slav.
+- **as White:** Ponziani, Italian Game, Ruy Lopez, Scotch Game, Vienna Game, King's Gambit, Evans Gambit, Danish Gambit, Bishop's Opening, Fried Liver Attack, Queen's Gambit, London System, English Opening, Smith-Morra Gambit, Alapin Sicilian, Catalan;
+- **as Black:** Caro-Kann, Sicilian, French, Scandinavian, Pirc, Alekhine's, Modern, Two Knights, Petrov, Philidor, Queen's Gambit Declined, Slav, King's Indian, Nimzo-Indian, Dutch, Grünfeld.
 
 The full list, with each opening's first moves, is in `src/openings/registry.ts`. Progress is kept separately for each opening. The Drill menu also has 21 endgame drills: checkmates (Queen, Rook, two Rooks, two Bishops, Bishop and Knight, Bishop and rook's pawn), winning technique (King and pawn, Queen vs pawn, Rook vs pawn, Lucena, outside passed pawn, breakthrough) and holding a draw (opposition, rook's pawn, rule of the square, wrong bishop, Philidor, Bishop or Knight vs Rook, opposite-coloured bishops, the stalemate draw against a queen).
 

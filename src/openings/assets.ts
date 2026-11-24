@@ -55,6 +55,10 @@ export const OPENING_ASSETS: Record<string, OpeningAssets> = {
     snapshotUrl: new URL('../data/openings/fried-liver.json', import.meta.url).href,
     ideas: () => import('../explore/ideas/fried-liver').then((module) => module.IDEAS),
   },
+  'queens-gambit': {
+    snapshotUrl: new URL('../data/openings/queens-gambit.json', import.meta.url).href,
+    ideas: () => import('../explore/ideas/queens-gambit').then((module) => module.IDEAS),
+  },
   'london': {
     snapshotUrl: new URL('../data/openings/london.json', import.meta.url).href,
     ideas: () => import('../explore/ideas/london').then((module) => module.IDEAS),
@@ -118,6 +122,22 @@ export const OPENING_ASSETS: Record<string, OpeningAssets> = {
   'slav': {
     snapshotUrl: new URL('../data/openings/slav.json', import.meta.url).href,
     ideas: () => import('../explore/ideas/slav').then((module) => module.IDEAS),
+  },
+  'kings-indian': {
+    snapshotUrl: new URL('../data/openings/kings-indian.json', import.meta.url).href,
+    ideas: () => import('../explore/ideas/kings-indian').then((module) => module.IDEAS),
+  },
+  'nimzo-indian': {
+    snapshotUrl: new URL('../data/openings/nimzo-indian.json', import.meta.url).href,
+    ideas: () => import('../explore/ideas/nimzo-indian').then((module) => module.IDEAS),
+  },
+  'dutch': {
+    snapshotUrl: new URL('../data/openings/dutch.json', import.meta.url).href,
+    ideas: () => import('../explore/ideas/dutch').then((module) => module.IDEAS),
+  },
+  'grunfeld': {
+    snapshotUrl: new URL('../data/openings/grunfeld.json', import.meta.url).href,
+    ideas: () => import('../explore/ideas/grunfeld').then((module) => module.IDEAS),
   },
 };
 

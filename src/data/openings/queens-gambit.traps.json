@@ -1,0 +1,84 @@
+{
+ "meta": {
+  "formatVersion": 1,
+  "side": "white",
+  "createdAt": "2026-11-24T10:12:01.914Z",
+  "snapshotCreatedAt": "2026-11-24T10:11:57.296Z",
+  "engine": {
+   "name": "Stockfish 19 Lite WASM",
+   "depth": 22
+  },
+  "rule": {
+   "minShare": 0.05,
+   "minGames": 1000,
+   "minDrop": 20,
+   "maxCandidates": 60
+  }
+ },
+ "traps": [
+  {
+   "id": "rnbqkbnr/pp3ppp/4p3/2pp4/2PP4/2N5/PP2PPPP/R1BQKBNR w KQkq -|c1f4",
+   "line": [
+    "d4",
+    "d5",
+    "c4",
+    "e6",
+    "Nc3",
+    "c5"
+   ],
+   "fen": "rnbqkbnr/pp3ppp/4p3/2pp4/2PP4/2N5/PP2PPPP/R1BQKBNR w KQkq - 0 4",
+   "victim": "white",
+   "kind": "avoid",
+   "move": {
+    "uci": "c1f4",
+    "san": "Bf4"
+   },
+   "popular": {
+    "games": 25377,
+    "share": 0.05681210164702932
+   },
+   "book": {
+    "games": 0,
+    "share": 0
+   },
+   "scoreBefore": {
+    "type": "cp",
+    "value": 40
+   },
+   "scoreAfter": {
+    "type": "cp",
+    "value": -236
+   },
+   "drop": 24.1,
+   "verdict": "mistake",
+   "refutation": {
+    "uci": [
+     "c5d4",
+     "c3b5",
+     "e6e5",
+     "d1a4",
+     "c8d7",
+     "f4e5",
+     "d5c4",
+     "e5d6",
+     "a7a6",
+     "d6f8"
+    ],
+    "san": [
+     "cxd4",
+     "Nb5",
+     "e5",
+     "Qa4",
+     "Bd7",
+     "Bxe5",
+     "dxc4",
+     "Bd6",
+     "a6",
+     "Bxf8"
+    ],
+    "why": "No immediate material win, but Stockfish rates the position -2.4. White's winning chances fall from 54% to 30%."
+   },
+   "opening": "Tarrasch Defense"
+  }
+ ]
+}

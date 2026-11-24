@@ -1,0 +1,88 @@
+{
+ "meta": {
+  "formatVersion": 1,
+  "side": "black",
+  "createdAt": "2026-11-24T10:05:57.891Z",
+  "snapshotCreatedAt": "2026-11-24T10:05:54.072Z",
+  "engine": {
+   "name": "Stockfish 19 Lite WASM",
+   "depth": 22
+  },
+  "rule": {
+   "minShare": 0.05,
+   "minGames": 1000,
+   "minDrop": 20,
+   "maxCandidates": 60
+  }
+ },
+ "traps": [
+  {
+   "id": "rnbqk2r/ppp1ppbp/6p1/3p2B1/2PPn3/2N2N2/PP2PPPP/R2QKB1R w KQkq -|c3e4",
+   "line": [
+    "d4",
+    "Nf6",
+    "c4",
+    "g6",
+    "Nc3",
+    "d5",
+    "Nf3",
+    "Bg7",
+    "Bg5",
+    "Ne4"
+   ],
+   "fen": "rnbqk2r/ppp1ppbp/6p1/3p2B1/2PPn3/2N2N2/PP2PPPP/R2QKB1R w KQkq - 4 6",
+   "victim": "white",
+   "kind": "exploit",
+   "move": {
+    "uci": "c3e4",
+    "san": "Nxe4"
+   },
+   "popular": {
+    "games": 1310,
+    "share": 0.429367420517863
+   },
+   "book": {
+    "games": 0,
+    "share": 0
+   },
+   "scoreBefore": {
+    "type": "cp",
+    "value": 11
+   },
+   "scoreAfter": {
+    "type": "cp",
+    "value": -247
+   },
+   "drop": 22.3,
+   "verdict": "mistake",
+   "refutation": {
+    "uci": [
+     "d5e4",
+     "f3d2",
+     "d8d4",
+     "a1b1",
+     "d4e5",
+     "g5e3",
+     "h7h5",
+     "h2h4",
+     "b8c6",
+     "g2g3"
+    ],
+    "san": [
+     "dxe4",
+     "Nd2",
+     "Qxd4",
+     "Rb1",
+     "Qe5",
+     "Be3",
+     "h5",
+     "h4",
+     "Nc6",
+     "g3"
+    ],
+    "why": "No immediate material win, but Stockfish rates the position -2.5. White's winning chances fall from 51% to 29%."
+   },
+   "opening": "Grünfeld Defense: Three Knights Variation, Petrosian System"
+  }
+ ]
+}
